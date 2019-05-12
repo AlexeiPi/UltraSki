@@ -1,4 +1,4 @@
-object Form1: TForm1
+object fUltraSki: TfUltraSki
   Left = 0
   Top = 0
   Caption = 'UltraSki'
@@ -14,6 +14,8 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Timer1: TTimer
+    Interval = 500
+    OnTimer = Timer1Timer
     Left = 56
     Top = 56
   end

@@ -121,8 +121,20 @@
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
     </PropertyGroup>
     <ItemGroup>
+        <CppCompile Include="Competition.cpp">
+            <DependentOn>Competition.h</DependentOn>
+            <BuildOrder>3</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="Racer.cpp">
+            <DependentOn>Racer.h</DependentOn>
+            <BuildOrder>4</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="TimingDevice.cpp">
+            <DependentOn>TimingDevice.h</DependentOn>
+            <BuildOrder>5</BuildOrder>
+        </CppCompile>
         <CppCompile Include="UltraSki.cpp">
-            <Form>Form1</Form>
+            <Form>fUltraSki</Form>
             <FormType>dfm</FormType>
             <DependentOn>UltraSki.h</DependentOn>
             <BuildOrder>2</BuildOrder>

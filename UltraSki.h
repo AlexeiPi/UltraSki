@@ -8,16 +8,20 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
+
+#include "IniFiles.hpp"
+
 //---------------------------------------------------------------------------
-class TForm1 : public TForm
+class TfUltraSki : public TForm
 {
 __published:	// IDE-managed Components
 	TTimer *Timer1;
+	void __fastcall Timer1Timer(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
-	__fastcall TForm1(TComponent* Owner);
+	__fastcall TfUltraSki(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm1 *Form1;
+extern PACKAGE TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 #endif
