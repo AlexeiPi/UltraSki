@@ -1,0 +1,36 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{45E71A49-D6C3-4BDE-BCE0-CD2C0ABC3AA5}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="UltraSki_cbp.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="UltraSki_cbp">
+        <MSBuild Projects="UltraSki_cbp.cbproj"/>
+    </Target>
+    <Target Name="UltraSki_cbp:Clean">
+        <MSBuild Projects="UltraSki_cbp.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="UltraSki_cbp:Make">
+        <MSBuild Projects="UltraSki_cbp.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="UltraSki_cbp"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="UltraSki_cbp:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="UltraSki_cbp:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
