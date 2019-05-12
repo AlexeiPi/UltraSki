@@ -12,8 +12,7 @@
 TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner)
-	: TForm(Owner)
-{
+	: TForm(Owner){
 AnsiString astr;
 Racer r1("123456","Иван","Иванович","Иванов","Ivan","Ivanovich","Ivanov","08.10.1957");
 	astr=r1.getFIO(0)+" возраст "+r1.getAge();
