@@ -1,0 +1,2 @@
+# UltraSki
+Ultimate timekeeping
