@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.032,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.863,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>2019.05.12 11:41:45.434,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>2019.05.12 11:41:45.564,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2019.05.12 11:42:32.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>2019.05.12 11:42:32.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.dfm=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>2019.05.12 11:42:32.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.h</Transaction>
+    <Transaction>2019.05.12 11:42:45.285,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Project1PCH1.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>2019.05.12 11:43:44.380,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbpPCH1.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Project1PCH1.h</Transaction>
+    <Transaction>2019.05.12 11:43:44.396,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>2019.05.12 11:44:36.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.h</Transaction>
+    <Transaction>2019.05.12 11:44:36.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.cpp</Transaction>
+    <Transaction>2019.05.12 11:44:36.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.dfm=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
