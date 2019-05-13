@@ -9,27 +9,39 @@
 #pragma resource "*.dfm"
 
 #include "Racer.h"
+#include "Competition.h"
 TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner)
 	: TForm(Owner){
 AnsiString astr;
-Racer r1("123456","Иван","Иванович","Иванов","Ivan","Ivanovich","Ivanov","08.10.1957");
-	astr=r1.getFIO(0)+" возраст "+r1.getAge();
-	astr=r1.getFIO(1)+" age "+r1.getAge();
-	astr=r1.getIOF(0)+" возраст "+r1.getAge();
-	astr=r1.getFio(0)+" возраст "+r1.getAge();
-	astr=r1.getioF(0)+" возраст "+r1.getAge();
-	astr=r1.getIOF(1)+" age "+r1.getAge();
-	astr=r1.getFio(1)+" age "+r1.getAge();
-	astr=r1.getioF(1)+" age "+r1.getAge();
-    astr=r1.getFIScode();
+
+
+	Person p1("Иван","Иванович","Иванов","Ivan","Ivanovich","Ivanov","08.10.1957");
+
+	Racer *r1=new Racer;
+	r1->setFIScode("123456");
+	r1->setPerson(&p1);
+	astr=r1->getFIScode();
+
+///	Racer r1("123456","Иван","Иванович","Иванов","Ivan","Ivanovich","Ivanov","08.10.1957");
+
+	astr=r1->getFIO(0)+" возраст "+r1->getAge();
+	astr=r1->getFIO(1)+" age "+r1->getAge();
+	astr=r1->getIOF(0)+" возраст "+r1->getAge();
+	astr=r1->getFio(0)+" возраст "+r1->getAge();
+	astr=r1->getioF(0)+" возраст "+r1->getAge();
+	astr=r1->getIOF(1)+" age "+r1->getAge();
+	astr=r1->getFio(1)+" age "+r1->getAge();
+	astr=r1->getioF(1)+" age "+r1->getAge();
+
+RaceList rcl;
+rcl.LoadFromExcel("C:\\test\\RPT_Start_910.csv");
 
 }
 //---------------------------------------------------------------------------
-void __fastcall TfUltraSki::Timer1Timer(TObject *Sender)
-{
+void __fastcall TfUltraSki::Timer1Timer(TObject *Sender){
 	fUltraSki->Caption="ULTRASKI "+Now().FormatString("dd.mm.yyyy hh:mm:ss");
-}
+}//end of proc
 //---------------------------------------------------------------------------
 

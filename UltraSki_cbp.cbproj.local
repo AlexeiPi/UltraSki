@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.909,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.438,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.298,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Competition.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.dfm=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.139,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Racer.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.000,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.396,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.912,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.380,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbpPCH1.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.285,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Project1PCH1.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.dfm=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.235,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TimingDevice.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.564,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.032,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.298,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Competition.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.139,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Racer.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
     <Transaction>1899.12.30 00:00:00.000.863,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
-    <Transaction>2019.05.12 11:41:45.434,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
-    <Transaction>2019.05.12 11:41:45.564,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 11:42:32.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.dfm=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
-    <Transaction>2019.05.12 11:42:32.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 11:42:32.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.h</Transaction>
-    <Transaction>2019.05.12 11:42:45.285,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Project1PCH1.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
-    <Transaction>2019.05.12 11:43:44.380,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbpPCH1.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Project1PCH1.h</Transaction>
-    <Transaction>2019.05.12 11:43:44.396,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
-    <Transaction>2019.05.12 11:44:36.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.h</Transaction>
-    <Transaction>2019.05.12 11:44:36.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.dfm=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.dfm</Transaction>
-    <Transaction>2019.05.12 11:44:36.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.cpp</Transaction>
-    <Transaction>2019.05.12 14:51:48.912,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbp.cbproj</Transaction>
-    <Transaction>2019.05.12 15:32:14.000,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 15:33:08.298,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Competition.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.h</Transaction>
-    <Transaction>2019.05.12 15:33:08.298,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Competition.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 15:34:25.909,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 15:34:47.139,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Racer.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.h</Transaction>
-    <Transaction>2019.05.12 15:34:47.139,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Racer.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 15:34:56.438,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 15:36:10.235,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TimingDevice.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.cpp</Transaction>
-    <Transaction>2019.05.12 15:36:10.235,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TimingDevice.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.434,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.235,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TimingDevice.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.959,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.392,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSkiP.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
   </Transactions>
 </BorlandProject>

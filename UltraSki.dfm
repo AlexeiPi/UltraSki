@@ -2,8 +2,8 @@ object fUltraSki: TfUltraSki
   Left = 0
   Top = 0
   Caption = 'UltraSki'
-  ClientHeight = 299
-  ClientWidth = 635
+  ClientHeight = 318
+  ClientWidth = 509
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
