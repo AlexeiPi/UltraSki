@@ -42,9 +42,9 @@ class Person {
 		AnsiString getFio(int language) const;
 		AnsiString getioF(int language) const;
 
-		void Person::setName(int language,AnsiString  name);
-		void Person::setSecondName(int language,AnsiString secondname);
-		void Person::setSurName(int language,AnsiString surname);
+		void setName(int language,AnsiString  name);
+		void setSecondName(int language,AnsiString secondname);
+		void setSurName(int language,AnsiString surname);
 
 
  };
@@ -65,8 +65,7 @@ class Person {
 		void setRacerName(Person *p);
 		void setRacerSecondName(Person *p);
 		void setRacerSurName(Person *p);
-        void Racer::setRacerAge(Person *p);
-
+		void setRacerAge(Person *p);
 
 };
 //---------------------------------------------------------------------------

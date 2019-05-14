@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+
 //____________________________________________________________________________
 void RaceList::LoadFromExcel(AnsiString filename){
   TStringList *SL;
@@ -21,10 +21,10 @@ void RaceList::LoadFromExcel(AnsiString filename){
 
   SL = new TStringList;
   SL->LoadFromFile(filename);
-  int num1 = SL->Count;
+  auto num1 = SL->Count;
 
   vector <string> RacerString;
-  vector <vector <string>> Racers;
+
 
   for (int i = 0; i < num1; i++) {
 	// lastastr=astr;
@@ -33,8 +33,10 @@ void RaceList::LoadFromExcel(AnsiString filename){
 	regex re("[;]");
 	sregex_token_iterator it(item.begin(), item.end(), re, -1);
 	sregex_token_iterator reg_end;
-	logi1="";
+	//int ilen =re;
+	//logi1="";
 	for (; it != reg_end; ++it) {
+		 i1=it->str();
 		 RacerString.push_back(it->str());
 	//	 i1=it->str();
 	//	 logi1+=i1+" ";

@@ -3,9 +3,11 @@
 #ifndef CompetitionH
 #define CompetitionH
 #include <vector>
+using namespace std;
 class RaceList{
 	private:
 		TPanel *panel;
+		vector <vector <string>> Racers;
 	public:
 		RaceList(){}
 		~RaceList(){}
