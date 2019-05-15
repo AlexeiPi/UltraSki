@@ -123,6 +123,10 @@
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
     </PropertyGroup>
     <ItemGroup>
+        <CppCompile Include="Racer.cpp">
+            <DependentOn>Racer.h</DependentOn>
+            <BuildOrder>3</BuildOrder>
+        </CppCompile>
         <CppCompile Include="TestCompetition.cpp">
             <DependentOn>TestCompetition.h</DependentOn>
             <BuildOrder>2</BuildOrder>

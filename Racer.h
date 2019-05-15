@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef RacerH
 #define RacerH
+#include <vcl.h>
 enum NameLanguage{rus=0,lat};
 class Person {
 	private:
@@ -24,11 +25,12 @@ class Person {
 		}
 		~Person(){};
 
-		AnsiString getAge(void) const;
-		AnsiString setAge(void) const;
+		String getAge(void) const;
+		void setAge(String);
+		void setage(TDate);
 		TDate getage(void)const;
 
-		void setAge(TDate dob);
+//		void setAge(TDate dob);
 
 
 		AnsiString getName(int language) const ;
@@ -53,7 +55,7 @@ class Person {
 	private:
 		AnsiString FIScode;
 	public:
-		~Racer();
+		~Racer(){};
 		Racer(AnsiString fiscode="",AnsiString name="",AnsiString secondname="",AnsiString surname="",
 		  AnsiString  _name="",AnsiString  _secondname="",AnsiString  _surname="",
 		  AnsiString dob=""):

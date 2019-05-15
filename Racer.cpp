@@ -6,13 +6,22 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 
-AnsiString Person::getAge(void)const{
-	return (Now()-DoB).FormatString("yy");
+String Person::getAge(void)const{
+	String astr=(Now()-DoB).FormatString("yy");
+	return  astr;
 }
 TDate Person::getage(void)const{
 	return DoB;
 }
-void Person::setAge(TDate dob){DoB=dob;}
+void Person::setAge(String dob){
+	AnsiString adob;
+	adob=dob.c_str();
+
+	DoB=StrToDate(adob);
+}
+void Person::setage(TDate dob){
+	DoB=dob;
+}
 
 
 AnsiString Person::getName(int language)const{ return Name[language]+" ";}
@@ -49,7 +58,11 @@ void Racer::setRacerSurName(Person *p){
 };
 
 void Racer::setRacerAge(Person *p){
-	setAge(p->getage());
+String dob;
+AnsiString adob;
+	adob=p->getage().FormatString("dd.mm.yyyy");
+	dob=adob.c_str();
+	setAge(dob);
 };
 
 void Racer::setPerson(Person *p){
