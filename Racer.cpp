@@ -6,15 +6,15 @@
 
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
-String Person::getAge(void)const{	return  (Now()-DoB).FormatString("yy");}
+String Person::getAge(void)const{return  (Now()-DoB).FormatString("yy");}
 //---------------------------------------------------------------------------------------------------------
-TDate Person::getdob(void)const{	return DoB;}
+TDate Person::getdob(void)const{return DoB;}
 //---------------------------------------------------------------------------------------------------------
-String Person::getDoB(void)const{	return DoB.FormatString("dd.mm.yyyy");}
+String Person::getDoB(void)const{return DoB.FormatString("dd.mm.yyyy");}
 //---------------------------------------------------------------------------------------------------------
-void Person::setdob(TDate dob){		DoB=dob;}
+void Person::setdob(TDate dob){DoB=dob;}
 //---------------------------------------------------------------------------------------------------------
-void Person::setDoB(String dob){	DoB=StrToDate(dob);}
+void Person::setDoB(String dob){DoB=StrToDate(dob);}
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 AnsiString Person::getName(int language)const{ return Name[language]+" ";}

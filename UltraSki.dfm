@@ -19,4 +19,8 @@ object fUltraSki: TfUltraSki
     Left = 56
     Top = 56
   end
+  object XMLDocument1: TXMLDocument
+    Left = 208
+    Top = 48
+  end
 end

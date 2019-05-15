@@ -14,8 +14,6 @@ TfUltraSki *fUltraSki;
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner)
 	: TForm(Owner){
 AnsiString astr;
-
-
 	Person p1("Иван","Иванович","Иванов","Ivan","Ivanovich","Ivanov","08.10.1957");
 	Racer *r1=new Racer;
 
@@ -36,6 +34,7 @@ AnsiString astr;
 
 RaceList rcl;
 rcl.LoadFromExcel("C:\\test\\RPT_Start_910.csv");
+rcl.saveXML("C:\\test\\RPT_Start_910.xml");
 
 }
 //---------------------------------------------------------------------------

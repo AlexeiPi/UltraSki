@@ -14,6 +14,7 @@ class RaceList{
 		void __fastcall Locations(TForm* form);
 		//std::vector <Racers*> RacersList;
 		void LoadFromExcel(AnsiString filename);
+		void saveXML(AnsiString filename);
 };
 //---------------------------------------------------------------------------
 #endif
