@@ -17,9 +17,11 @@ public:
 
 __published:
 	void __fastcall TestgetAge();
-	void __fastcall TestsetAge1();
-	void __fastcall Testgetage1();
-	void __fastcall TestsetAge2();
+	void __fastcall TestgetDoB();
+	void __fastcall Testgetdob();
+	void __fastcall TestsetDoB();
+	void __fastcall Testsetdob();
+
 	void __fastcall TestgetName();
 	void __fastcall TestgetI();
 	void __fastcall TestgetSecondName();
@@ -49,7 +51,7 @@ __published:
 	void __fastcall TestsetRacerName();
 	void __fastcall TestsetRacerSecondName();
 	void __fastcall TestsetRacerSurName();
-	void __fastcall TestsetRacerAge();
+	void __fastcall TestsetRacerdob();
 };
 
 void __fastcall TTestPerson::SetUp() {
@@ -59,45 +61,57 @@ void __fastcall TTestPerson::TearDown() {
 }
 
 void __fastcall TTestPerson::TestgetAge() {
-	// std::string Person::getAge(void)const
-
-	String dob("08.07.2008"),needed("10");
-	r1->setAge(dob);
-	dob = r1->getAge();
-
-	int i = dob.Compare(needed);
-	sprintf(ustr,"Требуется -> %s - получено -> %s", needed.c_str(), dob.c_str());
-	String uob=ustr;
-	Check(i==0,uob);
+	// String Person::getAge(void)const
+	String udiag,dobset("08.07.2008"),dobget,dobcheck("10");
+	r1->setDoB(dobset);
+	dobget = r1->getAge();//String Person::getAge(void)const
+	sprintf(ustr,"Требуется -> %s - получено -> %s", (AnsiString)dobcheck, (AnsiString)dobget);
+	udiag=ustr;
+	Check(0==dobcheck.Compare(dobget),udiag);
 }
 
-void __fastcall TTestPerson::TestsetAge1() {
-	// AnsiString setAge(void)
+void __fastcall TTestPerson::TestgetDoB() {
+	// TDate getDoB(void)
+	String udiag,dobset("08.07.2008"),dobget;
+	r1->setDoB(dobset);
+	dobget = r1->getDoB();//String Person::getDoB(void)const
+	sprintf(ustr,"Требуется -> %s - получено -> %s", (AnsiString)dobset, (AnsiString)dobget);
+	udiag=ustr;
+	Check(0==dobset.Compare(dobget),udiag);
+}
+
+void __fastcall TTestPerson::Testgetdob() {
+	// TDate getdob(void)
+	String udiag;
+	TDate dobset("08.07.2008"),dobget;
+	r1->setdob(dobset);
+	dobget = r1->getdob();//TDate Person::getdob(void)const
+	sprintf(ustr,"Требуется -> %s - получено -> %s", (AnsiString)dobset.FormatString("dd.mm.yyyy"), (AnsiString)dobget.FormatString("dd.mm.yyyy"));
+	udiag=ustr;
+	Check(dobset==dobget,udiag);
+}
+
+void __fastcall TTestPerson::TestsetDoB() {
+	// void setDoB(String)
 	String str;
 	TDate dobset("08.07.2008"),dobget;
 	str=dobset.FormatString("dd.mm.yyyy");
-	r1->setAge(str);
-	dobget = r1->getage();
-	sprintf(ustr,"Требуется -> %s - получено -> %s",dobset.FormatString("yyyy.mm.dd"), dobget.FormatString("yyyy.mm.dd"));
+	r1->setDoB(str); // void setDoB(String)
+	dobget = r1->getdob();
+	sprintf(ustr,"Требуется -> %s - получено -> %s",dobset.FormatString("dd.mm.yyyy"), dobget.FormatString("dd.mm.yyyy"));
 	String uob=ustr;
 	Check(dobget==dobset,uob);
 }
 
-void __fastcall TTestPerson::Testgetage1() {
-	// TDate getage(void)
-	TDate dobget,dobset("08.07.2008");
-	r1->setage(dobset);
-	dobget = r1->getage();
-	sprintf(ustr,"Требуется -> %s - получено -> %s",dobget.FormatString("yyyy.mm.dd"), dobset.FormatString("yyyy.mm.dd"));
-	String uob=ustr;
-	Check(dobget==dobset,uob);
-}
-
-void __fastcall TTestPerson::TestsetAge2() {
-	// void setAge(TDate dob)
+void __fastcall TTestPerson::Testsetdob() {
+	// void setdob(TDate dob)
+	TDate dobset("08.07.2008"),dobget;
 	String astr;
-	r1->setAge("28.02.1983");
-	astr = r1->getAge();
+	r1->setdob(dobset);//test setdob(TDate dob)
+	dobget = r1->getdob();
+	sprintf(ustr,"Требуется -> %s - получено -> %s",dobset.FormatString("dd.mm.yyyy"), dobget.FormatString("dd.mm.yyyy"));
+	String uob=ustr;
+	Check(dobget==dobset,uob);
 }
 
 void __fastcall TTestPerson::TestgetName() {
@@ -182,7 +196,7 @@ void __fastcall TTestRacer::TestsetRacerSurName() {
 	// void setRacerSurName(Person *p)
 }
 
-void __fastcall TTestRacer::TestsetRacerAge() {
+void __fastcall TTestRacer::TestsetRacerdob() {
 	// void setRacerAge(Person *p)
 }
 
@@ -193,6 +207,5 @@ static void registerTests() {
 	r1 = new Racer;
 	r1->setFIScode("123456");
 	r1->setPerson(&p1);
-
 }
 #pragma startup registerTests 33

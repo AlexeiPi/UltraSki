@@ -18,20 +18,18 @@ class Person {
 			Name[lat]=_name;
 			SecondName[lat]=_secondname;
 			Surname[lat]=_surname;
-			 if(dob.Length()>0)
+			if(dob.Length()>0)
 				DoB=StrToDate(dob);
-			 else
+			else
 				DoB=NULL;
 		}
 		~Person(){};
 
+		void setDoB(String);
+		void setdob(TDate);
+		TDate getdob(void)const;
+		String getDoB(void)const;
 		String getAge(void) const;
-		void setAge(String);
-		void setage(TDate);
-		TDate getage(void)const;
-
-//		void setAge(TDate dob);
-
 
 		AnsiString getName(int language) const ;
 		AnsiString getI(int language) const ;
@@ -67,8 +65,7 @@ class Person {
 		void setRacerName(Person *p);
 		void setRacerSecondName(Person *p);
 		void setRacerSurName(Person *p);
-		void setRacerAge(Person *p);
-
+		void setRacerdob(Person *p);
 };
 //---------------------------------------------------------------------------
 #endif
