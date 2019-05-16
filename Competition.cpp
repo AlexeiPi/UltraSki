@@ -13,28 +13,34 @@
 #include <Xml.XMLDoc.hpp>
 //____________________________________________________________________________
 void RaceList::LoadFromCSV(AnsiString filename){
-  TStringList *SL;
-  string  item;
-  AnsiString astr;
+	TStringList *SL;
+	string  item;
+	AnsiString astr;
 
-  SL = new TStringList;
-  SL->LoadFromFile(filename);
-  auto num1 = SL->Count;
+	SL = new TStringList;
+	SL->LoadFromFile(filename);
+	auto num1 = SL->Count;
 
-  vector <string> *RacerString;
-  for (int i = 0; i < num1; i++) {
-	astr=SL->Strings[i];
-	item=astr.c_str();
-	regex re("[;]");
-	sregex_token_iterator it(item.begin(), item.end(), re, -1);
-	sregex_token_iterator reg_end;
-	RacerString=new vector <string>;
-	for (; it != reg_end; ++it) {
-  		 RacerString->push_back(it->str());
+	vector <string> *RacerString;
+	int qqq=Racers.size();
+	Racers.clear();
+	qqq=Racers.size();
+
+	for (int i = 0; i < num1; i++) {
+		astr=SL->Strings[i];
+		item=astr.c_str();
+		regex re("[;]");
+		sregex_token_iterator it(item.begin(), item.end(), re, -1);
+		sregex_token_iterator reg_end;
+		RacerString=new vector <string>;
+		for (; it != reg_end; ++it) {
+			 RacerString->push_back(it->str());
+		}
+		Racers.push_back(*RacerString);
+		delete RacerString;
 	}
-	Racers.push_back(*RacerString);
-	delete RacerString;
-  }
+	qqq=Racers.size();
+
 }
 //____________________________________________________________________________
 void RaceList::saveXML(AnsiString filename){
@@ -64,7 +70,13 @@ void RaceList::saveXML(AnsiString filename){
 //____________________________________________________________________________
 void RaceList::loadXML(AnsiString filename){
 String  SN,FC,RNAM,RNAT,GBJ,RREG,RORT,RRAS,LNAM,LNAT;
-IXMLNode *nodElement;
+String workstring;
+IXMLNode *nodElement,*titleElement;
+
+	vector <string> *RacerString;
+	vector <String> TitleString={"SN","FC","RNAM","RNAT","GBJ","RREG","RORT","RRAS","LNAM","LNAT"};
+
+
 	TXMLDocument *racelistXML = new TXMLDocument(Application);
 	try{
 		racelistXML->LoadFromFile(filename);
@@ -72,19 +84,23 @@ IXMLNode *nodElement;
 		IXMLNode *XMLDoc = racelistXML->DocumentElement;
 		const auto count = racelistXML->ChildNodes->Count;
 		const auto n=XMLDoc->ChildNodes->Count;
+
+		int qqq=Racers.size();
+		Racers.clear();
+		qqq=Racers.size();
 		for (int i = 0; i < n; i++){
+			RacerString=new vector <string>;
 			nodElement = XMLDoc->ChildNodes->Nodes[i];
-			SN = nodElement->GetAttribute("SN");
-			FC= nodElement->GetAttribute("FC");
-			RNAM= nodElement->GetAttribute("RNAM");
-			RNAT= nodElement->GetAttribute("RNAT");
-			GBJ= nodElement->GetAttribute("GBJ");
-			RREG= nodElement->GetAttribute("RREG");
-			RORT= nodElement->GetAttribute("RORT");
-			RRAS= nodElement->GetAttribute("RRAS");
-			LNAM= nodElement->GetAttribute("LNAM");
-			LNAT= nodElement->GetAttribute("LNAT");
+			for (int jj = 1; jj < TitleString.size(); jj++) {
+				workstring=TitleString[jj];
+				workstring=nodElement->GetAttribute(workstring);
+				AnsiString ss=workstring;
+				RacerString->push_back(ss.c_str());
+			}
+			Racers.push_back(*RacerString);
+			delete RacerString;
 		}
+		qqq=Racers.size();
 	}
 	__finally {
 		FreeAndNil(&racelistXML); delete racelistXML;
