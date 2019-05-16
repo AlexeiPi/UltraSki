@@ -32,9 +32,10 @@ AnsiString astr;
 	astr=r1->getFio(1)+" age "+r1->getAge();
 	astr=r1->getioF(1)+" age "+r1->getAge();
 
-RaceList rcl;
-rcl.LoadFromExcel("C:\\test\\RPT_Start_910.csv");
-rcl.saveXML("C:\\test\\RPT_Start_910.xml");
+	RaceList rcl;
+	rcl.LoadFromCSV("C:\\test\\RPT_Start_910.csv");
+	rcl.saveXML("C:\\test\\RPT_Start_910.xml");
+	rcl.loadXML("C:\\test\\RPT_Start_910.xml");
 
 }
 //---------------------------------------------------------------------------

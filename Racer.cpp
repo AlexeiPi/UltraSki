@@ -3,7 +3,6 @@
 #include "Racer.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 String Person::getAge(void)const{return  (Now()-DoB).FormatString("yy");}
@@ -66,14 +65,14 @@ void Racer::setRacerSurName(Person *p){
 }
 //---------------------------------------------------------------------------------------------------------
 void Racer::setRacerdob(Person *p){
-	setdob(p->getdob());
+  setdob(p->getdob());
 }
 //---------------------------------------------------------------------------------------------------------
 void Racer::setPerson(Person *p){
-	setRacerName(p);
-	setRacerSecondName(p);
-	setRacerSurName(p);
-	setRacerdob(p);
+  setRacerName(p);
+  setRacerSecondName(p);
+  setRacerSurName(p);
+  setRacerdob(p);
 }
 //---------------------------------------------------------------------------------------------------------
 

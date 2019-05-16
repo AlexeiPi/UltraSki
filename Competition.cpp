@@ -12,17 +12,16 @@
 
 #include <Xml.XMLDoc.hpp>
 //____________________________________________________________________________
-void RaceList::LoadFromExcel(AnsiString filename){
+void RaceList::LoadFromCSV(AnsiString filename){
   TStringList *SL;
-  string  item,i1,logi1,lastlogi1;
-  AnsiString astr,lastastr;
-  String str;
+  string  item;
+  AnsiString astr;
 
   SL = new TStringList;
   SL->LoadFromFile(filename);
   auto num1 = SL->Count;
-  vector <string> *RacerString;
 
+  vector <string> *RacerString;
   for (int i = 0; i < num1; i++) {
 	astr=SL->Strings[i];
 	item=astr.c_str();
@@ -31,8 +30,7 @@ void RaceList::LoadFromExcel(AnsiString filename){
 	sregex_token_iterator reg_end;
 	RacerString=new vector <string>;
 	for (; it != reg_end; ++it) {
-		 i1=it->str();
-		 RacerString->push_back(it->str());
+  		 RacerString->push_back(it->str());
 	}
 	Racers.push_back(*RacerString);
 	delete RacerString;
@@ -50,23 +48,47 @@ void RaceList::saveXML(AnsiString filename){
 
 		int rSize=Racers.size();
 		int rrs;
-		vector <string> RacerString;
 		for (auto irs = 0;irs<rSize;++irs){
 			IXMLNode *nodNew = racelistXML->ChildNodes->Last()->AddChild(L"Racer");
-			RacerString=Racers[irs];
-			rrs=RacerString.size();
+			rrs=Racers[irs].size();
 			for (auto iirs = 0;iirs<rrs;++iirs){
-				auto rrr=RacerString[iirs];
-				AnsiString name1=iirs+1,str;
-				str=rrr.c_str();
-				nodNew->SetAttribute("A"+name1, rrr.c_str());
+				nodNew->SetAttribute(Racers[0][iirs].c_str(), Racers[irs][iirs].c_str());
 			}
 		}
 		racelistXML->SaveToFile(filename);
   }
-__finally {
-	FreeAndNil(&racelistXML); delete racelistXML;
+	__finally {
+		FreeAndNil(&racelistXML); delete racelistXML;
+	}
 }
+//____________________________________________________________________________
+void RaceList::loadXML(AnsiString filename){
+String  SN,FC,RNAM,RNAT,GBJ,RREG,RORT,RRAS,LNAM,LNAT;
+IXMLNode *nodElement;
+	TXMLDocument *racelistXML = new TXMLDocument(Application);
+	try{
+		racelistXML->LoadFromFile(filename);
+		racelistXML->Active = true;
+		IXMLNode *XMLDoc = racelistXML->DocumentElement;
+		const auto count = racelistXML->ChildNodes->Count;
+		const auto n=XMLDoc->ChildNodes->Count;
+		for (int i = 0; i < n; i++){
+			nodElement = XMLDoc->ChildNodes->Nodes[i];
+			SN = nodElement->GetAttribute("SN");
+			FC= nodElement->GetAttribute("FC");
+			RNAM= nodElement->GetAttribute("RNAM");
+			RNAT= nodElement->GetAttribute("RNAT");
+			GBJ= nodElement->GetAttribute("GBJ");
+			RREG= nodElement->GetAttribute("RREG");
+			RORT= nodElement->GetAttribute("RORT");
+			RRAS= nodElement->GetAttribute("RRAS");
+			LNAM= nodElement->GetAttribute("LNAM");
+			LNAT= nodElement->GetAttribute("LNAT");
+		}
+	}
+	__finally {
+		FreeAndNil(&racelistXML); delete racelistXML;
+	}
 }
 //____________________________________________________________________________
 void __fastcall RaceList::Locations(TForm* form){
