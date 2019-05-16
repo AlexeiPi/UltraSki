@@ -2,5 +2,7 @@
 
 #ifndef TestCompetitionH
 #define TestCompetitionH
+#include "Competition.h"
+
 //---------------------------------------------------------------------------
 #endif

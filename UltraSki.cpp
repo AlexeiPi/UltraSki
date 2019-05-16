@@ -36,11 +36,12 @@ AnsiString astr;
 	rcl.LoadFromCSV("C:\\test\\RPT_Start_910.csv");
 	rcl.saveXML("C:\\test\\RPT_Start_910.xml");
 	rcl.loadXML("C:\\test\\RPT_Start_910.xml");
+	rcl.saveXML("C:\\test\\RPT_Start_910.xml");
 
 }
 //---------------------------------------------------------------------------
 void __fastcall TfUltraSki::Timer1Timer(TObject *Sender){
-//auto ïîw = std::chroïo::system_clock::ïîw();
+//auto ïîw = std::chrono::system_clock::ïîw();
 	fUltraSki->Caption="ULTRASKI "+Now().FormatString("dd.mm.yyyy hh:mm:ss");
 }//end of proc
 //---------------------------------------------------------------------------

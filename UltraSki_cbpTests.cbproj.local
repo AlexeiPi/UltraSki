@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <BorlandProject>
 	<Transactions>
-    <Transaction>1899.12.30 00:00:00.000.809,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\UltraSki_cbpTests.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbpTests.cbproj</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.600,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Racer.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.123,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestRacer.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.h</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.492,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestCompetition.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestCompetition.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.812,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestCompetition.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.492,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestCompetition.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestCompetition.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.492,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestCompetition.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestCompetition.h</Transaction>
     <Transaction>1899.12.30 00:00:00.000.859,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestRacer.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.123,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestRacer.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.517,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestRacer.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.cpp</Transaction>
-    <Transaction>1899.12.30 00:00:00.000.517,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestRacer.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.492,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestCompetition.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestCompetition.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.600,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Racer.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.812,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestCompetition.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.517,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestRacer.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.089,=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Competition.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.809,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\UltraSki_cbpTests.cbproj=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\UltraSki_cbpTests.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.123,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestRacer.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.517,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.h=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\TestRacer.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.123,C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\TestRacer.cpp=C:\Users\Алексей\Documents\Embarcadero\Studio\Projects\UltraSki\Test\TestRacer.cpp</Transaction>
   </Transactions>
 </BorlandProject>

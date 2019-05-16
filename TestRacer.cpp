@@ -4,10 +4,11 @@
 #include <TestFramework.hpp>
 
 #include "Racer.h"
+//________________________________________________________________________________
 Racer *r1;
 Person p1("Иван", "Иванович", "Иванов", "Ivan", "Ivanovich", "Ivanov","08.10.1957");
-char ustr[100];
-
+extern String udiag;
+//________________________________________________________________________________
 class TTestPerson : public TTestCase {
 public:
 	__fastcall virtual TTestPerson(System::String name) : TTestCase(name) {
@@ -65,8 +66,7 @@ void __fastcall TTestPerson::TestgetAge() {
 	String udiag,dobset("08.07.2008"),dobget,dobcheck("10");
 	r1->setDoB(dobset);
 	dobget = r1->getAge();//String Person::getAge(void)const
-	sprintf(ustr,"Требуется -> %s - получено -> %s", (AnsiString)dobcheck, (AnsiString)dobget);
-	udiag=ustr;
+	udiag="Требуется -> "+dobcheck+" - получено -> "+dobget;
 	Check(0==dobcheck.Compare(dobget),udiag);
 }
 
@@ -75,19 +75,16 @@ void __fastcall TTestPerson::TestgetDoB() {
 	String udiag,dobset("08.07.2008"),dobget;
 	r1->setDoB(dobset);
 	dobget = r1->getDoB();//String Person::getDoB(void)const
-	sprintf(ustr,"Требуется -> %s - получено -> %s", (AnsiString)dobset, (AnsiString)dobget);
-	udiag=ustr;
+	udiag="Требуется -> "+dobset+" - получено -> "+dobget;
 	Check(0==dobset.Compare(dobget),udiag);
 }
 
 void __fastcall TTestPerson::Testgetdob() {
 	// TDate getdob(void)
-	String udiag;
 	TDate dobset("08.07.2008"),dobget;
 	r1->setdob(dobset);
 	dobget = r1->getdob();//TDate Person::getdob(void)const
-	sprintf(ustr,"Требуется -> %s - получено -> %s", (AnsiString)dobset.FormatString("dd.mm.yyyy"), (AnsiString)dobget.FormatString("dd.mm.yyyy"));
-	udiag=ustr;
+	udiag="Требуется -> "+dobset.FormatString("dd.mm.yyyy")+" - получено -> "+dobget.FormatString("dd.mm.yyyy");
 	Check(dobset==dobget,udiag);
 }
 
@@ -98,9 +95,8 @@ void __fastcall TTestPerson::TestsetDoB() {
 	str=dobset.FormatString("dd.mm.yyyy");
 	r1->setDoB(str); // void setDoB(String)
 	dobget = r1->getdob();
-	sprintf(ustr,"Требуется -> %s - получено -> %s",dobset.FormatString("dd.mm.yyyy"), dobget.FormatString("dd.mm.yyyy"));
-	String uob=ustr;
-	Check(dobget==dobset,uob);
+	udiag="Требуется -> "+dobset.FormatString("dd.mm.yyyy")+" - получено -> "+dobget.FormatString("dd.mm.yyyy");
+	Check(dobget==dobset,udiag);
 }
 
 void __fastcall TTestPerson::Testsetdob() {
@@ -109,9 +105,8 @@ void __fastcall TTestPerson::Testsetdob() {
 	String astr;
 	r1->setdob(dobset);//test setdob(TDate dob)
 	dobget = r1->getdob();
-	sprintf(ustr,"Требуется -> %s - получено -> %s",dobset.FormatString("dd.mm.yyyy"), dobget.FormatString("dd.mm.yyyy"));
-	String uob=ustr;
-	Check(dobget==dobset,uob);
+	udiag="Требуется -> "+dobset.FormatString("dd.mm.yyyy")+" - получено -> "+dobget.FormatString("dd.mm.yyyy");
+	Check(dobget==dobset,udiag);
 }
 
 void __fastcall TTestPerson::TestgetName() {

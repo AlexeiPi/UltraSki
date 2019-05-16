@@ -8,6 +8,7 @@
 #include <tchar.h>
 #include <vcl.h>
 #include <GUITestRunner.hpp>
+String udiag;
 
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
