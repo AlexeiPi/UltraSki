@@ -4,6 +4,67 @@
 
 #include "Competition.h"
 //____________________________________________________________________________
+void RaceResults::LoadFromCSV(string filename){
+	TStringList *SL;
+	string  item;
+	AnsiString astr;
+
+	SL = new TStringList;
+	SL->LoadFromFile(filename.c_str());
+	auto num1 = SL->Count;
+
+	vector <string> *RacerResults;
+	Results.clear();
+	for (int i = 0; i < num1; i++) {
+		astr=SL->Strings[i];
+		item=astr.c_str();
+		regex re("[;]");
+		sregex_token_iterator it(item.begin(), item.end(), re, -1);
+		sregex_token_iterator reg_end;
+		RacerResults=new vector <string>;
+		for (; it != reg_end; ++it) {
+			 RacerResults->push_back(it->str());
+		}
+		Results.push_back(*RacerResults);
+		delete RacerResults;
+	}
+}
+//____________________________________________________________________________
+void RaceResults::saveXML(string filename){
+  TXMLDocument* racelistXML = new TXMLDocument(NULL);
+   try{
+	   racelistXML->Active=true;
+		racelistXML->Encoding = "UTF-8";
+		racelistXML->Options = racelistXML->Options << doNodeAutoIndent;
+		_di_IXMLNode nodElement = racelistXML->CreateElement(L"RaceResults", L"");
+		racelistXML->ChildNodes->Add(nodElement);
+
+		int rSize=Results.size();
+		int rrs;
+		IXMLNode *nodNew = racelistXML->ChildNodes->Last()->AddChild(L"Title");
+		rrs=Results[1].size();
+		rrs=Results[0].size();
+		AnsiString work="",w1;
+		for (auto iirs = 0;iirs<rrs;++iirs){
+			w1=Results[0][iirs].c_str();
+			work+=w1+";";
+		}
+		nodNew->SetAttribute("TitleNames", work);
+
+		for (auto irs = 0;irs<rSize;++irs){
+			IXMLNode *nodNew = racelistXML->ChildNodes->Last()->AddChild(L"RacerResults");
+			rrs=Results[irs].size();
+			for (auto iirs = 0;iirs<rrs;++iirs){
+				nodNew->SetAttribute(Results[0][iirs].c_str(), Results[irs][iirs].c_str());
+			}
+		}
+		racelistXML->SaveToFile(filename.c_str());
+  }
+	__finally {
+		FreeAndNil(&racelistXML); delete racelistXML;
+	}
+}
+//____________________________________________________________________________
 void RaceList::LoadFromCSV(string filename){
 	TStringList *SL;
 	string  item;
