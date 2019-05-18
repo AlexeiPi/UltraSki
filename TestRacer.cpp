@@ -6,7 +6,7 @@
 #include "Racer.h"
 //________________________________________________________________________________
 Racer *r1;
-Person p1("Иван", "Иванович", "Иванов", "Ivan", "Ivanovich", "Ivanov","08.10.1957");
+Person p1("Иван", "Иванович", "Иванов", "Ivan", "Ivanovich", "Ivanov","М","08.10.1957");
 extern String udiag;
 //________________________________________________________________________________
 class TTestPerson : public TTestCase {
@@ -17,6 +17,7 @@ public:
 	virtual void __fastcall TearDown();
 
 __published:
+	void __fastcall TestGender();
 	void __fastcall TestgetAge();
 	void __fastcall TestgetDoB();
 	void __fastcall Testgetdob();
@@ -60,7 +61,27 @@ void __fastcall TTestPerson::SetUp() {
 
 void __fastcall TTestPerson::TearDown() {
 }
+//______________________________________________________________________________
+void __fastcall TTestPerson::TestGender() {
+//	String getGender(int language=0)
+String s1="W",s11="Ж",s2="M",s21="М",ss;
+	p1.setGender(s1);ss=p1.getGender(lat);
+	udiag="Требуется -> "+s1+" - получено -> "+ss;
+	Check(0==s1.Compare(ss),udiag);
 
+	p1.setGender(s2);ss=p1.getGender(lat);
+	udiag="Требуется -> "+s2+" - получено -> "+ss;
+	Check(0==s2.Compare(ss),udiag);
+
+	p1.setGender(s11);ss=p1.getGender(rus);
+	udiag="Требуется -> "+s11+" - получено -> "+ss;
+	Check(0==s11.Compare(ss),udiag);
+
+	p1.setGender(s21);ss=p1.getGender(rus);
+	udiag="Требуется -> "+s21+" - получено -> "+ss;
+	Check(0==s21.Compare(ss),udiag);
+}
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetAge() {
 	// String Person::getAge(void)const
 	String udiag,dobset("08.07.2008"),dobget,dobcheck("10");
@@ -69,7 +90,7 @@ void __fastcall TTestPerson::TestgetAge() {
 	udiag="Требуется -> "+dobcheck+" - получено -> "+dobget;
 	Check(0==dobcheck.Compare(dobget),udiag);
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetDoB() {
 	// TDate getDoB(void)
 	String udiag,dobset("08.07.2008"),dobget;
@@ -78,7 +99,7 @@ void __fastcall TTestPerson::TestgetDoB() {
 	udiag="Требуется -> "+dobset+" - получено -> "+dobget;
 	Check(0==dobset.Compare(dobget),udiag);
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::Testgetdob() {
 	// TDate getdob(void)
 	TDate dobset("08.07.2008"),dobget;
@@ -87,7 +108,7 @@ void __fastcall TTestPerson::Testgetdob() {
 	udiag="Требуется -> "+dobset.FormatString("dd.mm.yyyy")+" - получено -> "+dobget.FormatString("dd.mm.yyyy");
 	Check(dobset==dobget,udiag);
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestsetDoB() {
 	// void setDoB(String)
 	String str;
@@ -98,7 +119,7 @@ void __fastcall TTestPerson::TestsetDoB() {
 	udiag="Требуется -> "+dobset.FormatString("dd.mm.yyyy")+" - получено -> "+dobget.FormatString("dd.mm.yyyy");
 	Check(dobget==dobset,udiag);
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::Testsetdob() {
 	// void setdob(TDate dob)
 	TDate dobset("08.07.2008"),dobget;
@@ -108,93 +129,93 @@ void __fastcall TTestPerson::Testsetdob() {
 	udiag="Требуется -> "+dobset.FormatString("dd.mm.yyyy")+" - получено -> "+dobget.FormatString("dd.mm.yyyy");
 	Check(dobget==dobset,udiag);
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetName() {
 	// AnsiString getName(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetI() {
 	// AnsiString getI(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetSecondName() {
 	// AnsiString getSecondName(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetO() {
 	// AnsiString getO(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetSurName() {
 	// AnsiString getSurName(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetSURNAME() {
 	// AnsiString getSURNAME(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetFIO() {
 	// AnsiString getFIO(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetIOF() {
 	// AnsiString getIOF(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetFio() {
 	// AnsiString getFio(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestgetioF() {
 	// AnsiString getioF(int language)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestsetName() {
 	// void setName(int language, AnsiString name)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestsetSecondName() {
 	// void setSecondName(int language, AnsiString secondname)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestPerson::TestsetSurName() {
 	// void setSurName(int language, AnsiString surname)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::SetUp() {
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TearDown() {
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestgetFIScode() {
 	// AnsiString getFIScode()
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestsetFIScode() {
 	// void setFIScode(AnsiString sfis)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestsetPerson() {
 	// void setPerson(Person *p)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestsetRacerName() {
 	// void setRacerName(Person *p)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestsetRacerSecondName() {
 	// void setRacerSecondName(Person *p)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestsetRacerSurName() {
 	// void setRacerSurName(Person *p)
 }
-
+//______________________________________________________________________________
 void __fastcall TTestRacer::TestsetRacerdob() {
 	// void setRacerAge(Person *p)
 }
-
+//______________________________________________________________________________
 static void registerTests() {
 	Testframework::RegisterTest(TTestPerson::Suite());
 	Testframework::RegisterTest(TTestRacer::Suite());

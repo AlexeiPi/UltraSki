@@ -134,6 +134,10 @@
             <DependentOn>Racer.h</DependentOn>
             <BuildOrder>3</BuildOrder>
         </CppCompile>
+        <CppCompile Include="RaceViews.cpp">
+            <DependentOn>RaceViews.h</DependentOn>
+            <BuildOrder>5</BuildOrder>
+        </CppCompile>
         <CppCompile Include="TestCompetition.cpp">
             <DependentOn>TestCompetition.h</DependentOn>
             <BuildOrder>2</BuildOrder>
@@ -141,6 +145,10 @@
         <CppCompile Include="TestRacer.cpp">
             <DependentOn>TestRacer.h</DependentOn>
             <BuildOrder>1</BuildOrder>
+        </CppCompile>
+        <CppCompile Include="TestRaceViews.cpp">
+            <DependentOn>TestRaceViews.h</DependentOn>
+            <BuildOrder>6</BuildOrder>
         </CppCompile>
         <CppCompile Include="UltraSki_cbpTests.cpp">
             <BuildOrder>0</BuildOrder>

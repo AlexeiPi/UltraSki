@@ -133,6 +133,10 @@
             <DependentOn>Racer.h</DependentOn>
             <BuildOrder>4</BuildOrder>
         </CppCompile>
+        <CppCompile Include="RaceViews.cpp">
+            <DependentOn>RaceViews.h</DependentOn>
+            <BuildOrder>6</BuildOrder>
+        </CppCompile>
         <CppCompile Include="TimingDevice.cpp">
             <DependentOn>TimingDevice.h</DependentOn>
             <BuildOrder>5</BuildOrder>

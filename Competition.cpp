@@ -177,21 +177,5 @@ IXMLNode *nodElement,*titleElement;
 		FreeAndNil(&racelistXML); delete racelistXML;
 	}
 }
-//____________________________________________________________________________
-/*
-void __fastcall RaceList::Locations(TForm* form){
-	panel= new TPanel(form);
-	panel->Parent = form;
-	panel->Font->Size=14;              8
-	panel->Alignment=taLeftJustify;
-	panel->VerticalAlignment=taAlignTop;
-	panel->Top=10;
-	panel->Left=1;
-	panel->Visible=true;
-	str.sprintf("RaceList%d",sN);
-	panel->Caption=str;
-
-}//end of proc
-*/
 //---------------------------------------------------------------------------
 #pragma package(smart_init)

@@ -7,11 +7,12 @@ class Person {
 	private:
 		AnsiString Name[2],SecondName[2],Surname[2];
 		TDate DoB;
+		int iGender;
 	public:
 		Person(){};
 		Person(AnsiString name="",AnsiString secondname="",AnsiString surname="",
 		  AnsiString  _name="",AnsiString  _secondname="",AnsiString  _surname="",
-		  AnsiString dob=""){
+		  AnsiString gender="",AnsiString dob=""){
 			Name[rus]=name;
 			SecondName[rus]=secondname;
 			Surname[rus]=surname;
@@ -22,6 +23,11 @@ class Person {
 				DoB=StrToDate(dob);
 			else
 				DoB=NULL;
+			if (gender=="M" or gender=="Ì") {
+				iGender=1;
+			}
+			else
+				iGender=0;
 		}
 		~Person(){};
 
@@ -30,6 +36,16 @@ class Person {
 		TDate getdob(void)const;
 		String getDoB(void)const;
 		String getAge(void) const;
+
+		String getGender(int language=0) const {
+			return language?iGender?"M":"W":iGender?"Ì":"Æ";
+		};
+
+		void setGender(String gender){
+			iGender=0;
+			if (gender=="M" or gender=="Ì") iGender=1;
+		}
+
 
 		AnsiString getName(int language) const ;
 		AnsiString getI(int language) const ;

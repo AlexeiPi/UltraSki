@@ -13,6 +13,16 @@ object fUltraSki: TfUltraSki
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object Label1: TLabel
+    Left = 48
+    Top = 168
+    Width = 297
+    Height = 73
+    Caption = 'Label1'
+    Color = clActiveCaption
+    ParentColor = False
+    Transparent = False
+  end
   object Timer1: TTimer
     Interval = 500
     OnTimer = Timer1Timer

@@ -9,6 +9,7 @@
 #pragma resource "*.dfm"
 #include "Racer.h"
 #include "Competition.h"
+#include "RaceViews.h"
 TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner)
@@ -38,6 +39,9 @@ AnsiString astr;
 	rcl.loadXML("C:\\test\\RPT_Start_910.xml");
 	rcl.saveXML("C:\\test\\RPT_Start_910.xml");
 
+	RaceStartListView rsl;
+	rsl.showView();
+
 }
 //---------------------------------------------------------------------------
 void __fastcall TfUltraSki::Timer1Timer(TObject *Sender){
@@ -45,4 +49,5 @@ void __fastcall TfUltraSki::Timer1Timer(TObject *Sender){
 	fUltraSki->Caption="ULTRASKI "+Now().FormatString("dd.mm.yyyy hh:mm:ss");
 }//end of proc
 //---------------------------------------------------------------------------
+
 
