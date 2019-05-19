@@ -8,7 +8,7 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 void __fastcall RaceStartListView::form_resize(TObject *Sender){
-	checkLines();   //new commit 2
+	checkLines();   //new commit 3
 }
 //______________________________________________________________________________
 void __fastcall RaceStartListView::checkLines(void){
