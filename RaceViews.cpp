@@ -8,18 +8,18 @@
 #pragma package(smart_init)
 //---------------------------------------------------------------------------
 void __fastcall RaceStartListView::form_resize(TObject *Sender){
-	checkLines();   //new commit 67
+int i;
+	i=checkLines();   //number of lines in the viewport
 }
 //______________________________________________________________________________
-void __fastcall RaceStartListView::checkLines(void){
+int __fastcall RaceStartListView::checkLines(void){
 int iHeight=pRaceViews->Height,iN,ih,itop;
-
 	ih=viewSL[0].SN->Height;
 	itop=viewSL[0].SN->Top+3*ih;
 	iN=(iHeight-itop)/ih;
 	pRaceViews->Caption=iN;
-
-}
+	return iN;
+ }
 //______________________________________________________________________________
 void __fastcall RaceStartListView::setRacersColor(_viewSL vsl){
 int i=vsl.SN->Tag;
@@ -37,9 +37,12 @@ int ik=Key;
 	switch(Key){
 	   case 35:
 			icurrRacer=RL->getRacersN()-1;
+			panel3->Top-=(18*(RL->getRacersN()-checkLines()-1));
+
 	   break;
 	   case 36:
 			icurrRacer=1;
+			panel3->Top=0;
 	   break;
 	   case 40:
 			if(icurrRacer<RL->getRacersN()-1)icurrRacer++;
@@ -87,33 +90,53 @@ void __fastcall RaceStartListView::mouse_down(TObject *Sender, TMouseButton Butt
 }//end of proc
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::Locations(TForm* form){
-TPanel *panel;
 
 String str;
 _viewSL *vsl;
 
 	if(!viewSL.empty()) viewSL.clear();
 int iN;
-
-	panel= new TPanel(form);
-	panel->Parent = form;
-	panel->Font->Size=12;
-	panel->Alignment=taLeftJustify;
-	panel->VerticalAlignment=taAlignTop;
-	panel->Top=3;
-	panel->Left=3;
-	panel->Width=pRaceViews->Width-panel->Left;
-	panel->Visible=true;
-	str.sprintf(L"RaceList%s",RL->getCODEX().c_str());
-	panel->Caption=str;
 	iN=RL->getRacersN();
 
+	panel1= new TPanel(form);
+	panel1->Parent = form;
+	panel1->Font->Size=12;
+	panel1->Alignment=taLeftJustify;
+	panel1->VerticalAlignment=taAlignTop;
+	panel1->Top=3;
+	panel1->Left=3;
+	panel1->Width=pRaceViews->Width-panel1->Left;
+	panel1->Visible=true;
+	str.sprintf(L"RaceList%s",RL->getCODEX().c_str());
+	panel1->Caption=str;
+
+
+	panel2= new TPanel(panel1);
+	panel2->Parent = panel1;
+	panel2->Font->Size=12;
+	panel2->Alignment=taLeftJustify;
+	panel2->VerticalAlignment=taAlignTop;
+	panel2->Top=18*2;
+	panel2->Left=3;
+	panel2->Width=panel1->Width-panel2->Left;
+	panel2->Visible=true;
+	panel2->Caption="";
+
+	panel3= new TPanel(panel2);
+	panel3->Parent = panel2;
+	panel3->Font->Size=12;
+	panel3->Alignment=taLeftJustify;
+	panel3->VerticalAlignment=taAlignTop;
+	panel3->Top=0;
+	panel3->Left=3;
+	panel3->Width=panel2->Width-panel3->Left;
+	panel3->Visible=true;
+	panel3->Caption="";
 
 	for(int i=0;i<iN;++i){
 		vsl=new _viewSL();
-
-		vsl->SN=new TLabel(panel);
-		vsl->SN->Parent = panel;
+		vsl->SN=new TLabel(i>0?panel3:panel1);
+		vsl->SN->Parent = (i>0?panel3:panel1);
 		vsl->SN->AutoSize=false;
 		vsl->SN->Transparent=false;
 		vsl->SN->Tag=i;
@@ -121,7 +144,7 @@ int iN;
 		vsl->SN->Font->Size=10;
 		vsl->SN->Width=30;
 		vsl->SN->Height=18;
-		vsl->SN->Top=i*vsl->SN->Height;
+		vsl->SN->Top=(i>0?i-1:1)*vsl->SN->Height;
 		vsl->SN->Left=1;
 		vsl->SN->Alignment=taCenter;
 		str=i>0?RL->getRacer(i,0).c_str():"¹";
@@ -129,8 +152,8 @@ int iN;
 		vsl->SN->OnMouseDown = mouse_down;
 
 
-		vsl->FC=new TLabel(panel);
-		vsl->FC->Parent = panel;
+		vsl->FC=new TLabel(i>0?panel3:panel1);
+		vsl->FC->Parent = (i>0?panel3:panel1);
 		vsl->FC->AutoSize=false;
 		vsl->FC->Transparent=false;
 		vsl->FC->Tag=i;
@@ -145,8 +168,8 @@ int iN;
 		vsl->FC->Caption=str;
 		vsl->FC->OnMouseDown = vsl->SN->OnMouseDown;
 
-		vsl->FIO=new TLabel(panel);
-		vsl->FIO->Parent = panel;
+		vsl->FIO=new TLabel(i>0?panel3:panel1);
+		vsl->FIO->Parent = (i>0?panel3:panel1);
 		vsl->FIO->AutoSize=false;
 
 		vsl->FIO->Transparent=vsl->SN->Transparent;
@@ -167,7 +190,9 @@ int iN;
 		viewSL.push_back(*vsl);
 
 	}
-	panel->Height=iN*vsl->FIO->Height;
+	panel3->Height=iN*vsl->FIO->Height;
+	panel2->Height=panel3->Height;
+	panel1->Height=panel2->Height+2;
 
  /*
 	startlabel=new TLabel(start_button);

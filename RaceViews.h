@@ -17,8 +17,11 @@ class RaceStartListView{
 		RaceList *RL;
 		vector < _viewSL > viewSL;
 		TForm *pRaceViews;
+        TPanel *panel1,*panel2,*panel3;
+
 		int icurrRacer=1,ilastcurrRacer=-1;
 		int iTopLine=1,iBottomLine;
+        int iActiveLine=1;
 	public:
 		RaceStartListView():pRaceViews(NULL){}
 		RaceStartListView(RaceList *rl):pRaceViews(NULL){RL=rl;}
@@ -30,7 +33,7 @@ class RaceStartListView{
 		void __fastcall showView();
 		void __fastcall Locations(TForm* form);
 		void __fastcall setRacersColor(_viewSL vsl);
-        void __fastcall checkLines(void);
+        int  __fastcall checkLines(void);
 };
 //---------------------------------------------------------------------------
 class RaceResultsView{
