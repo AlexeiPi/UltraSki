@@ -19,7 +19,7 @@ object fUltraSki: TfUltraSki
     Width = 297
     Height = 73
     Caption = 'Label1'
-    Color = clActiveCaption
+    Color = clAqua
     ParentColor = False
     Transparent = False
   end
