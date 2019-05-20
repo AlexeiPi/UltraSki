@@ -20,7 +20,7 @@ class TfUltraSki : public TForm
 __published:	// IDE-managed Components
 	TTimer *Timer1;
 	TXMLDocument *XMLDocument1;
-	TLabel *Label1;
+	TLabel *LabelSample;
 	void __fastcall Timer1Timer(TObject *Sender);
 private:	// User declarations
 public:		// User declarations

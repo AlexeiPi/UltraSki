@@ -10,7 +10,8 @@
 #include "Racer.h"
 #include "Competition.h"
 #include "RaceViews.h"
-TfUltraSki *fUltraSki;
+//TfUltraSki *fUltraSki;
+extern PACKAGE TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner)
 	: TForm(Owner){
@@ -49,6 +50,7 @@ void __fastcall TfUltraSki::Timer1Timer(TObject *Sender){
 	fUltraSki->Caption="ULTRASKI "+Now().FormatString("dd.mm.yyyy hh:mm:ss");
 }//end of proc
 //---------------------------------------------------------------------------
+
 
 
 

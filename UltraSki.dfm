@@ -13,12 +13,12 @@ object fUltraSki: TfUltraSki
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object LabelSample: TLabel
     Left = 48
     Top = 168
-    Width = 297
-    Height = 73
-    Caption = 'Label1'
+    Width = 59
+    Height = 13
+    Caption = 'LabelSample'
     Color = clAqua
     ParentColor = False
     Transparent = False
