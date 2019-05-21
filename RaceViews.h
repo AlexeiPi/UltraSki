@@ -8,7 +8,13 @@
 #include "Racer.h"
 #include "Competition.h"
 
-TfUltraSki *fUltraSki;
+
+#include <IdBaseComponent.hpp>
+#include <IdComponent.hpp>
+#include <IdTCPClient.hpp>
+#include <IdTCPConnection.hpp>
+
+//TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 
 class RaceStartListView{
@@ -81,6 +87,8 @@ class RaceStartListView{
 		TPanel *panel1,*panel2,*panel3;
 		TLabel *lbl;
 
+        TIdTCPClient *TcpClient1;
+
 		int icurrRacer=1,ilastcurrRacer=-1;
 		int iTopLine=1,iBottomLine;
 		int iActiveLine=1;
@@ -113,6 +121,8 @@ class RaceStartListView{
 			if(lbl!=NULL){
 				delete lbl;lbl=NULL;
 			}
+			if(TcpClient1!=NULL)
+				delete TcpClient1;
 			if(pRaceViews!=NULL){
 				delete pRaceViews;pRaceViews=NULL;
 			}
@@ -126,6 +136,18 @@ class RaceStartListView{
 		void __fastcall Locations(TForm* form);
 		void __fastcall setRacersColor(_viewSL vsl);
 		int  __fastcall checkLines(void);
+		void __fastcall FISconnect();
+		void __fastcall OnConnected(TObject *Sender);
+		void __fastcall OnWork(TObject *ASender, TWorkMode AWorkMode, __int64 AWorkCount);
+		void __fastcall WorkBegin(TObject *ASender, TWorkMode AWorkMode,
+		  __int64 AWorkCountMax);
+		void __fastcall Status(TObject *ASender, const TIdStatus AStatus,
+		  const UnicodeString AStatusText);
+
+
+
+
+
 };
 //---------------------------------------------------------------------------
 class RaceResultsView{

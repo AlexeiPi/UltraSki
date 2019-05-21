@@ -19,6 +19,29 @@ class RaceList;
 class RaceResults;
 
 //---------------------------------------------------------------------------
+/*
+class Competition{
+	private:
+		vector <vector <string> > Racers;
+		String CODEX;
+		RaceResults *Run1Results;
+		RaceResults *Run2Results;
+	public:
+		RaceList(){}
+		RaceList(String codex):CODEX(codex){}
+		~RaceList(){}
+		void LoadFromCSV(string filename);
+		void saveXML(string filename);
+		void loadXML(string filename);
+		int getRacersN(){return Racers.size();};
+		string getRacer(int i,int j){return Racers[i][j];};
+		void setRacer(int i,int j,string sval){Racers[i][j].assign(sval);};
+		void setCODEX(String codex){CODEX=codex;};
+		String getCODEX(){return CODEX;};
+		bool Compare(RaceList *rl){return Racers==rl->Racers;};
+};
+*/
+//______________________________________________________________________________
 class RaceList{
 	private:
 		vector <vector <string> > Racers;

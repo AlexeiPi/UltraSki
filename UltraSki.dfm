@@ -2,8 +2,8 @@ object fUltraSki: TfUltraSki
   Left = 0
   Top = 0
   Caption = 'UltraSki'
-  ClientHeight = 318
-  ClientWidth = 509
+  ClientHeight = 509
+  ClientWidth = 830
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,14 +11,139 @@ object fUltraSki: TfUltraSki
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
-  object LabelSample: TLabel
+  object lClear: TLabel
     Left = 48
     Top = 168
-    Width = 59
+    Width = 49
     Height = 13
-    Caption = 'LabelSample'
+    AutoSize = False
+    Caption = 'Clear'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lClearClick
+  end
+  object lClearResponse: TLabel
+    Left = 103
+    Top = 168
+    Width = 25
+    Height = 13
+    Caption = 'Clear'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lClearClick
+  end
+  object lRaceInfo: TLabel
+    Left = 48
+    Top = 187
+    Width = 49
+    Height = 13
+    AutoSize = False
+    Caption = 'RaceInfo'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lRaceInfoClick
+  end
+  object lRaceInfoResponse: TLabel
+    Left = 103
+    Top = 187
+    Width = 25
+    Height = 13
+    Caption = 'Clear'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lClearClick
+  end
+  object lMessage: TLabel
+    Left = 48
+    Top = 229
+    Width = 49
+    Height = 13
+    AutoSize = False
+    Caption = 'Message'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lMessageClick
+  end
+  object lMessageResponse: TLabel
+    Left = 103
+    Top = 229
+    Width = 25
+    Height = 13
+    Caption = 'Clear'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+  end
+  object lActiveRun: TLabel
+    Left = 48
+    Top = 317
+    Width = 49
+    Height = 13
+    AutoSize = False
+    Caption = 'ActiveRun'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lActiveRunClick
+  end
+  object lActiveRunResponse: TLabel
+    Left = 103
+    Top = 317
+    Width = 25
+    Height = 13
+    Caption = 'Clear'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+  end
+  object lMessage1: TLabel
+    Left = 48
+    Top = 248
+    Width = 49
+    Height = 13
+    AutoSize = False
+    Caption = 'Message'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lMessage1Click
+  end
+  object lMessage1Response: TLabel
+    Left = 103
+    Top = 248
+    Width = 25
+    Height = 13
+    Caption = 'Clear'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+  end
+  object lHumidity: TLabel
+    Left = 50
+    Top = 301
+    Width = 49
+    Height = 13
+    AutoSize = False
+    Caption = 'Humidity'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
+    OnClick = lHumidityClick
+  end
+  object lHumidityResponse: TLabel
+    Left = 105
+    Top = 301
+    Width = 25
+    Height = 13
+    Caption = 'Clear'
     Color = clAqua
     ParentColor = False
     Transparent = False
@@ -32,5 +157,16 @@ object fUltraSki: TfUltraSki
   object XMLDocument1: TXMLDocument
     Left = 208
     Top = 48
+  end
+  object LiveFIS: TIdTCPClient
+    OnStatus = LiveFISStatus
+    OnWorkBegin = LiveFISWorkBegin
+    ConnectTimeout = 0
+    Host = 'live.fisski.com'
+    IPVersion = Id_IPv4
+    Port = 1550
+    ReadTimeout = -1
+    Left = 424
+    Top = 16
   end
 end
