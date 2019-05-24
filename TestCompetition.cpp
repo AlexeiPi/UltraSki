@@ -5,11 +5,37 @@
 #include "TestCompetition.h"
 
 //-------------------------------------------------------------------------------
+Race r;
 RaceResults rrcl,rrcl1;
 RaceList rcl,rcl1;
 extern String udiag;
 string str;
+TIdTCPClient *LiveFIS;
+
 //-------------------------------------------------------------------------------
+class TTestRace : public TTestCase
+{
+public:
+  __fastcall virtual TTestRace(System::String name) : TTestCase(name) {}
+  virtual void __fastcall SetUp();
+  virtual void __fastcall TearDown();
+
+__published:
+/*  void __fastcall LoadFromCSV();
+  void __fastcall saveXML();
+  void __fastcall loadXML();
+*/
+	void __fastcall setgetRaceData();
+//________________________________
+
+	void __fastcall LiveFISRaceclear();
+    void __fastcall LiveFISRacemeteo();
+	void __fastcall LiveFISRaceinfo();
+	void __fastcall LiveFISRaceactiverun();
+	void __fastcall LiveFISRacemessage();
+	void __fastcall LiveFISRacestartLIST();
+};
+//______________________________________________________________________________
 class TTestRaceResults : public TTestCase
 {
 public:
@@ -41,6 +67,183 @@ __published:
   void  __fastcall setRacer();
 
 };
+//______________________________________________________________________________
+//______________________________________________________________________________
+void __fastcall TTestRace::SetUp(){
+	if (LiveFIS!=NULL){
+		if(LiveFIS->Connected())
+			LiveFIS->Disconnect();
+		delete LiveFIS;
+		LiveFIS=NULL;
+	}
+	if (LiveFIS==NULL) {
+		LiveFIS=new TIdTCPClient;
+		LiveFIS->Name="LiveFIS";
+		LiveFIS->Port=1550;
+		LiveFIS->Host="live.fisski.com";
+		LiveFIS->Connect();
+	}
+
+}
+void __fastcall TTestRace::TearDown(){}
+//_____________________________________________________________________________
+//_____________________________________________________________________________
+void __fastcall TTestRace::LiveFISRaceclear(){
+String Str,Str1;
+int  iCodex=9872;
+	r.setCodex(iCodex);
+	r.setLiveFISpassword("08101957");
+
+	if( LiveFIS->Connected() ){
+		Str=r.LiveFISRaceclear();
+		LiveFIS->IOHandler->WriteLn(Str);
+		Str1="";
+		Str1= LiveFIS->IOHandler->ReadLn();
+	}
+	udiag="Несовпадение кодексов гонок";
+	Check(true,udiag);
+}
+//------------------------------------------------------------------------------
+void __fastcall TTestRace::LiveFISRacemeteo(){
+String Str,Str1;
+int  iCodex=9872;
+	r.setCodex(iCodex);
+	r.setLiveFISpassword("08101957");
+	Str=r.LiveFISRacemeteo("1");
+
+
+	LiveFIS->IOHandler->WriteLn(Str);
+	Str1="";
+	Str1= LiveFIS->IOHandler->ReadLn();
+	udiag="Несовпадение метео";
+	Check(true,udiag);
+}
+//------------------------------------------------------------------------------
+void __fastcall TTestRace::LiveFISRaceinfo(){
+int  iCodex=9872;
+String Str,Str1;
+string  sDiscipline="DH";
+string  sCategory="UNI";
+	r.setCodex(iCodex);
+	r.setDiscipline(sDiscipline);
+	r.setCategory(sCategory);
+	r.setLiveFISpassword("08101957");
+	r.setGender("L");
+	r.setNation("RUS");
+	r.setPlace("Elizovo");
+	r.setEventname("Eventname");
+	r.setSlope("Slope");
+	r.setRacedate(TDate("23.05.2019"));
+	Str=r.getRaceyyyy();
+	Str=r.getRacemm();
+	Str=r.getRacedd();
+
+
+
+	if( LiveFIS->Connected() ){
+
+		Str=r.LiveFISRaceinfo(L"1");
+
+		LiveFIS->IOHandler->WriteLn(Str);
+		Str1="";
+		Str1= LiveFIS->IOHandler->ReadLn();
+
+/*		Str=r.LiveFISRaceactiverun("1");
+		LiveFIS->IOHandler->WriteLn(Str);
+		Str1="";
+		Str1= LiveFIS->IOHandler->ReadLn();
+*/
+	}
+	udiag="Несовпадение кодексов гонок";
+	Check(true,udiag);
+}
+//------------------------------------------------------------------------------
+void __fastcall TTestRace::LiveFISRaceactiverun(){
+String Str,Str1;
+int  iCodex=9872;
+	r.setCodex(iCodex);
+	r.setLiveFISpassword("08101957");
+
+	if( LiveFIS->Connected() ){
+		Str=r.LiveFISRaceactiverun("1");
+		LiveFIS->IOHandler->WriteLn(Str);
+		Str1="";
+		Str1= LiveFIS->IOHandler->ReadLn();
+	}
+	udiag="Несовпадение кодексов гонок";
+	Check(true,udiag);
+}
+//------------------------------------------------------------------------------
+void __fastcall TTestRace::LiveFISRacemessage(){
+String Str,Str1,strTIME;
+int  iCodex=9872;
+	r.setCodex(iCodex);
+	r.setLiveFISpassword("08101957");
+	DateTimeToString(strTIME, "h:mm:ss", Now());
+
+	if( LiveFIS->Connected() ){
+		Str=r.LiveFISRacemessage("new message "+strTIME);
+		LiveFIS->IOHandler->WriteLn(Str);
+		Str1="";
+		Str1= LiveFIS->IOHandler->ReadLn();
+	}
+	udiag="Несовпадение кодексов гонок";
+	Check(true,udiag);
+}
+
+void __fastcall TTestRace::LiveFISRacestartLIST(){
+String Str,Str1,strTIME;
+int  iCodex=9872;
+	r.setCodex(iCodex);
+	r.setLiveFISpassword("08101957");
+	DateTimeToString(strTIME, "h:mm:ss", Now());
+
+	if( LiveFIS->Connected() ){
+		Str=r.LiveFISRacestartLIST("2","C:\\test\\RPT_Start_911.csv");
+
+		LiveFIS->IOHandler->WriteLn(Str);
+		Str1="";
+		Str1= LiveFIS->IOHandler->ReadLn();
+	}
+	udiag="Несовпадение списков гонок";
+	Check(true,udiag);
+}
+
+
+//------------------------------------------------------------------------------
+void __fastcall TTestRace::setgetRaceData(){
+int  iCodex=9872,iCodex1;
+string  sNation="RUS",sNation1;
+string  sDiscipline="Moscow Cup",sDiscipline1;
+string  sCategory="Moscow Cup",sCategory1;
+string  sPlace="Moscow",sPlace1;
+string  sType="Moscow Cup",sType1;
+string  sEventname="Moscow Cup",sEventname1;
+
+	r.setCodex(iCodex);
+	iCodex1=r.getCodex();
+
+	r.setNation(sNation);
+	sNation1=r.getNation();
+
+	r.setDiscipline(sDiscipline);
+	sDiscipline1=r.getDiscipline();
+
+	r.setCategory(sCategory);
+	sCategory1=r.getCategory();
+
+	r.setPlace(sPlace);
+	sPlace1=r.getPlace();
+
+	r.setType(sType);
+	sType1=r.getType();
+
+	r.setEventname(sEventname);
+	sEventname1=r.getEventname();
+
+	udiag="Несовпадение кодексов гонок";
+	Check(iCodex==iCodex1,udiag);
+}
 //______________________________________________________________________________
 //______________________________________________________________________________
 void __fastcall TTestRaceResults::SetUp(){
@@ -158,7 +361,8 @@ void __fastcall TTestRaceList::loadXML(){
 }
 //______________________________________________________________________________
 static void registerTests(){
-  Testframework::RegisterTest(TTestRaceList::Suite());
-  Testframework::RegisterTest(TTestRaceResults::Suite());
+	Testframework::RegisterTest(TTestRace::Suite());
+	Testframework::RegisterTest(TTestRaceList::Suite());
+	Testframework::RegisterTest(TTestRaceResults::Suite());
 }
 #pragma startup registerTests 33

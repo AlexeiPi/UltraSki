@@ -5,8 +5,13 @@
 enum NameLanguage{rus=0,lat};
 class Person {
 	private:
+		std::string Fiscode;
+		std::string Nation;
+		std::string Clubname;
+
 		AnsiString Name[2],SecondName[2],Surname[2];
 		TDate DoB;
+        int YoB;
 		int iGender;
 	public:
 		Person(){};

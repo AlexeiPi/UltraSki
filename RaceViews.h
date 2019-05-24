@@ -17,7 +17,7 @@
 //TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 
-class RaceStartListView{
+class RaceStartListView:public RaceList{
 	private:
 //______________________________________________________________________________
 	struct _viewSL{
@@ -81,13 +81,13 @@ class RaceStartListView{
 		}
 	};
 //______________________________________________________________________________
-		RaceList *RL;
+	   ///	RaceList *RL;
 		vector < _viewSL > viewSL;
 		TForm *pRaceViews;
 		TPanel *panel1,*panel2,*panel3;
 		TLabel *lbl;
 
-        TIdTCPClient *TcpClient1;
+		TIdTCPClient *TcpClient1;
 
 		int icurrRacer=1,ilastcurrRacer=-1;
 		int iTopLine=1,iBottomLine;
@@ -95,7 +95,10 @@ class RaceStartListView{
 //______________________________________________________________________________
 	public:
 		RaceStartListView():pRaceViews(NULL){}
-		RaceStartListView(RaceList *rl):pRaceViews(NULL){RL=rl;}
+/*		RaceStartListView(RaceList *rl):pRaceViews(NULL){
+			RL=rl;
+		}
+*/
 		void __fastcall freevcls(_viewSL vsl){
 			if(vsl.SN!=NULL){
 				delete vsl.SN;vsl.SN=NULL;
@@ -136,21 +139,16 @@ class RaceStartListView{
 		void __fastcall Locations(TForm* form);
 		void __fastcall setRacersColor(_viewSL vsl);
 		int  __fastcall checkLines(void);
+
+
 		void __fastcall FISconnect();
 		void __fastcall OnConnected(TObject *Sender);
 		void __fastcall OnWork(TObject *ASender, TWorkMode AWorkMode, __int64 AWorkCount);
-		void __fastcall WorkBegin(TObject *ASender, TWorkMode AWorkMode,
-		  __int64 AWorkCountMax);
-		void __fastcall Status(TObject *ASender, const TIdStatus AStatus,
-		  const UnicodeString AStatusText);
-
-
-
-
-
+		void __fastcall WorkBegin(TObject *ASender, TWorkMode AWorkMode,__int64 AWorkCountMax);
+		void __fastcall Status(TObject *ASender, const TIdStatus AStatus,const UnicodeString AStatusText);
 };
 //---------------------------------------------------------------------------
-class RaceResultsView{
+class RaceResultsView:public RaceList{
 	private:
 	///	TfUltraSki *fRaceResultsView;
 		RaceResults *RR;

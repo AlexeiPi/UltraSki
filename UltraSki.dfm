@@ -2,8 +2,8 @@ object fUltraSki: TfUltraSki
   Left = 0
   Top = 0
   Caption = 'UltraSki'
-  ClientHeight = 509
-  ClientWidth = 830
+  ClientHeight = 376
+  ClientWidth = 481
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,7 +24,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lClearClick
   end
   object lClearResponse: TLabel
     Left = 103
@@ -35,7 +34,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lClearClick
   end
   object lRaceInfo: TLabel
     Left = 48
@@ -47,7 +45,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lRaceInfoClick
   end
   object lRaceInfoResponse: TLabel
     Left = 103
@@ -58,7 +55,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lClearClick
   end
   object lMessage: TLabel
     Left = 48
@@ -70,7 +66,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lMessageClick
   end
   object lMessageResponse: TLabel
     Left = 103
@@ -92,7 +87,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lActiveRunClick
   end
   object lActiveRunResponse: TLabel
     Left = 103
@@ -136,7 +130,6 @@ object fUltraSki: TfUltraSki
     Color = clAqua
     ParentColor = False
     Transparent = False
-    OnClick = lHumidityClick
   end
   object lHumidityResponse: TLabel
     Left = 105
@@ -159,14 +152,27 @@ object fUltraSki: TfUltraSki
     Top = 48
   end
   object LiveFIS: TIdTCPClient
-    OnStatus = LiveFISStatus
-    OnWorkBegin = LiveFISWorkBegin
     ConnectTimeout = 0
     Host = 'live.fisski.com'
     IPVersion = Id_IPv4
     Port = 1550
     ReadTimeout = -1
-    Left = 424
-    Top = 16
+    Left = 112
+    Top = 24
+  end
+  object ADOTable1: TADOTable
+    ConnectionString = 
+      'Provider=MSDASQL.1;Persist Security Info=False;User ID=mysql_nat' +
+      'ive_password;Data Source=SQLite3 Datasource'
+    Left = 264
+    Top = 144
+  end
+  object DataSource1: TDataSource
+    Left = 336
+    Top = 152
+  end
+  object ADOConnection1: TADOConnection
+    Left = 296
+    Top = 216
   end
 end

@@ -51,21 +51,21 @@ String str="";
 //<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00001\" \
 
 str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00001\" \
+<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00001\" \
 timestamp=\""+strtime+"\">\
-<command><clear /></command>\
+<command><clear/></command>\
 </livetiming>";
 		TcpClient1->Socket->WriteLn(str);
 		str="";
 //		str= TcpClient1->Socket->ReadLn();
 
-#if 0
+#if 1
 DateTimeToString(strtime, "hh:mm:ss", Now());
 str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00002\" \
+<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00002\" \
 timestamp=\""+strtime+"\"> \
 <raceinfo>\
-<event>Forerunners </event>\
+<event>Forerunners raceviews </event>\
 <name>SL</name>\
 <slope />\
 <discipline>SL</discipline>\
@@ -91,7 +91,7 @@ timestamp=\""+strtime+"\"> \
 #if 0
 DateTimeToString(strtime, "hh:mm:ss", Now());
 str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00003\" \
+<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00003\" \
 timestamp=\""+strtime+"\"> \
 <command><activerun no=\"1\" /></command></command></livetiming>";
 		TcpClient1->Socket->WriteLn(str);
@@ -102,7 +102,7 @@ timestamp=\""+strtime+"\"> \
 #if 0
 DateTimeToString(strtime, "hh:mm:ss.z", Now());
 str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00004\" \
+<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00004\" \
 timestamp=\""+strtime+"\"> \
 <message><text>"+str1+"</text></message> \
 </livetiming>";
@@ -124,7 +124,7 @@ timestamp=\""+strtime+"\"> \
 		str= TcpClient1->Socket->ReadLn();
 
 
-str= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><livetiming codex=\"9872\" passwd=\"08101957\" timestamp=\" 1:38:58.08\"><startlist runno=\"1\">\
+str= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><livetiming codex=\"9871\" passwd=\"08101957\" timestamp=\" 1:38:58.08\"><startlist runno=\"1\">\
 <racer\
 order=\"1\"><bib>1</bib><lastname>MELNIKOVA</lastname><firstname>Polina</firstname><nat>RUS</nat><fiscode>486140</fiscode></racer><racer order=\"2\"><bib>2</bib><lastname>TIMCHENKO</lastname><firstname>Elizaveta</firstname><nat>RUS</nat><fiscode>485850</fiscode></racer></startlist></livetiming>";
 
@@ -145,6 +145,8 @@ str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
 
 
 
+
+
 		TcpClient1->Disconnect();
 		delete TcpClient1;TcpClient1=NULL;
 		}
@@ -157,7 +159,8 @@ str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::form_resize(TObject *Sender){
 int ichecklines=checkLines(),
-	iracersN=RL->getRacersN(),
+//	iracersN=RL->getRacersN(),
+	iracersN=this->getRacersN(),
 	iformH=pRaceViews->Height,
 	iracerH=iracersN*18,
 	iDelta=panel3->Top+iracerH;
@@ -190,7 +193,7 @@ TColor cl1=clActiveCaption,cl2=clWhite,cl;
 //______________________________________________________________________________
 void __fastcall RaceStartListView::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
 int ik=Key;
-int ichecklines=checkLines(),iracersN=RL->getRacersN();
+int ichecklines=checkLines(),iracersN=this->getRacersN();
 int icurH,icurN,
 	iformH=pRaceViews->Height,//=icurrRacer*18;
 	ipaneltop=panel3->Top;
@@ -225,7 +228,7 @@ int icurH,icurN,
 			}
 			else{
 				icurrRacer=1;
-                panel3->Top=0;
+				panel3->Top=0;
 			}
 	   break;
 	}
@@ -275,7 +278,7 @@ _viewSL *vsl;
 int iN;
 
 	if(!viewSL.empty()) viewSL.clear();
-	iN=RL->getRacersN();
+	iN=this->getRacersN();
 
 	panel1= new TPanel(form);
 	panel1->Parent = form;
@@ -287,7 +290,8 @@ int iN;
 	panel1->Left=3;
 	panel1->Width=pRaceViews->Width-panel1->Left;
 	panel1->Visible=true;
-	str.sprintf(L"RaceList%s",RL->getCODEX().c_str());
+	int ccodex=this->getCodex();
+	str.sprintf(L"RaceList%d",this->getCodex());
 	panel1->Caption=str;
 
 	panel2= new TPanel(panel1);
@@ -322,7 +326,7 @@ int iN;
 	viewSL.reserve(iN);
 	auto sz= viewSL.capacity();
 	for(int i=0;i<iN;++i){
-		vsl=new _viewSL(i==0?panel1:panel3,i,RL,lbl);
+		vsl=new _viewSL(i==0?panel1:panel3,i,this,lbl);
 		viewSL.push_back(*vsl);
 		if(sz!=viewSL.capacity()){
 			sz=viewSL.capacity();
