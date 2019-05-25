@@ -149,22 +149,55 @@ String sTIMESTAMP=strTIME;
 return str;
 }
 //------------------------------------------------------------------------------
-String __fastcall Race::LiveFISRacestartLIST(String srun,string filename){
+AnsiString rus[]={" ","À", "à", "Á","á","Â","â","Ã","ã","¥","´","Ä","ä","Å","å","ª", "º", "Æ", "æ", "Ç", "ç", "È", "è", "²", "³", "¯", "¿", "É", "é", "Ê", "ê",
+"Ë", "ë", "Ì", "ì", "Í", "í", "Î", "î", "Ï", "ï","Ð", "ð", "Ñ", "ñ", "Ò", "ò", "Ó", "ó", "Ô", "ô","Õ", "õ", "Ö", "ö", "×", "÷","Ø", "ø",
+"Ù", "ù", "Ü", "ü", "Þ", "þ","ß", "ÿ", "Û", "û", "Ú", "ú", "¨", "¸", "Ý", "ý"};
+
+AnsiString eng[]={" ","A", "a", "B", "b","V", "v","G", "g", "G", "g", "D", "d", "E", "e", "E", "E", "Zh", "zh", "Z", "z", "I", "i", "I", "I", "Yi", "yi", "J", "j", "K", "k",
+"L", "l", "M", "m", "N", "n", "O", "o", "P", "p","R", "r", "S", "s", "T", "t", "U", "u", "F", "f","KH", "kh", "TS", "ts", "CH", "ch", "SH", "sh",
+"SHH", "shh", "'", "'", "YU", "yu","YA", "ya", "Y", "y", "", "", "YO", "yo", "E", "e"};
+AnsiString toLatin(AnsiString &srussian){
+AnsiString ret="",senglish="",rLet,eLet;
+int iN=srussian.Length(),iNN=sizeof(rus)/sizeof(rus[0]);
+	for(int i=0; i<=iN; i++){
+		auto find=false;
+		rLet=srussian.c_str()[i];
+		eLet="";
+		for(int j=0;j<iNN;j++){
+			if(rLet==rus[j]){
+				eLet=eng[j];
+				senglish+=eLet;
+				ret=senglish;
+				find=true;
+				break;
+			}
+		}
+		if(!find)
+			senglish+="*";
+	}
+return ret;
+}
+//______________________________________________________________________________
+String __fastcall RaceList::LiveFISRacestartLIST(int srun,String filename){
 String str,strTIME;
-String sRUN=srun;
-String sCODEX=Codex;
-String sPASSWORD=LiveFISpassword.c_str();
+String sRUN=String(srun);
+String sCODEX=getCodex();
+String sPASSWORD=getLiveFISpassword();
 DateTimeToString(strTIME, "hhmmsszzz", Now());
 String sSEQUENCE=strTIME;
 DateTimeToString(strTIME, "h:mm:ss", Now());
 String sTIMESTAMP=strTIME;
 
-RaceList rcl;
-	rcl.LoadFromCSV(filename);
-	int rSize=rcl.getRacersN();
+	LoadFromCSV(filename+".csv");
+	saveXML(filename+".xml");
+	loadXML(filename+".xml");
+
+
+//	int rSize=rcl.getRacersN();
+	int rSize=getRacersN();
 
 	AnsiString work="";
-	String fa,im,fc,fio,yob;
+	String order,nat,fa,im,fc,fio,yob;
 	String  TOTAL,item,i1,i2,i3,i4,i5,i6,i7,i8;
 	DateTimeToString(strTIME, "hh:mm:ss", Now());
 	 i1="<?xml version=\"1.0\" encoding=\"UTF-8\"?><livetiming codex=\"";
@@ -185,20 +218,44 @@ RaceList rcl;
 	 #else
 		TOTAL=i1+i22+i3+i23+i5+i25+i6;//sCODEX;//+"\" passwd=\""+sPASSWORD+"\" sequence=\"" + sSEQUENCE + "\" timestamp=\""+strtime+"\">";
 	 #endif
+	String str1,str2,str3;
+	int iSN=0;
 	for (auto iirs = 1;iirs<rSize;++iirs){
+		str1="";str2="";str3="";
+		order=getRacer(iirs,0);
+		if (order.Length()==0)continue;
+        iSN++;
 		fc=getRacer(iirs,1);
-		str1 =rcl.getRacer(iirs,8);
-		std::size_t pos = str1.find(" ");
-		 std::string str2 = str1.substr (0,pos);
-		 std::string str3 = str1.substr (pos+1);
+		nat=getRacer(iirs,9);
+		if (nat.Length()==0) {
+			nat="RUS";
+		}
+		str2=fc;
+		str1=getRacer(iirs,8);
+		if(str1.Length()==0){
+			AnsiString sstr1=getRacer(iirs,2);
+			sstr1=toLatin(sstr1);
+			str1=sstr1.c_str();
+		}
+
+		str1=str1.Trim();
+		auto pos = str1.Pos(" ");
+
+		if(pos>0){
+			str2 = str1.SubString(0,pos-1);
+			str3 = str1.SubString(pos+1,str1.Length()-pos);
+		}
+		else
+			str2 = str1,str3 ="";
+
 		 i1="<racer order=\"";
-		 i2= std::to_string(iirs);
+		 i2= order;
 		 i3="\"><bib>";
 		 i4="</bib><lastname>";
-		 i5=str2.c_str();
+		 i5=str2;
 		 i6="</lastname><firstname>";
-		 i7=str3.c_str();
-		 i8="</firstname><nat>ITA</nat><fiscode>"+fc+"</fiscode></racer>";
+		 i7=str3;
+		 i8="</firstname><nat>"+nat+"</nat><fiscode>"+fc+"</fiscode></racer>";
 		im=im;
 		item=i1+i2+i3+i2+i4+i5+i6+i7+i8;
 		TOTAL+=item;
@@ -210,16 +267,16 @@ return str;
 }
 
 //______________________________________________________________________________
-void RaceResults::LoadFromCSV(string filename){
+void RaceResults::LoadFromCSV(String filename){
 	TStringList *SL;
 	string  item;
 	AnsiString astr;
 
 	SL = new TStringList;
-	SL->LoadFromFile(filename.c_str());
+	SL->LoadFromFile(filename);
 	auto num1 = SL->Count;
 
-	vector <string> *RacerResults;
+	vector <String> *RacerResults;
 	Results.clear();
 	for (int i = 0; i < num1; i++) {
 		astr=SL->Strings[i];
@@ -227,16 +284,20 @@ void RaceResults::LoadFromCSV(string filename){
 		regex re("[;]");
 		sregex_token_iterator it(item.begin(), item.end(), re, -1);
 		sregex_token_iterator reg_end;
-		RacerResults=new vector <string>;
+		RacerResults=new vector <String>;
 		for (; it != reg_end; ++it) {
-			 RacerResults->push_back(it->str());
+			String Str;
+///			astr=AnsiString(it->str());
+			item=it->str();
+			Str=item.c_str();
+			RacerResults->push_back(Str);
 		}
 		Results.push_back(*RacerResults);
 		delete RacerResults;
 	}
 }
 //____________________________________________________________________________
-void RaceResults::saveXML(string filename){
+void RaceResults::saveXML(String filename){
   TXMLDocument* racelistXML = new TXMLDocument(NULL);
    try{
 	   racelistXML->Active=true;
@@ -271,16 +332,17 @@ void RaceResults::saveXML(string filename){
 	}
 }
 //____________________________________________________________________________
-void RaceList::LoadFromCSV(string filename){
+void RaceList::LoadFromCSV(String filename){
 	TStringList *SL;
 	string  item;
 	AnsiString astr;
+	String Str;
 
 	SL = new TStringList;
 	SL->LoadFromFile(filename.c_str());
 	auto num1 = SL->Count;
 
-	vector <string> *RacerString;
+	vector <String> *RacerString;
 	Racers.clear();
 	for (int i = 0; i < num1; i++) {
 		astr=SL->Strings[i];
@@ -288,16 +350,20 @@ void RaceList::LoadFromCSV(string filename){
 		regex re("[;]");
 		sregex_token_iterator it(item.begin(), item.end(), re, -1);
 		sregex_token_iterator reg_end;
-		RacerString=new vector <string>;
+		RacerString=new vector <String>;
 		for (; it != reg_end; ++it) {
-			 RacerString->push_back(it->str());
+
+			item=it->str();
+			Str=item.c_str();
+			RacerString->push_back(Str);      /////?????????
 		}
 		Racers.push_back(*RacerString);
 		delete RacerString;
 	}
 }
 //____________________________________________________________________________
-void RaceList::saveXML(string filename){
+void RaceList::saveXML(String filename){
+String Str;
   TXMLDocument* racelistXML = new TXMLDocument(NULL);
    try{
 	   racelistXML->Active=true;
@@ -313,7 +379,7 @@ void RaceList::saveXML(string filename){
 		rrs=Racers[0].size();
 		AnsiString work="",w1;
 		for (auto iirs = 0;iirs<rrs;++iirs){
-			w1=Racers[0][iirs].c_str();
+			w1=Racers[0][iirs]/*.c_str()*/;
 			work+=w1+";";
 		}
 		nodNew->SetAttribute("TitleNames", work);
@@ -322,29 +388,30 @@ void RaceList::saveXML(string filename){
 			IXMLNode *nodNew = racelistXML->ChildNodes->Last()->AddChild(L"Racer");
 			rrs=Racers[irs].size();
 			for (auto iirs = 0;iirs<rrs;++iirs){
-				nodNew->SetAttribute(Racers[0][iirs].c_str(), Racers[irs][iirs].c_str());
+				Str=Racers[irs][iirs];
+				nodNew->SetAttribute(Racers[0][iirs]/*.c_str()*/, Racers[irs][iirs]/*.c_str()*/);
 			}
 		}
-		racelistXML->SaveToFile(filename.c_str());
+		racelistXML->SaveToFile(filename/*.c_str()*/);
   }
 	__finally {
 		FreeAndNil(&racelistXML); delete racelistXML;
 	}
 }
 //____________________________________________________________________________
-void RaceList::loadXML(string filename){
+void RaceList::loadXML(String filename){
 String workstring;
 string  item;
 AnsiString astr;
 IXMLNode *nodElement,*titleElement;
 
-	vector <string> *RacerString;
-	vector <string> TitleString;
+	vector <String> *RacerString;
+	vector <String> TitleString;
 
 
 	TXMLDocument *racelistXML = new TXMLDocument(Application);
 	try{
-		racelistXML->LoadFromFile(filename.c_str());
+		racelistXML->LoadFromFile(filename);
 		racelistXML->Active = true;
 		IXMLNode *XMLDoc = racelistXML->DocumentElement;
 		const auto count = racelistXML->ChildNodes->Count;
@@ -352,7 +419,7 @@ IXMLNode *nodElement,*titleElement;
 
 		Racers.clear();
 		for (int i = 0; i < n; i++){
-			RacerString=new vector <string>;
+			RacerString=new vector <String>;
 			nodElement = XMLDoc->ChildNodes->Nodes[i];
 			astr=nodElement->GetNodeName();
 			if(astr=="Title"){
@@ -363,7 +430,10 @@ IXMLNode *nodElement,*titleElement;
 				sregex_token_iterator reg_end;
 				TitleString.clear();
 				for (; it != reg_end; ++it) {
-					TitleString.push_back(it->str());
+					String Str;
+					item=it->str();
+                    Str=item.c_str();
+					TitleString.push_back(Str);
 				}
 			}
 			else{

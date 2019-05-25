@@ -9,7 +9,7 @@ Race r;
 RaceResults rrcl,rrcl1;
 RaceList rcl,rcl1;
 extern String udiag;
-string str;
+String str;
 TIdTCPClient *LiveFIS;
 
 //-------------------------------------------------------------------------------
@@ -122,8 +122,8 @@ int  iCodex=9872;
 void __fastcall TTestRace::LiveFISRaceinfo(){
 int  iCodex=9872;
 String Str,Str1;
-string  sDiscipline="DH";
-string  sCategory="UNI";
+String  sDiscipline="DH";
+String  sCategory="UNI";
 	r.setCodex(iCodex);
 	r.setDiscipline(sDiscipline);
 	r.setCategory(sCategory);
@@ -190,20 +190,20 @@ int  iCodex=9872;
 	udiag="Несовпадение кодексов гонок";
 	Check(true,udiag);
 }
-
+//------------------------------------------------------------------------------
 void __fastcall TTestRace::LiveFISRacestartLIST(){
 String Str,Str1,strTIME;
 int  iCodex=9872;
-	r.setCodex(iCodex);
-	r.setLiveFISpassword("08101957");
+	rcl.setCodex(iCodex);
+	rcl.setLiveFISpassword("08101957");
 	DateTimeToString(strTIME, "h:mm:ss", Now());
 
 	if( LiveFIS->Connected() ){
-		Str=r.LiveFISRacestartLIST("2","C:\\test\\RPT_Start_911.csv");
+		Str=rcl.LiveFISRacestartLIST(1,"C:\\test\\RPT_Start_911");
 
 		LiveFIS->IOHandler->WriteLn(Str);
 		Str1="";
-		Str1= LiveFIS->IOHandler->ReadLn();
+		////Str1= LiveFIS->IOHandler->ReadLn();
 	}
 	udiag="Несовпадение списков гонок";
 	Check(true,udiag);
@@ -213,12 +213,12 @@ int  iCodex=9872;
 //------------------------------------------------------------------------------
 void __fastcall TTestRace::setgetRaceData(){
 int  iCodex=9872,iCodex1;
-string  sNation="RUS",sNation1;
-string  sDiscipline="Moscow Cup",sDiscipline1;
-string  sCategory="Moscow Cup",sCategory1;
-string  sPlace="Moscow",sPlace1;
-string  sType="Moscow Cup",sType1;
-string  sEventname="Moscow Cup",sEventname1;
+String  sNation="RUS",sNation1;
+String  sDiscipline="Moscow Cup",sDiscipline1;
+String  sCategory="Moscow Cup",sCategory1;
+String  sPlace="Moscow",sPlace1;
+String  sType="Moscow Cup",sType1;
+String  sEventname="Moscow Cup",sEventname1;
 
 	r.setCodex(iCodex);
 	iCodex1=r.getCodex();
@@ -327,15 +327,24 @@ void  __fastcall TTestRaceList::setRacer(){
 //______________________________________________________________________________
 void __fastcall TTestRaceList::LoadFromCSV(){
   // void LoadFromExcel(AnsiString filename)
+String Str,Str1,Str2,Str3;
 	rcl.LoadFromCSV("C:\\test\\RPT_Start_910.csv");
 	rcl.saveXML("C:\\test\\RPT_Start_910_1.xml");
 	rcl1.loadXML("C:\\test\\RPT_Start_910_1.xml");
-	str=rcl.getRacer(1,2);
-	str=rcl1.getRacer(1,1);
-	str=rcl1.getRacer(1,2);
+	Str=rcl.getRacer(1,2);
+	Str1=rcl1.getRacer(1,1);
+	Str2=rcl1.getRacer(1,2);
+
+	for (int i = 1; i < 10; i++) {
+		Str3=rcl.getRacer(i,8);
+		Str2=rcl1.getRacer(i,8);
+
+	}
+
+
 	rcl1.setRacer(1,2,"Пивоваров Алексей");
 	rcl1.saveXML("C:\\test\\RPT_Start_910_1.xml");
-	rcl1.setRacer(1,2,str.c_str());
+	rcl1.setRacer(1,2,Str);
 	str=rcl1.getRacer(1,2);
 	int ii=rcl.Compare(&rcl1);
 	udiag="Несовпадение векторов списков спортсменов после загрузки из CSV";

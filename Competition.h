@@ -23,45 +23,45 @@ class RaceResults;
 class Race;
 class Race{
 	private:
-        string LiveFISpassword;
-		string Gender;//[M]en,[L]adies,[A] Mixed
+		String LiveFISpassword;
+		String Gender;//[M]en,[L]adies,[A] Mixed
 		//Season-Codex-Nation-Discipline-Category-Type-Training
 		//Speedcodex-Eventname-Place-Racedate
 		//Tempunit-Longunit-Speedunit-Windunit
 		int Season;// 2012 for Juni 2011 - May 2012 integer
 		int Codex;
-		string Nation;
-		string Discipline;
-		string Category;
-		string Type;   //Type of content Startlist Partial Unofficial Official
-		string Training;
+		String Nation;
+		String Discipline;
+		String Category;
+		String Type;   //Type of content Startlist Partial Unofficial Official
+		String Training;
 		int Speedcodex;
-		string Eventname;
-		string Place;
-		string Slope;
+		String Eventname;
+		String Place;
+		String Slope;
 		TDate Racedate;
-		string Tempunit;
-		string Longunit;
-		string Speedunit;
-		string Windunit;
-		string Usedfislist;
+		String Tempunit;
+		String Longunit;
+		String Speedunit;
+		String Windunit;
+		String Usedfislist;
 		float Appliedpenalty;
 		int Fvalue;
-		string Timingby;
-		string Dataprocessingby;
-		string Softwarecompany;
-		string Softwarename;
-		string Softwareversion;
+		String Timingby;
+		String Dataprocessingby;
+		String Softwarecompany;
+		String Softwarename;
+		String Softwareversion;
 		struct Jury{
-			string Lastname;
-			string Firstname;
-			string Nation;
-			string Email;
-			string Phonenbr;
+			String Lastname;
+			String Firstname;
+			String Nation;
+			String Email;
+			String Phonenbr;
 		};
 		struct Course{
-			string Name;
-			string Homologation;
+			String Name;
+			String Homologation;
 			int Length;
 			int Gates;
 			int Turninggates;
@@ -69,21 +69,21 @@ class Race{
 			int Finishelev;
 		};
 		struct Coursesetter{
-			string Lastname;
-			string Firstname;
-			string Nation;
+			String Lastname;
+			String Firstname;
+			String Nation;
 		};
 		struct Forerunner{
-			string Lastname;
-			string Firstname;
-			string Nation;
+			String Lastname;
+			String Firstname;
+			String Nation;
 		};
-		string IntermediateDistance;
+		String IntermediateDistance;
 		struct Weather{
-			string Time;
-			string Place;
-			string Weather;
-			string Snow;
+			String Time;
+			String Place;
+			String Weather;
+			String Snow;
 			float Temperatureair;
 			float Temperaturesnow;
 			int Humiditystart;
@@ -91,22 +91,22 @@ class Race{
 		};
 //		struct AL_ranked{		Rank 		Order 		Bib 		};
 		struct Competitor{
-			string Fiscode;
-			string Lastname;
-			string Firstname;
-			string Gender;//M L
-			string Nation;
+			String Fiscode;
+			String Lastname;
+			String Firstname;
+			String Gender;//M L
+			String Nation;
 			int Yearofbirth;
-			string Clubname;
+			String Clubname;
 		};
 		struct AL_result{
-			string Timerun1;//MM:SS:ZZ
-			string Timerun2;//MM:SS:ZZ
-			string Timerun3;//MM:SS:ZZ
-			string Totaltime;//MM:SS:ZZ
-			string Diff;//MM:SS:ZZ
+			String Timerun1;//MM:SS:ZZ
+			String Timerun2;//MM:SS:ZZ
+			String Timerun3;//MM:SS:ZZ
+			String Totaltime;//MM:SS:ZZ
+			String Diff;//MM:SS:ZZ
 			float Racepoints;
-			string Level;//	final smallfinal semifinal quarterfinaleightfinal qualification sixteenfinal thirtytwofinal sixtyfourfinal
+			String Level;//	final smallfinal semifinal quarterfinaleightfinal qualification sixteenfinal thirtytwofinal sixtyfourfinal
 		};
 /*
 Order number of intermediate point
@@ -114,50 +114,50 @@ Order number of intermediate point
 99 		= Finish
 */
 		struct Intermediate{
-			string Time;
-			string Diff;
+			String Time;
+			String Diff;
 			int Rank;
 			float Speed;
-			string Sectortime;
-			string Sectordiff;
-			string Sectorrank;
+			String Sectortime;
+			String Sectordiff;
+			String Sectorrank;
 		};
 		struct AL_notranked{
 			int Run;
-			string Bib;
+			String Bib;
 			Competitor competitor;
 			int Gate;
 			AL_result al_result;
 //			AL_resultdetail al_resultdetail;
-			string Reason;
+			String Reason;
 
 		};
 	public:
 		Race():Codex(0){}
 		~Race(){}
 
-		void setLiveFISpassword(string liveFISpassword){LiveFISpassword=liveFISpassword;};
-		string getLiveFISpassword(){return LiveFISpassword;};
+		void setLiveFISpassword(String liveFISpassword){LiveFISpassword=liveFISpassword;};
+		String getLiveFISpassword(){return LiveFISpassword;};
 		void setCodex(int icodex){Codex=icodex;};
 		int getCodex(){return Codex;};
-		void setNation(string nation){Nation=nation;};
-		string getNation(){return Nation;};
-		void setDiscipline(string discipline){Discipline=discipline;};
-		string getDiscipline(){return Discipline;};
+		void setNation(String nation){Nation=nation;};
+		String getNation(){return Nation;};
+		void setDiscipline(String discipline){Discipline=discipline;};
+		String getDiscipline(){return Discipline;};
 
-		void setGender(string gender){Gender=gender;};
-		string getGender(void){return Gender;};
-		void setCategory(string category){Category=category;};
-		string getCategory(){return Category;};
-		void setType(string ttype){Type=ttype;};   //Type of content Startlist Partial Unofficial Official
-		string getType(){return Type;};   //Type of content Startlist Partial Unofficial Official
-		void setEventname(string eventname){Eventname=eventname;};
-		string getEventname(){return Eventname;};
-		void setPlace(string place){Place=place;};
-		string getPlace(){return Place;};
+		void setGender(String gender){Gender=gender;};
+		String getGender(void){return Gender;};
+		void setCategory(String category){Category=category;};
+		String getCategory(){return Category;};
+		void setType(String ttype){Type=ttype;};   //Type of content Startlist Partial Unofficial Official
+		String getType(){return Type;};   //Type of content Startlist Partial Unofficial Official
+		void setEventname(String eventname){Eventname=eventname;};
+		String getEventname(){return Eventname;};
+		void setPlace(String place){Place=place;};
+		String getPlace(){return Place;};
 
-		void setSlope(string slope){Slope=slope;};
-		string getSlope(){return Slope;};
+		void setSlope(String slope){Slope=slope;};
+		String getSlope(){return Slope;};
 
 
 		String getRaceyyyy(){String str;DateTimeToString(str, "yyyy", Racedate);return str;};
@@ -165,17 +165,17 @@ Order number of intermediate point
 		String getRacedd(){String str;DateTimeToString(str, "d", Racedate);return str;};
 		void setRacedate(TDate racedate){Racedate=racedate;};
 
-		void setTimingby(string timingby){Timingby=timingby;};
-		string getTimingby(){return Timingby;};
-		void setDataprocessingby(string dataprocessingby){Dataprocessingby=dataprocessingby;};
-		string getDataprocessingby(){return Dataprocessingby;};
+		void setTimingby(String timingby){Timingby=timingby;};
+		String getTimingby(){return Timingby;};
+		void setDataprocessingby(String dataprocessingby){Dataprocessingby=dataprocessingby;};
+		String getDataprocessingby(){return Dataprocessingby;};
 
-		void setSoftwarecompany(string softwarecompany){Softwarecompany=softwarecompany;};
-		string getSoftwarecompany(){return Softwarecompany;};
-		void setSoftwarename(string softwarename){Softwarename=softwarename;};
-		string getSoftwarename(){return Softwarename;};
-		void setSoftwareversion(string softwareversion){Softwareversion=softwareversion;};
-		string getSoftwareversion(){return Softwareversion;};
+		void setSoftwarecompany(String softwarecompany){Softwarecompany=softwarecompany;};
+		String getSoftwarecompany(){return Softwarecompany;};
+		void setSoftwarename(String softwarename){Softwarename=softwarename;};
+		String getSoftwarename(){return Softwarename;};
+		void setSoftwareversion(String softwareversion){Softwareversion=softwareversion;};
+		String getSoftwareversion(){return Softwareversion;};
 
 //______LIVE FIS________________________________________________________________________
 		String __fastcall LiveFISRaceclear(void);
@@ -183,7 +183,6 @@ Order number of intermediate point
 		String __fastcall LiveFISRaceinfo(String srun);
 		String __fastcall LiveFISRacemessage(String message);
 		String __fastcall LiveFISRaceactiverun(String srun);
-		String __fastcall LiveFISRacestartLIST(String srun,string filename);
 
 
  };
@@ -191,7 +190,7 @@ Order number of intermediate point
 //______________________________________________________________________________
 class RaceList:public Race{
 	private:
-		vector <vector <string> > Racers;
+		vector <vector <String> > Racers;
 ///		String CODEX;//Codex
 		RaceResults *Run1Results;
 		RaceResults *Run2Results;
@@ -199,29 +198,32 @@ class RaceList:public Race{
 		RaceList(){}
 ///		RaceList(String codex):Codex(codex){}
 		~RaceList(){}
-		void LoadFromCSV(string filename);
-		void saveXML(string filename);
-		void loadXML(string filename);
+		void LoadFromCSV(String filename);
+		void saveXML(String filename);
+		void loadXML(String filename);
 		int getRacersN(){return Racers.size();};
-		string getRacer(int i,int j){return Racers[i][j];};
-		void setRacer(int i,int j,string sval){Racers[i][j].assign(sval);};
+		String getRacer(int i,int j){return Racers[i][j];};
+		void setRacer(int i,int j,String sval){Racers[i][j]=sval;/*.assign(sval);*/};
 ///		void setCODEX(String codex){CODEX=codex;};
 ///		String getCODEX(){return Codex;};
 		bool Compare(RaceList *rl){return Racers==rl->Racers;};
+//______LIVE FIS________________________________________________________________________
+	   String __fastcall LiveFISRacestartLIST(int srun,String filename);
 };
 //______________________________________________________________________________
 class RaceResults{
 	private:
-		vector <vector <string> > Results;
+		vector <vector <String> > Results;
 		RaceList *RL;
 	public:
 		RaceResults(){}
 		~RaceResults(){}
-		void LoadFromCSV(string filename);
-		void saveXML(string filename);
-		void loadXML(string filename){};
-		string getResult(int i,int j){return Results[i][j];};
-		void setResult(int i,int j,string sval){Results[i][j].assign(sval);};
+		void LoadFromCSV(String filename);
+		void saveXML(String filename);
+		void loadXML(String filename){};
+		String getResult(int i,int j){return Results[i][j];};
+//		void setResult(int i,int j,String sval){Results[i][j].assign(sval);};
+		void setResult(int i,int j,String sval){Results[i][j]=sval;};
 		bool Compare(RaceResults *rl){return Results==rl->Results;};
 };
 //______________________________________________________________________________

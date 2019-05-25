@@ -40,7 +40,8 @@ class RaceStartListView:public RaceList{
 			SN->Top=(i>0?i-1:1)*SN->Height;
 			SN->Left=1;
 			SN->Alignment=taCenter;
-			str=i>0?rL->getRacer(i,0).c_str():"¹";
+//			str=i>0?rL->getRacer(i,0).c_str():"¹";
+			str=i>0?rL->getRacer(i,0):"¹";
 			SN->Caption=str;
 			SN->OnMouseDown = lbl->OnMouseDown;
 
@@ -57,7 +58,7 @@ class RaceStartListView:public RaceList{
 			FC->Top=SN->Top;
 			FC->Left=SN->Left+SN->Width;
 			FC->Alignment=taLeftJustify;
-			str=i>0?rL->getRacer(i,1).c_str():"êîä ÔÈÑ";
+			str=i>0?rL->getRacer(i,1):"êîä ÔÈÑ";
 			FC->Caption=str;
 			FC->OnMouseDown = SN->OnMouseDown;
 
@@ -74,7 +75,7 @@ class RaceStartListView:public RaceList{
 			FIO->Top=SN->Top;
 			FIO->Left=FC->Left+FC->Width;
 			FIO->Alignment=taLeftJustify;
-			str=i>0?rL->getRacer(i,2).c_str():"ÔÀÌÈËÈß, Èìÿ";
+			str=i>0?rL->getRacer(i,2):"ÔÀÌÈËÈß, Èìÿ";
 
 			FIO->Caption=str;
 			FIO->OnMouseDown = SN->OnMouseDown;
