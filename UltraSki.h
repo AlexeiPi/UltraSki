@@ -26,25 +26,14 @@ class TfUltraSki : public TForm
 __published:	// IDE-managed Components
 	TTimer *Timer1;
 	TXMLDocument *XMLDocument1;
-	TLabel *lClear;
 	TIdTCPClient *LiveFIS;
-	TLabel *lClearResponse;
-	TLabel *lRaceInfo;
-	TLabel *lRaceInfoResponse;
-	TLabel *lMessage;
-	TLabel *lMessageResponse;
-	TLabel *lActiveRun;
-	TLabel *lActiveRunResponse;
-	TLabel *lMessage1;
-	TLabel *lMessage1Response;
-	TLabel *lHumidity;
-	TLabel *lHumidityResponse;
 	TADOTable *ADOTable1;
 	TDataSource *DataSource1;
 	TADOConnection *ADOConnection1;
+	TPanel *Panel1;
+	TLabel *Label1;
+	TEdit *Edit1;
 	void __fastcall Timer1Timer(TObject *Sender);
-	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall lMessage1Click(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations

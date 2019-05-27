@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "Competition.h"
+#include <StrUtils.hpp>
 //____________________________________________________________________________
 String __fastcall Race::LiveFISRaceclear(void){
 String str,strTIME;
@@ -159,22 +160,22 @@ AnsiString eng[]={" ","A", "a", "B", "b","V", "v","G", "g", "G", "g", "D", "d", 
 AnsiString toLatin(AnsiString &srussian){
 AnsiString ret="",senglish="",rLet,eLet;
 int iN=srussian.Length(),iNN=sizeof(rus)/sizeof(rus[0]);
-	for(int i=0; i<=iN; i++){
+	for(int i=0; i<iN; i++){
 		auto find=false;
 		rLet=srussian.c_str()[i];
-		eLet="";
+		eLet=rLet;
 		for(int j=0;j<iNN;j++){
 			if(rLet==rus[j]){
 				eLet=eng[j];
 				senglish+=eLet;
-				ret=senglish;
 				find=true;
 				break;
 			}
 		}
 		if(!find)
-			senglish+="*";
+			senglish+=eLet;
 	}
+	ret=senglish;
 return ret;
 }
 //______________________________________________________________________________
@@ -192,8 +193,6 @@ String sTIMESTAMP=strTIME;
 	saveXML(filename+".xml");
 	loadXML(filename+".xml");
 
-
-//	int rSize=rcl.getRacersN();
 	int rSize=getRacersN();
 
 	AnsiString work="";
@@ -267,36 +266,6 @@ return str;
 }
 
 //______________________________________________________________________________
-void RaceResults::LoadFromCSV(String filename){
-	TStringList *SL;
-	string  item;
-	AnsiString astr;
-
-	SL = new TStringList;
-	SL->LoadFromFile(filename);
-	auto num1 = SL->Count;
-
-	vector <String> *RacerResults;
-	Results.clear();
-	for (int i = 0; i < num1; i++) {
-		astr=SL->Strings[i];
-		item=astr.c_str();
-		regex re("[;]");
-		sregex_token_iterator it(item.begin(), item.end(), re, -1);
-		sregex_token_iterator reg_end;
-		RacerResults=new vector <String>;
-		for (; it != reg_end; ++it) {
-			String Str;
-///			astr=AnsiString(it->str());
-			item=it->str();
-			Str=item.c_str();
-			RacerResults->push_back(Str);
-		}
-		Results.push_back(*RacerResults);
-		delete RacerResults;
-	}
-}
-//____________________________________________________________________________
 void RaceResults::saveXML(String filename){
   TXMLDocument* racelistXML = new TXMLDocument(NULL);
    try{
@@ -334,29 +303,31 @@ void RaceResults::saveXML(String filename){
 //____________________________________________________________________________
 void RaceList::LoadFromCSV(String filename){
 	TStringList *SL;
-	string  item;
 	AnsiString astr;
 	String Str;
 
 	SL = new TStringList;
-	SL->LoadFromFile(filename.c_str());
+	SL->LoadFromFile(filename);
 	auto num1 = SL->Count;
 
 	vector <String> *RacerString;
 	Racers.clear();
+
 	for (int i = 0; i < num1; i++) {
 		astr=SL->Strings[i];
-		item=astr.c_str();
-		regex re("[;]");
-		sregex_token_iterator it(item.begin(), item.end(), re, -1);
-		sregex_token_iterator reg_end;
+		if (astr.Length()==0)
+			continue;
+		int ipos=1,ipos1;
+		ipos1=PosEx(";",astr,ipos);
 		RacerString=new vector <String>;
-		for (; it != reg_end; ++it) {
-
-			item=it->str();
-			Str=item.c_str();
-			RacerString->push_back(Str);      /////?????????
+		while(ipos1>0){
+			Str=astr.SubString(ipos,ipos1-ipos);
+			ipos=ipos1+1;
+			RacerString->push_back(Str);
+			ipos1=PosEx(";",astr,ipos);
 		}
+		Str=astr.SubString(ipos,astr.Length()-ipos+1);
+		RacerString->push_back(Str);
 		Racers.push_back(*RacerString);
 		delete RacerString;
 	}
@@ -454,4 +425,232 @@ IXMLNode *nodElement,*titleElement;
 	}
 }
 //---------------------------------------------------------------------------
+void __fastcall Races::showView(){
+TDateTime tdt=Now();
+String astr;
+	DateTimeToString(astr, "ddmmyyyyhhmmss", tdt);
+	pRaceViews->Name="RacesForm"+astr;
+	pRaceViews->Caption="";//pRaceViews->Name;
+	pRaceViews->DoubleBuffered=true;
+	pRaceViews->OnKeyDown=form_key_down;
+	pRaceViews->OnResize=form_resize;
+	Locations(pRaceViews);
+	pRaceViews->Show();
+}
+//------------------------------------------------------------------------------
+void __fastcall Races::Locations(TForm* form){
+String str;
+_viewRL *vsl;
+int iN;
+
+	if(!viewSL.empty()){
+		viewSL.clear();
+		delete eCompetition;
+		delete lbl;
+		delete panel3;
+		delete panel2;
+		delete panel1;
+	}
+	iN=this->getRacesN();
+
+	panel1= new TPanel(form);
+	panel1->Parent = form;
+	panel1->Name="P1";
+	panel1->Font->Size=12;
+	panel1->Alignment=taLeftJustify;
+	panel1->VerticalAlignment=taAlignTop;
+	panel1->Top=3;
+	panel1->Left=2;
+	panel1->Width=pRaceViews->Width-panel1->Left;
+	panel1->Visible=true;
+///	int ccodex=this->getCodex();
+	str.sprintf(L"Races");
+	panel1->Caption=str;
+
+	panel2= new TPanel(panel1);
+	panel2->Parent = panel1;
+	panel2->Name="P2";
+	panel2->Font->Size=12;
+	panel2->Alignment=taLeftJustify;
+	panel2->VerticalAlignment=taAlignTop;
+	panel2->Top=18;
+	panel2->Left=2;
+	panel2->Width=panel1->Width-panel2->Left;
+	panel2->Visible=true;
+	panel2->Caption="";
+
+	eCompetition=new TEdit(panel2);
+	eCompetition->Parent = panel2;
+	eCompetition->Name="P2";
+	eCompetition->Font->Size=12;
+	eCompetition->Top=18;
+	eCompetition->Left=34;
+	eCompetition->Width=90;
+	eCompetition->Visible=true;
+	eCompetition->Text="";
+
+
+	panel3= new TPanel(panel2);
+	panel3->Parent = panel2;
+	panel3->Name="P3";
+	panel3->Font->Size=12;
+	panel3->Alignment=taLeftJustify;
+	panel3->VerticalAlignment=taAlignTop;
+	panel3->Top=18*2+8;
+	panel3->Left=3;
+	panel3->Width=panel2->Width-panel3->Left;
+	panel3->Visible=true;
+	panel3->Caption="";
+
+	lbl= new TLabel(pRaceViews);
+	lbl->Name="Label"+pRaceViews->Name;
+	lbl->OnMouseDown=mouse_down;
+	lbl->OnDblClick=mouse_DblClick;
+
+
+	viewSL.reserve(iN);
+	auto sz= viewSL.capacity();
+	for(int i=0;i<iN;++i){
+		vsl=new _viewRL(panel3,i,this,lbl);
+		viewSL.push_back(*vsl);
+		if(sz!=viewSL.capacity()){
+			sz=viewSL.capacity();
+		}
+	}
+	///String *sss=(String*)viewSL.data();
+	panel3->Height=48+(iN+1)*vsl->SN->Height;
+	panel2->Height=panel3->Height;
+	panel1->Height=panel2->Height+2;
+	panel3->Color=clGradientActiveCaption;
+	panel2->Color=clAqua;
+	panel1->Color=clLime;
+	panel1->ShowCaption=true;panel1->Caption="Регистрация";panel1->Font->Size=10;
+	panel2->ShowCaption=true;panel2->Caption="соревнований:";panel2->Font->Size=panel1->Font->Size;
+	panel3->ShowCaption=true;panel3->Caption="3333333";panel3->Font->Size=panel1->Font->Size;
+	panel3->Width=viewSL[0].SN->Width+viewSL[0].RCodex->Width+3*2;
+	panel2->Width=panel3->Width+2*panel3->Left;
+	panel1->Width=panel2->Width+2*panel2->Left;
+	pRaceViews->Width=panel1->Width+2*panel1->Left+15;
+	pRaceViews->Height=panel1->Height+40;
+
+	TBorderIcons tempBI = pRaceViews->BorderIcons;
+//	tempBI >> biSystemMenu;
+	tempBI >> biMinimize;
+	tempBI >> biMaximize;
+	tempBI >> biHelp;
+	pRaceViews->BorderIcons = tempBI;
+
+ /*
+	tln = new TShape(stop_panel);
+	tln->Parent = stop_panel;
+	tln->Top= stop_panel_time_label->Top+stop_panel_time_label->Height;
+	tln->Left= 1;
+	tln->Height= 1;
+	tln->Width= stop_panel->Width;
+	tln->Visible=true;
+
+
+	image=new TImage(stop_panel);
+	image->Parent = stop_panel;
+	image->Height=40;
+	image->Top=3;
+	image->Left=3;
+	image->Width=40;
+	image->Picture=F366->Image1->Picture;
+*/
+
+}//end of proc
+
+
+void __fastcall Races::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
+int ik=Key;
+int ichecklines=checkLines(),iracersN=this->getRacesN();
+int icurH,icurN,
+	iformH=pRaceViews->Height,
+	ipaneltop=panel3->Top;
+	icurN=icurrRace;
+	switch(Key){
+	   case 35:
+			icurrRace=iracersN;
+			panel3->Top=(18*(ichecklines-iracersN+1));
+	   break;
+	   case 36://home
+			icurrRace=0;
+			panel3->Top=18*2+8;
+	   break;
+	   case 39://right
+	   break;
+	   case 40://down
+			if(icurrRace<iracersN-1){
+				icurH=(icurN+5)*18;
+				if((icurH+ipaneltop)>iformH)
+					panel3->Top-=18;
+
+				icurrRace++;
+				icurH=icurrRace*18;
+			}
+			else icurrRace=iracersN-1;
+			Key=0;
+	   break;
+	   case 38://up
+			if(icurrRace>0){
+				icurH=icurrRace*18;
+				if(icurH+ipaneltop<0)
+					panel3->Top+=18;
+				icurrRace--;
+				icurN=icurrRace;
+			}
+			Key=0;
+	   break;
+	}
+	std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+}
+//_____________________________________________________________________________
+//_____________________________________________________________________________
+void __fastcall Races::form_resize(TObject *Sender){
+int ichecklines=checkLines(),
+	iracersN=getRacesN(),
+	iformH=pRaceViews->Height,
+	iracerH=iracersN*18,
+	iDelta=panel3->Top+iracerH;
+int ipaneltop=panel3->Top;
+	if(ipaneltop<0){
+		panel3->Top=iformH-iracerH-3*18;
+	}
+	ipaneltop=panel3->Top;
+}
+//______________________________________________________________________________
+int __fastcall Races::checkLines(void){
+int iHeight=pRaceViews->Height,iN,ih,itop;
+	ih=viewSL[0].SN->Height;
+	itop=viewSL[0].SN->Top+3*ih;
+	iN=(iHeight-itop)/ih;
+	return iN;
+ }
+//______________________________________________________________________________
+void __fastcall Races::setRacersColor(_viewRL vsl){
+int i=vsl.SN->Tag;
+	if (i>=0){
+	TColor cl1=clActiveCaption,cl2=clWhite,cl;
+		vsl.SN->Color=clActiveCaption;
+		cl=(i==icurrRace)?cl1:cl2;
+		vsl.SN->Color=cl;
+		vsl.RCodex->Color=cl;
+	}
+}
+//______________________________________________________________________________
+void __fastcall Races::mouse_down(TObject *Sender, TMouseButton Button,
+  TShiftState Shift, int X, int Y){
+	ilastcurrRace=icurrRace;
+	icurrRace=dynamic_cast<TLabel*>(Sender)->Tag;
+	std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+}//end of proc
+//------------------------------------------------------------------------------
+void __fastcall Races::mouse_DblClick(TObject *Sender)
+{
+int i;
+}
+//_____________________________________________________________________________
+
+
 #pragma package(smart_init)

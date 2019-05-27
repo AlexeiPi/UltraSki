@@ -6,12 +6,16 @@
 //---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 String Person::getAge(void)const{return  (Now()-DoB).FormatString("yy");}
+int Person::getYage(void)const{int nowyob=StrToInt(Now().FormatString("yyyy"));return  nowyob-YoB;}
 //---------------------------------------------------------------------------------------------------------
 TDate Person::getdob(void)const{return DoB;}
+int Person::getyob(void)const{return YoB;}
 //---------------------------------------------------------------------------------------------------------
 String Person::getDoB(void)const{return DoB.FormatString("dd.mm.yyyy");}
+String Person::getYoB(void)const{return String(YoB);}
 //---------------------------------------------------------------------------------------------------------
 void Person::setdob(TDate dob){DoB=dob;}
+void Person::setyob(int yob){YoB=yob;}
 //---------------------------------------------------------------------------------------------------------
 void Person::setDoB(String dob){DoB=StrToDate(dob);}
 //---------------------------------------------------------------------------------------------------------

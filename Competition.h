@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #ifndef CompetitionH
 #define CompetitionH
+#include "UltraSki.h"
 #include <vector>
 #include <vcl.h>
 
@@ -14,11 +15,130 @@
 #include <iostream>
 
 #include <Xml.XMLDoc.hpp>
+
 using namespace std;
 class RaceList;
 class RaceResults;
 
 //---------------------------------------------------------------------------
+class Races{
+	private:
+		struct RacePack{
+			String Codex;
+			String path;
+		};
+		vector < RacePack > RacesList;
+		String DefaultPath;
+
+//=============================================================================
+		struct _viewRL{
+			TLabel *SN;
+			TLabel *RCodex;
+
+			_viewRL(TPanel*p,int i,Races *r,TLabel *lbl){//constructor
+				AnsiString str;
+				SN=new TLabel(p);
+				SN->Name="SN"+AnsiString(i);
+				SN->Parent = p;
+				SN->AutoSize=false;
+				SN->Transparent=false;
+				SN->Tag=i;
+				SN->Color=clWhite;
+				SN->Font->Size=10;
+				SN->Width=30;
+				SN->Height=18;
+				SN->Top=i*SN->Height;
+				SN->Left=1;
+				SN->Alignment=taCenter;
+				str=i+1;
+				SN->Caption=str;
+				SN->OnMouseDown = lbl->OnMouseDown;
+				SN->OnDblClick = lbl->OnDblClick;
+
+				RCodex=new TLabel(p);
+				RCodex->Name="FC"+AnsiString(i);
+				RCodex->Parent = p;
+				RCodex->AutoSize=false;
+				RCodex->Transparent=false;
+				RCodex->Tag=SN->Tag;
+				RCodex->Color=SN->Color;
+				RCodex->Font->Size=SN->Font->Size;
+				RCodex->Width=90;
+				RCodex->Height=SN->Height;
+				RCodex->Top=SN->Top;
+				RCodex->Left=SN->Left+SN->Width;
+				RCodex->Alignment=taLeftJustify;
+				str=r->getRace(i).Codex;
+				RCodex->Caption=str;
+				RCodex->OnMouseDown = SN->OnMouseDown;
+				RCodex->OnDblClick = SN->OnDblClick;
+
+			}
+		};
+		vector < _viewRL > viewSL;
+		TForm *pRaceViews;
+		TEdit *eCompetition;
+
+
+		TPanel *panel1,*panel2,*panel3;
+		TLabel *lbl;
+
+		int icurrRace=1,ilastcurrRace=-1;
+		int iTopLine=1,iBottomLine;
+		int iActiveLine=1;
+
+//=============================================================================
+
+
+
+	public:
+		Races(){
+			DefaultPath=ExtractFilePath(Application->ExeName);
+			pRaceViews=new TForm(Application);
+			pRaceViews->Caption="";
+			pRaceViews->KeyPreview=true;
+		};
+		~Races(){delete pRaceViews;};
+		void LoadFromPath(String path){
+			RacePack rp;
+			TSearchRec sr;
+			String spath=path+"*.usr";
+			RacesList.clear();
+			if (FindFirst(spath, faAnyFile | faDirectory, sr) == 0){
+				rp.path=path+sr.Name;
+				int  ipos=sr.Name.Pos(".usr");
+				rp.Codex=sr.Name.SubString(1,ipos-1);
+				RacesList.push_back(rp);
+
+				while (FindNext(sr) == 0){
+					rp.path=path+sr.Name;
+					ipos=sr.Name.Pos(".usr");
+					rp.Codex=sr.Name.SubString(1,ipos-1);
+					RacesList.push_back(rp);
+				}
+			}
+
+			FindClose(sr);
+		};
+		int getRacesN(){return RacesList.size();};
+//------------------------------------------------------------------------------
+		void setDefaultPath(String path){DefaultPath=path;};
+		String getDefaultPath(void){return DefaultPath;};
+
+		RacePack getRace(int i){return RacesList[i];};
+
+		void __fastcall showView();
+		void __fastcall Locations(TForm* form);
+
+		void __fastcall form_key_down(TObject *Sender, WORD &Key, TShiftState Shift);
+		void __fastcall form_resize(TObject *Sender);
+		void __fastcall mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+		void __fastcall mouse_DblClick(TObject *Sender);
+
+		int __fastcall checkLines(void);
+		void __fastcall setRacersColor(_viewRL vsl);
+};
+//______________________________________________________________________________
 #if 1
 class Race;
 class Race{
@@ -133,11 +253,12 @@ Order number of intermediate point
 
 		};
 	public:
-		Race():Codex(0){}
-		~Race(){}
+		Race():Codex(0){};
+		~Race(){};
 
 		void setLiveFISpassword(String liveFISpassword){LiveFISpassword=liveFISpassword;};
 		String getLiveFISpassword(){return LiveFISpassword;};
+
 		void setCodex(int icodex){Codex=icodex;};
 		int getCodex(){return Codex;};
 		void setNation(String nation){Nation=nation;};
@@ -195,17 +316,14 @@ class RaceList:public Race{
 		RaceResults *Run1Results;
 		RaceResults *Run2Results;
 	public:
-		RaceList(){}
-///		RaceList(String codex):Codex(codex){}
-		~RaceList(){}
+		RaceList(){};
+		~RaceList(){};
 		void LoadFromCSV(String filename);
 		void saveXML(String filename);
 		void loadXML(String filename);
 		int getRacersN(){return Racers.size();};
 		String getRacer(int i,int j){return Racers[i][j];};
-		void setRacer(int i,int j,String sval){Racers[i][j]=sval;/*.assign(sval);*/};
-///		void setCODEX(String codex){CODEX=codex;};
-///		String getCODEX(){return Codex;};
+		void setRacer(int i,int j,String sval){Racers[i][j]=sval;};
 		bool Compare(RaceList *rl){return Racers==rl->Racers;};
 //______LIVE FIS________________________________________________________________________
 	   String __fastcall LiveFISRacestartLIST(int srun,String filename);
@@ -216,17 +334,17 @@ class RaceResults{
 		vector <vector <String> > Results;
 		RaceList *RL;
 	public:
-		RaceResults(){}
-		~RaceResults(){}
-		void LoadFromCSV(String filename);
+		RaceResults(){};
+		~RaceResults(){};
 		void saveXML(String filename);
 		void loadXML(String filename){};
 		String getResult(int i,int j){return Results[i][j];};
-//		void setResult(int i,int j,String sval){Results[i][j].assign(sval);};
 		void setResult(int i,int j,String sval){Results[i][j]=sval;};
 		bool Compare(RaceResults *rl){return Results==rl->Results;};
 };
 //______________________________________________________________________________
 #endif
+
+
 //---------------------------------------------------------------------------
 

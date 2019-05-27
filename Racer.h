@@ -41,6 +41,10 @@ class Person {
 		TDate getdob(void)const;
 		String getDoB(void)const;
 		String getAge(void) const;
+		void setyob(int yob);
+		String getYoB(void)  const;
+		int getyob(void) const;
+		int getYage(void) const;
 
 		String getGender(int language=0) const {
 			return language?iGender?"M":"W":iGender?"Ì":"Æ";
@@ -62,6 +66,7 @@ class Person {
 		AnsiString getIOF(int language) const;
 		AnsiString getFio(int language) const;
 		AnsiString getioF(int language) const;
+
 
 		void setName(int language,AnsiString  name);
 		void setSecondName(int language,AnsiString secondname);

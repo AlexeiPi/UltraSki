@@ -265,8 +265,8 @@ int ii=0;
 //______________________________________________________________________________
 void __fastcall TTestRaceResults::LoadFromCSV(){
   // void LoadFromExcel(AnsiString filename)
-	rrcl.LoadFromCSV("C:\\test\\Results.csv");
-	rrcl.saveXML("C:\\test\\Results.xml");
+///	  rrcl.LoadFromCSV("C:\\test\\Results.csv");
+////	rrcl.saveXML("C:\\test\\Results.xml");
 /*	rrcl1.loadXML("C:\\test\\RPT_Start_910_1.xml");
 	str=rrcl.getResult(1,2);
 	str=rrcl1.getResult(1,1);
@@ -328,9 +328,9 @@ void  __fastcall TTestRaceList::setRacer(){
 void __fastcall TTestRaceList::LoadFromCSV(){
   // void LoadFromExcel(AnsiString filename)
 String Str,Str1,Str2,Str3;
-	rcl.LoadFromCSV("C:\\test\\RPT_Start_910.csv");
-	rcl.saveXML("C:\\test\\RPT_Start_910_1.xml");
-	rcl1.loadXML("C:\\test\\RPT_Start_910_1.xml");
+	rcl.LoadFromCSV("C:\\test\\RPT_Start_911.csv");
+	rcl.saveXML("C:\\test\\RPT_Start_911_1.xml");
+	rcl1.loadXML("C:\\test\\RPT_Start_911_1.xml");
 	Str=rcl.getRacer(1,2);
 	Str1=rcl1.getRacer(1,1);
 	Str2=rcl1.getRacer(1,2);

@@ -5,162 +5,11 @@
 #pragma package(smart_init)
 
 extern PACKAGE TfUltraSki *fUltraSki;
-
-//---------------------------------------------------------------------------
-void __fastcall RaceStartListView::Status(TObject *ASender, const TIdStatus AStatus,
-		  const UnicodeString AStatusText){
-}
-
-void __fastcall RaceStartListView::WorkBegin(TObject *ASender, TWorkMode AWorkMode,
-		  __int64 AWorkCountMax)
-{
-
-}
-//---------------------------------------------------------------------------
-
-void __fastcall RaceStartListView::OnConnected(TObject *Sender){
-int i=0;
-   //	ShowMessage("Client Connected");
-}
-//_____________________________________________________________
-void __fastcall RaceStartListView::OnWork(TObject *ASender, TWorkMode AWorkMode, __int64 AWorkCount){
-int i=0;
-   //	ShowMessage("Client Connected");
-   AnsiString S  = TcpClient1->Socket->ReadLn();
-}
-//_____________________________________________________________
-void __fastcall RaceStartListView::FISconnect(){
-String str1="",strtime="";
-String str="";
-//	TcpClient1 = new TIdTCPClient(pRaceViews/*Application*/);
-	TcpClient1 = new TIdTCPClient(Application);
-	//TcpClient1->OnSend = TcpClient1Send;
-	TcpClient1->Port = 1550;
-	TcpClient1->Host = "live.fisski.com";
-	TcpClient1->OnConnected=OnConnected;
-	TcpClient1->OnWork=OnWork;
-	TcpClient1->OnWorkBegin=WorkBegin;
-	TcpClient1->OnStatus=Status;
-	try{
-		TcpClient1->Connect();
-		if( TcpClient1->Connected() )//Если подключились
-		{
-		TDateTime tdt=Now();
-		DateTimeToString(str1, "ddmmyyyyhhmmss", tdt);
-		DateTimeToString(strtime, "hh:mm:ss", Now());
-//<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00001\" \
-
-str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00001\" \
-timestamp=\""+strtime+"\">\
-<command><clear/></command>\
-</livetiming>";
-		TcpClient1->Socket->WriteLn(str);
-		str="";
-//		str= TcpClient1->Socket->ReadLn();
-
-#if 1
-DateTimeToString(strtime, "hh:mm:ss", Now());
-str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00002\" \
-timestamp=\""+strtime+"\"> \
-<raceinfo>\
-<event>Forerunners raceviews </event>\
-<name>SL</name>\
-<slope />\
-<discipline>SL</discipline>\
-<gender>L</gender>\
-<category>UNI</category>\
-<place>Juzhno-Sakhalinsk</place>\
-<tempunit>C</tempunit><longunit>m</longunit><speedunit>kmh</speedunit>\
-<run no=\"1\">\
-<discipline>SL</discipline>\
-<year>2019</year><month>5</month><day>21</day>\
-<hour>9</hour><minute>29</minute><racedef><inter i=\"1\" />\
-</racedef>\
-</run>\
-</raceinfo>\
-</command></livetiming>";
-//<start /><finish /><height /><length /><gates /><turninggates />\
-
-		TcpClient1->Socket->WriteLn(str);
-		str="";
-		str= TcpClient1->Socket->ReadLn();
-#endif
-
-#if 0
-DateTimeToString(strtime, "hh:mm:ss", Now());
-str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00003\" \
-timestamp=\""+strtime+"\"> \
-<command><activerun no=\"1\" /></command></command></livetiming>";
-		TcpClient1->Socket->WriteLn(str);
-		str="";
-		str= TcpClient1->Socket->ReadLn();
-#endif
-
-#if 0
-DateTimeToString(strtime, "hh:mm:ss.z", Now());
-str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9871\" passwd=\"08101957\" sequence=\"00004\" \
-timestamp=\""+strtime+"\"> \
-<message><text>"+str1+"</text></message> \
-</livetiming>";
-		TcpClient1->Socket->WriteLn(str);
-		str="";
-		str= TcpClient1->Socket->ReadLn();
-#endif
-/*
-
-		str= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00006\"   timestamp=\" 1:38:58.33\">\
-<raceinfo><event>Forerunners </event><name>SL</name><slope /><discipline>SL</discipline><gender>L</gender><category>UNI</category>\
-<place>Juzhno-Sakhalinsk</place><tempunit>C</tempunit><longunit>m</longunit><speedunit>kmh</speedunit><run no=\"1\"><discipline>SL</discipline><start /><finish />\
-<height /><length /><gates /><turninggates />\
-<year>2019</year><month>5</month><day>21</day><hour>1</hour><minute>38</minute>\
-<racedef><inter i=\"1\" /></racedef></run>\
-</raceinfo></livetiming>";
-
-		TcpClient1->Socket->WriteLn(str);str="";
-		str= TcpClient1->Socket->ReadLn();
-
-
-str= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><livetiming codex=\"9871\" passwd=\"08101957\" timestamp=\" 1:38:58.08\"><startlist runno=\"1\">\
-<racer\
-order=\"1\"><bib>1</bib><lastname>MELNIKOVA</lastname><firstname>Polina</firstname><nat>RUS</nat><fiscode>486140</fiscode></racer><racer order=\"2\"><bib>2</bib><lastname>TIMCHENKO</lastname><firstname>Elizaveta</firstname><nat>RUS</nat><fiscode>485850</fiscode></racer></startlist></livetiming>";
-
-		TcpClient1->Socket->WriteLn(str);str="";
-///		str= TcpClient1->Socket->ReadLn();
-		str=str;
-
-*/
-/*
-str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\"9872\" passwd=\"08101957\" sequence=\"00008\" timesamp=\"20:06:41\">\
-<message><text>"+str1+"</text></message></livetiming>";
-		TcpClient1->Socket->WriteLn(str);
-		str= TcpClient1->Socket->ReadLn();
-*/
-
-
-
-
-
-
-
-		TcpClient1->Disconnect();
-		delete TcpClient1;TcpClient1=NULL;
-		}
-	  }
-	catch(...){
-	}
-//	"08101957" 	"sportstiming@mail.ru"
-
-}
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::form_resize(TObject *Sender){
 int ichecklines=checkLines(),
-//	iracersN=RL->getRacersN(),
-	iracersN=this->getRacersN(),
+//	iracersN=this->getRacersN(),
+	iracersN=getRacersN(),
 	iformH=pRaceViews->Height,
 	iracerH=iracersN*18,
 	iDelta=panel3->Top+iracerH;
@@ -249,7 +98,6 @@ String astr;
 	pRaceViews->OnResize=form_resize;
 	Locations(pRaceViews);
 	pRaceViews->Show();
-	FISconnect();
 }
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::mouse_down(TObject *Sender, TMouseButton Button,

@@ -7,18 +7,12 @@
 #include "UltraSki.h"
 #include "Racer.h"
 #include "Competition.h"
-
-
-#include <IdBaseComponent.hpp>
-#include <IdComponent.hpp>
-#include <IdTCPClient.hpp>
-#include <IdTCPConnection.hpp>
-
-//TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 
 class RaceStartListView:public RaceList{
 	private:
+
+//------------------------------------------------------------------------------
 //______________________________________________________________________________
 	struct _viewSL{
 		TLabel *SN;
@@ -40,7 +34,6 @@ class RaceStartListView:public RaceList{
 			SN->Top=(i>0?i-1:1)*SN->Height;
 			SN->Left=1;
 			SN->Alignment=taCenter;
-//			str=i>0?rL->getRacer(i,0).c_str():"¹";
 			str=i>0?rL->getRacer(i,0):"¹";
 			SN->Caption=str;
 			SN->OnMouseDown = lbl->OnMouseDown;
@@ -82,13 +75,10 @@ class RaceStartListView:public RaceList{
 		}
 	};
 //______________________________________________________________________________
-	   ///	RaceList *RL;
 		vector < _viewSL > viewSL;
 		TForm *pRaceViews;
 		TPanel *panel1,*panel2,*panel3;
 		TLabel *lbl;
-
-		TIdTCPClient *TcpClient1;
 
 		int icurrRacer=1,ilastcurrRacer=-1;
 		int iTopLine=1,iBottomLine;
@@ -96,10 +86,6 @@ class RaceStartListView:public RaceList{
 //______________________________________________________________________________
 	public:
 		RaceStartListView():pRaceViews(NULL){}
-/*		RaceStartListView(RaceList *rl):pRaceViews(NULL){
-			RL=rl;
-		}
-*/
 		void __fastcall freevcls(_viewSL vsl){
 			if(vsl.SN!=NULL){
 				delete vsl.SN;vsl.SN=NULL;
@@ -125,8 +111,6 @@ class RaceStartListView:public RaceList{
 			if(lbl!=NULL){
 				delete lbl;lbl=NULL;
 			}
-			if(TcpClient1!=NULL)
-				delete TcpClient1;
 			if(pRaceViews!=NULL){
 				delete pRaceViews;pRaceViews=NULL;
 			}
@@ -140,18 +124,10 @@ class RaceStartListView:public RaceList{
 		void __fastcall Locations(TForm* form);
 		void __fastcall setRacersColor(_viewSL vsl);
 		int  __fastcall checkLines(void);
-
-
-		void __fastcall FISconnect();
-		void __fastcall OnConnected(TObject *Sender);
-		void __fastcall OnWork(TObject *ASender, TWorkMode AWorkMode, __int64 AWorkCount);
-		void __fastcall WorkBegin(TObject *ASender, TWorkMode AWorkMode,__int64 AWorkCountMax);
-		void __fastcall Status(TObject *ASender, const TIdStatus AStatus,const UnicodeString AStatusText);
 };
 //---------------------------------------------------------------------------
 class RaceResultsView:public RaceList{
 	private:
-	///	TfUltraSki *fRaceResultsView;
 		RaceResults *RR;
 	public:
 		RaceResultsView(){}

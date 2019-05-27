@@ -70,85 +70,9 @@ struct RaceInfo{
 } raceinfo;
 //______________________________________________________________________________
 //_______________________________________________________________________________
-String FISstartLIST(String sCODEX,String sPASSWORD,String sRun,string filename){
-
-String str,strtime;
-RaceList rcl;
-	rcl.LoadFromCSV(filename);
-	rcl.setCODEX(sCODEX);
-	int rSize=rcl.getRacersN();
-
-	AnsiString work="";
-	std::string fa,im,fc,fio,yob;
-	string  TOTAL,item,i1,i2,i3,i4,i5,i6,i7,i8;
-	DateTimeToString(strtime, "hh:mm:ss", Now());
-	 i1="<?xml version=\"1.0\" encoding=\"UTF-8\"?><livetiming codex=\"";
-	 std::string i22(AnsiString(sCODEX).c_str());
-	 i3="\" passwd=\"";
-	 std::string i23(AnsiString(sPASSWORD).c_str());
-	 #if 0
-	 i4="\" sequence=\"";
-	 std::string i24(AnsiString(sSEQUENCE).c_str());
-	 #else
-	 #endif
-	 i5="\" timestamp=\"";
-	 std::string i25(AnsiString(strtime).c_str());
-	 i6="\"><startlist runno=\"1\">";
-
-	 #if 0
-	TOTAL=i1+i22+i3+i23+i4+i24+i5+i25+i6;//sCODEX;//+"\" passwd=\""+sPASSWORD+"\" sequence=\"" + sSEQUENCE + "\" timestamp=\""+strtime+"\">";
-	 #else
-	TOTAL=i1+i22+i3+i23+i5+i25+i6;//sCODEX;//+"\" passwd=\""+sPASSWORD+"\" sequence=\"" + sSEQUENCE + "\" timestamp=\""+strtime+"\">";
-	 #endif
-	for (auto iirs = 1;iirs<rSize;++iirs){
-		fc=rcl.getRacer(iirs,1);
-		std::string str1 =rcl.getRacer(iirs,8);
-		std::size_t pos = str1.find(" ");
-		 std::string str2 = str1.substr (0,pos);
-		 std::string str3 = str1.substr (pos+1);
-		 i1="<racer order=\"";
-		 i2= std::to_string(iirs);
-		 i3="\"><bib>";
-		 i4="</bib><lastname>";
-		 i5=str2.c_str();
-		 i6="</lastname><firstname>";
-		 i7=str3.c_str();
-		 i8="</firstname><nat>ITA</nat><fiscode>"+fc+"</fiscode></racer>";
-///		str=+work+"\"><bib>"+work+"</bib><lastname>" + str2.c_str() + "</lastname><firstname>" + str3.c_str() + "</firstname><nat>RUS</nat><fiscode"+fc+"</fiscode></racer>";
-		im=im;
-		item=i1+i2+i3+i2+i4+i5+i6+i7+i8;
-		TOTAL+=item;
-	}
-	i1="</startlist></livetiming>";
-	TOTAL+=i1;
 
 
-/*
-DateTimeToString(strtime, "hh:mm:ss", Now());
-	DateTimeToString(strtime, "hh:mm:ss", Now());
-	str="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-<livetiming codex=\""+sCODEX+"\" passwd=\""+sPASSWORD+"\" sequence=\"" + sSEQUENCE + "\" timestamp=\""+strtime+"\">\
-<message><text>"+strtime+"</text></message></livetiming>";
-*/
-	str=TOTAL.c_str();
-return str;
-}
-//---------------------------------------------------------------------------
-//---------------------------------------------------------------------------
-void __fastcall TfUltraSki::FormCreate(TObject *Sender)
-{
-		if( !LiveFIS->Connected() )
-			LiveFIS->Connect();
-}
-//---------------------------------------------------------------------------
-void __fastcall TfUltraSki::lMessage1Click(TObject *Sender)
-{
-String str;
-	str=FISstartLIST("9872","08101957","2","C:\\test\\RPT_Start_911.csv");
-	LiveFIS->IOHandler->WriteLn(str);
-	str="";
- ////	str= LiveFIS->IOHandler->ReadLn();
-	lMessage1Response->Caption=str;
-}
-//---------------------------------------------------------------------------
+
+
+
 

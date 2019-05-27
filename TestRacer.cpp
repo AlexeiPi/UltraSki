@@ -85,6 +85,9 @@ String s1="W",s11="Ж",s2="M",s21="М",ss;
 void __fastcall TTestPerson::TestgetAge() {
 	// String Person::getAge(void)const
 	String udiag,dobset("08.07.2008"),dobget,dobcheck("10");
+	r1->setyob(1957);
+	dobget=r1->getYoB();
+    dobget=r1->getYage();
 	r1->setDoB(dobset);
 	dobget = r1->getAge();//String Person::getAge(void)const
 	udiag="Требуется -> "+dobcheck+" - получено -> "+dobget;
