@@ -19,6 +19,7 @@
 #include <IdTCPConnection.hpp>
 #include <Data.DB.hpp>
 #include <Data.Win.ADODB.hpp>
+#include <Vcl.Dialogs.hpp>
 
 //---------------------------------------------------------------------------
 class TfUltraSki : public TForm
@@ -33,6 +34,9 @@ __published:	// IDE-managed Components
 	TPanel *Panel1;
 	TLabel *Label1;
 	TEdit *Edit1;
+	TFileOpenDialog *FileOpenDialog1;
+	TRadioGroup *RadioGroup1;
+	TRadioButton *RadioButton2;
 	void __fastcall Timer1Timer(TObject *Sender);
 
 private:	// User declarations

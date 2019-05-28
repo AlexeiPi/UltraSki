@@ -4615,12 +4615,15 @@ object fUltraSki: TfUltraSki
     Width = 31
     Height = 13
     Caption = 'Label1'
+    Color = clLime
+    ParentColor = False
+    Transparent = False
   end
   object Panel1: TPanel
-    Left = 141
-    Top = 98
+    Left = 8
+    Top = 74
     Width = 225
-    Height = 137
+    Height = 87
     Caption = 'Panel1'
     Color = clLime
     FullRepaint = False
@@ -4634,6 +4637,22 @@ object fUltraSki: TfUltraSki
     Height = 21
     TabOrder = 1
     Text = 'Edit1'
+  end
+  object RadioGroup1: TRadioGroup
+    Left = 239
+    Top = 151
+    Width = 185
+    Height = 63
+    Caption = 'RadioGroup1'
+    TabOrder = 2
+  end
+  object RadioButton2: TRadioButton
+    Left = 288
+    Top = 104
+    Width = 105
+    Height = 25
+    Caption = 'RadioButton2'
+    TabOrder = 3
   end
   object Timer1: TTimer
     Interval = 500
@@ -4667,5 +4686,12 @@ object fUltraSki: TfUltraSki
   object ADOConnection1: TADOConnection
     Left = 240
     Top = 16
+  end
+  object FileOpenDialog1: TFileOpenDialog
+    FavoriteLinks = <>
+    FileTypes = <>
+    Options = []
+    Left = 24
+    Top = 256
   end
 end

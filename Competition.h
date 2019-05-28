@@ -15,41 +15,39 @@
 #include <iostream>
 
 #include <Xml.XMLDoc.hpp>
+#include "IniFiles.hpp"
+
+TIniFile *IniUltraAlpSki;//ini file
+
+
 
 using namespace std;
 class RaceList;
 class RaceResults;
-
+enum {SNHeight=18,SNWidth=30,CodexWidth=90};
 //---------------------------------------------------------------------------
 class Races{
 	private:
-		struct RacePack{
-			String Codex;
-			String path;
-		};
-		vector < RacePack > RacesList;
-		String DefaultPath;
-
+		int number_Of_competitions;
 //=============================================================================
 		struct _viewRL{
 			TLabel *SN;
 			TLabel *RCodex;
-
 			_viewRL(TPanel*p,int i,Races *r,TLabel *lbl){//constructor
 				AnsiString str;
 				SN=new TLabel(p);
 				SN->Name="SN"+AnsiString(i);
 				SN->Parent = p;
 				SN->AutoSize=false;
+				SN->Alignment=taCenter;
 				SN->Transparent=false;
 				SN->Tag=i;
 				SN->Color=clWhite;
 				SN->Font->Size=10;
-				SN->Width=30;
-				SN->Height=18;
-				SN->Top=i*SN->Height;
+				SN->Width=SNWidth;
+				SN->Height=SNHeight;
+				SN->Top=i*SNHeight;
 				SN->Left=1;
-				SN->Alignment=taCenter;
 				str=i+1;
 				SN->Caption=str;
 				SN->OnMouseDown = lbl->OnMouseDown;
@@ -63,8 +61,8 @@ class Races{
 				RCodex->Tag=SN->Tag;
 				RCodex->Color=SN->Color;
 				RCodex->Font->Size=SN->Font->Size;
-				RCodex->Width=90;
-				RCodex->Height=SN->Height;
+				RCodex->Width=CodexWidth;
+				RCodex->Height=SNHeight;
 				RCodex->Top=SN->Top;
 				RCodex->Left=SN->Left+SN->Width;
 				RCodex->Alignment=taLeftJustify;
@@ -76,50 +74,58 @@ class Races{
 			}
 		};
 		vector < _viewRL > viewSL;
-		TForm *pRaceViews;
+		TForm *pRaceViews,*pRaceInfo,*pRaceStartList;
 		TEdit *eCompetition;
+///        String sLastRegistered;
 
 
 		TPanel *panel1,*panel2,*panel3;
 		TLabel *lbl;
+		TLabel *lFISCodex,*lDate,*lSLiportN,*lSLiport,*lID,*lInfoName;
+		TEdit *eFISCodex,*eDate,*eInfoName;
+		TOpenDialog *StartListFileDialog;
+        TRadioButton *rb1,*rb2,*rb3,*rb4,*rb5,*rb6,*rb7;
+
 
 		int icurrRace=1,ilastcurrRace=-1;
 		int iTopLine=1,iBottomLine;
 		int iActiveLine=1;
 
 //=============================================================================
-
-
-
+		struct RacePack{
+			String Codex;
+			String path;
+		};
+		vector < RacePack > RacesList;
+		String DefaultPath;
+		String ApplicationPath;
+//-----------------------------------------------------------------------------
 	public:
 		Races(){
-			DefaultPath=ExtractFilePath(Application->ExeName);
-			pRaceViews=new TForm(Application);
-			pRaceViews->Caption="";
-			pRaceViews->KeyPreview=true;
+			String str="";
+				DefaultPath=ExtractFilePath(Application->ExeName);
+				pRaceViews=new TForm(Application);
+				pRaceViews->Caption="";
+				pRaceViews->KeyPreview=true;
+				pRaceInfo=new TForm(Application);
+				pRaceInfo->Caption="";
+				pRaceInfo->KeyPreview=true;
+				pRaceStartList=new TForm(Application);
+				pRaceStartList->Caption="";
+				pRaceStartList->KeyPreview=true;
+
+				StartListFileDialog=new TOpenDialog(pRaceStartList);
+
+				eCompetition=NULL;
+				lbl=NULL;
+				lInfoName=NULL;lID=NULL;lSLiport=NULL;lSLiportN=NULL;
+				panel3=NULL;panel2=NULL;panel1=NULL;
+				ApplicationPath=Application->ExeName;
+				ApplicationPath=StringReplace(ApplicationPath,".\\","",TReplaceFlags()<<rfReplaceAll<<rfIgnoreCase);
+				ApplicationPath=ChangeFileExt( ApplicationPath, ".INI" );
 		};
 		~Races(){delete pRaceViews;};
-		void LoadFromPath(String path){
-			RacePack rp;
-			TSearchRec sr;
-			String spath=path+"*.usr";
-			RacesList.clear();
-			if (FindFirst(spath, faAnyFile | faDirectory, sr) == 0){
-				rp.path=path+sr.Name;
-				int  ipos=sr.Name.Pos(".usr");
-				rp.Codex=sr.Name.SubString(1,ipos-1);
-				RacesList.push_back(rp);
-
-				while (FindNext(sr) == 0){
-					rp.path=path+sr.Name;
-					ipos=sr.Name.Pos(".usr");
-					rp.Codex=sr.Name.SubString(1,ipos-1);
-					RacesList.push_back(rp);
-				}
-			}
-
-			FindClose(sr);
-		};
+		void LoadFromPath(String path);
 		int getRacesN(){return RacesList.size();};
 //------------------------------------------------------------------------------
 		void setDefaultPath(String path){DefaultPath=path;};
@@ -128,15 +134,27 @@ class Races{
 		RacePack getRace(int i){return RacesList[i];};
 
 		void __fastcall showView();
+		void __fastcall showInfo();
+		void __fastcall showStartList();
+
 		void __fastcall Locations(TForm* form);
+		void __fastcall LocationsInfo(TForm* form);
+		void __fastcall LocationsStartList(TForm* form);
 
 		void __fastcall form_key_down(TObject *Sender, WORD &Key, TShiftState Shift);
+		void __fastcall form_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift);
+		void __fastcall form_key_down_startlist(TObject *Sender, WORD &Key, TShiftState Shift);
+
+
 		void __fastcall form_resize(TObject *Sender);
 		void __fastcall mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
+		void __fastcall radio_click(TObject *Sender);
 		void __fastcall mouse_DblClick(TObject *Sender);
 
 		int __fastcall checkLines(void);
 		void __fastcall setRacersColor(_viewRL vsl);
+		void __fastcall FillRaceDescription(void);
+		void __fastcall SaveInfo2INI(void);
 };
 //______________________________________________________________________________
 #if 1

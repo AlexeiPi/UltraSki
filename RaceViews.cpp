@@ -102,6 +102,8 @@ String astr;
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::mouse_down(TObject *Sender, TMouseButton Button,
   TShiftState Shift, int X, int Y){
+  String sname;
+	///sname=dynamic_cast<TLabel*>(Sender)->Name;
 	ilastcurrRacer=icurrRacer;
 	icurrRacer=dynamic_cast<TLabel*>(Sender)->Tag;
 
@@ -130,7 +132,7 @@ int iN;
 
 	panel1= new TPanel(form);
 	panel1->Parent = form;
-	panel1->Name="P1";
+	panel1->Name="P1"+form->Name;
 	panel1->Font->Size=12;
 	panel1->Alignment=taLeftJustify;
 	panel1->VerticalAlignment=taAlignTop;
@@ -144,7 +146,7 @@ int iN;
 
 	panel2= new TPanel(panel1);
 	panel2->Parent = panel1;
-	panel2->Name="P2";
+	panel2->Name="P2"+form->Name;
 	panel2->Font->Size=12;
 	panel2->Alignment=taLeftJustify;
 	panel2->VerticalAlignment=taAlignTop;
@@ -156,7 +158,7 @@ int iN;
 
 	panel3= new TPanel(panel2);
 	panel3->Parent = panel2;
-	panel3->Name="P3";
+	panel3->Name="P3"+form->Name;
 	panel3->Font->Size=12;
 	panel3->Alignment=taLeftJustify;
 	panel3->VerticalAlignment=taAlignTop;

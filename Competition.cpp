@@ -42,7 +42,7 @@ String str,strTIME;
 
 	String sDISCIPLINE=Discipline.c_str();
 	String sCATEGORY=Category.c_str();
-	String sRUNNO=run;//.c_str();
+	String sRUNNO=run;
 
 	String sEVENTname=Eventname.c_str();
 	String sSLOPE=Slope.c_str();
@@ -350,7 +350,7 @@ String Str;
 		rrs=Racers[0].size();
 		AnsiString work="",w1;
 		for (auto iirs = 0;iirs<rrs;++iirs){
-			w1=Racers[0][iirs]/*.c_str()*/;
+			w1=Racers[0][iirs];
 			work+=w1+";";
 		}
 		nodNew->SetAttribute("TitleNames", work);
@@ -360,10 +360,10 @@ String Str;
 			rrs=Racers[irs].size();
 			for (auto iirs = 0;iirs<rrs;++iirs){
 				Str=Racers[irs][iirs];
-				nodNew->SetAttribute(Racers[0][iirs]/*.c_str()*/, Racers[irs][iirs]/*.c_str()*/);
+				nodNew->SetAttribute(Racers[0][iirs], Racers[irs][iirs]);
 			}
 		}
-		racelistXML->SaveToFile(filename/*.c_str()*/);
+		racelistXML->SaveToFile(filename);
   }
 	__finally {
 		FreeAndNil(&racelistXML); delete racelistXML;
@@ -428,14 +428,50 @@ IXMLNode *nodElement,*titleElement;
 void __fastcall Races::showView(){
 TDateTime tdt=Now();
 String astr;
+
 	DateTimeToString(astr, "ddmmyyyyhhmmss", tdt);
 	pRaceViews->Name="RacesForm"+astr;
 	pRaceViews->Caption="";//pRaceViews->Name;
 	pRaceViews->DoubleBuffered=true;
 	pRaceViews->OnKeyDown=form_key_down;
 	pRaceViews->OnResize=form_resize;
+
 	Locations(pRaceViews);
 	pRaceViews->Show();
+	pRaceViews->Top=0;
+	pRaceViews->Left=0;
+}
+//------------------------------------------------------------------------------
+void __fastcall Races::showInfo(){
+TDateTime tdt=Now();
+String astr;
+
+	DateTimeToString(astr, "ddmmyyyyhhmmss", tdt);
+	pRaceInfo->Name="RacesINFO"+astr;
+	pRaceInfo->Caption=pRaceInfo->Name;
+	pRaceInfo->DoubleBuffered=true;
+	pRaceInfo->OnKeyDown=form_key_down_info;
+	pRaceInfo->OnResize=form_resize;
+
+	LocationsInfo(pRaceInfo);
+	pRaceInfo->Show();
+	pRaceInfo->Top=pRaceViews->Top;
+	pRaceInfo->Left=pRaceViews->Top+pRaceViews->Width;
+}
+//------------------------------------------------------------------------------
+void __fastcall Races::showStartList(){
+TDateTime tdt=Now();
+String astr;
+
+	DateTimeToString(astr, "ddmmyyyyhhmmss", tdt);
+	pRaceStartList->Name="RacesSL"+astr;
+	pRaceStartList->Caption=pRaceStartList->Name;
+	pRaceStartList->DoubleBuffered=true;
+	pRaceStartList->OnKeyDown=form_key_down_startlist;
+	pRaceStartList->OnResize=form_resize;
+
+	LocationsStartList(pRaceStartList);
+	pRaceStartList->Show();
 }
 //------------------------------------------------------------------------------
 void __fastcall Races::Locations(TForm* form){
@@ -445,12 +481,13 @@ int iN;
 
 	if(!viewSL.empty()){
 		viewSL.clear();
-		delete eCompetition;
-		delete lbl;
-		delete panel3;
-		delete panel2;
-		delete panel1;
+
 	}
+	if(eCompetition!=NULL)	delete eCompetition,eCompetition=NULL;
+	if(lbl!=NULL)	delete lbl,lbl=NULL;
+	if(panel3!=NULL)	delete panel3,panel3=NULL;
+	if(panel2!=NULL)	delete panel2,panel2=NULL;
+	if(panel1!=NULL)	delete panel1,panel1=NULL;
 	iN=this->getRacesN();
 
 	panel1= new TPanel(form);
@@ -473,21 +510,37 @@ int iN;
 	panel2->Font->Size=12;
 	panel2->Alignment=taLeftJustify;
 	panel2->VerticalAlignment=taAlignTop;
-	panel2->Top=18;
+	panel2->Top=SNHeight;
 	panel2->Left=2;
 	panel2->Width=panel1->Width-panel2->Left;
 	panel2->Visible=true;
 	panel2->Caption="";
 
+	lbl= new TLabel(panel2);
+	lbl->Parent = panel2;
+	lbl->Name="Label"+pRaceViews->Name;
+	lbl->AutoSize=false;
+	lbl->Alignment=taCenter;
+	lbl->Transparent=false;
+	lbl->Top=SNHeight;
+	lbl->Left=3;
+	lbl->Width=SNWidth;
+	lbl->Visible=true;
+	lbl->Caption="+";
+
+	lbl->OnMouseDown=mouse_down;
+	lbl->OnDblClick=mouse_DblClick;
+
 	eCompetition=new TEdit(panel2);
 	eCompetition->Parent = panel2;
 	eCompetition->Name="P2";
 	eCompetition->Font->Size=12;
-	eCompetition->Top=18;
+	eCompetition->Top=SNHeight;
 	eCompetition->Left=34;
-	eCompetition->Width=90;
+	eCompetition->Width=CodexWidth;
 	eCompetition->Visible=true;
-	eCompetition->Text="";
+	str=Now().FormatString("yyyymmdd01");
+	eCompetition->Text=str;
 
 
 	panel3= new TPanel(panel2);
@@ -502,11 +555,18 @@ int iN;
 	panel3->Visible=true;
 	panel3->Caption="";
 
-	lbl= new TLabel(pRaceViews);
-	lbl->Name="Label"+pRaceViews->Name;
-	lbl->OnMouseDown=mouse_down;
-	lbl->OnDblClick=mouse_DblClick;
 
+	IniUltraAlpSki=new TIniFile(ApplicationPath);
+	iN=IniUltraAlpSki->ReadInteger("Competitions","Number",0);
+	RacePack rp;
+	RacesList.clear();
+	for (int ii = 1; ii <= iN; ii++) {
+		String astr=IniUltraAlpSki->ReadString("Competition "+String(ii),"ID",0);
+		rp.path="";
+		rp.Codex=astr;
+		RacesList.push_back(rp);
+	}
+	delete  IniUltraAlpSki;IniUltraAlpSki=NULL;
 
 	viewSL.reserve(iN);
 	auto sz= viewSL.capacity();
@@ -517,8 +577,7 @@ int iN;
 			sz=viewSL.capacity();
 		}
 	}
-	///String *sss=(String*)viewSL.data();
-	panel3->Height=48+(iN+1)*vsl->SN->Height;
+	panel3->Height=48+(iN+1)*18;
 	panel2->Height=panel3->Height;
 	panel1->Height=panel2->Height+2;
 	panel3->Color=clGradientActiveCaption;
@@ -527,7 +586,339 @@ int iN;
 	panel1->ShowCaption=true;panel1->Caption="Регистрация";panel1->Font->Size=10;
 	panel2->ShowCaption=true;panel2->Caption="соревнований:";panel2->Font->Size=panel1->Font->Size;
 	panel3->ShowCaption=true;panel3->Caption="3333333";panel3->Font->Size=panel1->Font->Size;
-	panel3->Width=viewSL[0].SN->Width+viewSL[0].RCodex->Width+3*2;
+	panel3->Width=SNWidth+CodexWidth+3*2;
+	panel2->Width=panel3->Width+2*panel3->Left;
+	panel1->Width=panel2->Width+2*panel2->Left;
+	pRaceViews->Width=panel1->Width+2*panel1->Left+15;
+	pRaceViews->Height=panel1->Height+40;
+	pRaceViews->Left=0;
+	pRaceViews->Top=0;
+
+	TBorderIcons tempBI = pRaceViews->BorderIcons;
+//	tempBI >> biSystemMenu;
+	tempBI >> biMinimize;
+	tempBI >> biMaximize;
+	tempBI >> biHelp;
+	pRaceViews->BorderIcons = tempBI;
+
+ /*
+	tln = new TShape(stop_panel);
+	tln->Parent = stop_panel;
+	tln->Top= stop_panel_time_label->Top+stop_panel_time_label->Height;
+	tln->Left= 1;
+	tln->Height= 1;
+	tln->Width= stop_panel->Width;
+	tln->Visible=true;
+
+
+	image=new TImage(stop_panel);
+	image->Parent = stop_panel;
+	image->Height=40;
+	image->Top=3;
+	image->Left=3;
+	image->Width=40;
+	image->Picture=F366->Image1->Picture;
+*/
+
+}//end of proc
+//------------------------------------------------------------------------------
+void __fastcall Races::LocationsInfo(TForm* form){
+String str;
+_viewRL *vsl;
+int iN;
+	if(lID!=NULL)return;
+	lID=new TLabel(form);
+	lID->Parent = form;
+	lID->Name="lID";
+	lID->Font->Size=10;
+	lID->Top=6;
+	lID->Left=3;
+	lID->Width=CodexWidth;
+	lID->Transparent=false;
+	lID->Visible=true;
+	lID->Caption="ID соревнования";
+	lID->OnMouseDown=mouse_down;
+
+
+	rb1=new TRadioButton(form);
+	rb1->Parent = form;
+	rb1->Name="rb1";
+	rb1->Top=6;
+	rb1->Left=lID->Left+lID->Width+20;
+	rb1->Visible=true;
+	rb1->Caption="DH";
+	rb1->Tag=1;
+	rb1->OnClick=radio_click;
+	rb2=new TRadioButton(form);
+	rb2->Parent = form;
+	rb2->Name="rb2";
+	rb2->Top=6;
+	rb2->Left=rb1->Left+40;
+	rb2->Visible=true;
+	rb2->Caption="SL";
+	rb2->Tag=2;
+	rb2->OnClick=radio_click;
+	rb3=new TRadioButton(form);
+	rb3->Parent = form;
+	rb3->Name="rb3";
+	rb3->Top=6;
+	rb3->Left=rb2->Left+40;
+	rb3->Visible=true;
+	rb3->Caption="SG";
+	rb3->Tag=3;
+	rb3->OnClick=radio_click;
+	rb4=new TRadioButton(form);
+	rb4->Parent = form;
+	rb4->Name="rb4";
+	rb4->Top=6;
+	rb4->Left=rb3->Left+40;
+	rb4->Visible=true;
+	rb4->Caption="GS";
+	rb4->Tag=4;
+	rb4->OnClick=radio_click;
+/*
+KOS KO Slalom
+KOG KO Giant Slalom
+PGS Parallel Giant Slalom
+PSL Parallel Slalom
+*/
+	rb5=new TRadioButton(form);
+	rb5->Parent = form;
+	rb5->Name="rb5";
+	rb5->Top=6;
+	rb5->Left=rb4->Left+40;
+	rb5->Visible=true;
+	rb5->Caption="AC";
+	rb5->Tag=5;
+	rb5->OnClick=radio_click;
+	rb6=new TRadioButton(form);
+	rb6->Parent = form;
+	rb6->Name="rb6";
+	rb6->Top=6;
+	rb6->Left=rb5->Left+40;
+	rb6->Visible=true;
+	rb6->Caption="TE";
+	rb6->Tag=6;
+	rb6->OnClick=radio_click;
+
+
+	lDate= new TLabel(form);
+	lDate->Parent = form;
+	lDate->Name="LDate"+form->Name;
+	lDate->AutoSize=true;
+	lDate->Alignment=taCenter;
+	lDate->Transparent=false;
+	lDate->Top=lID->Top+lID->Height+5;
+	lDate->Left=lID->Left;
+	lDate->Visible=true;
+	lDate->Caption="Дата соревнования";
+
+
+	eDate=new TEdit(form);
+	eDate->Parent = form;
+	eDate->Name="eDate"+form->Name;
+	eDate->Font->Size=10;
+	eDate->Top=lDate->Top+lDate->Height+2;
+	eDate->Left=lID->Left;
+	eDate->Width=CodexWidth;
+	eDate->Visible=true;
+	eDate->Text="";
+
+	lFISCodex= new TLabel(form);
+	lFISCodex->Parent = form;
+	lFISCodex->Name="LFISCodex"+form->Name;
+	lFISCodex->AutoSize=true;
+	lFISCodex->Alignment=taCenter;
+	lFISCodex->Transparent=false;
+	lFISCodex->Top=eDate->Top+eDate->Height+2;
+	lFISCodex->Left=lID->Left;
+	lFISCodex->Visible=true;
+	lFISCodex->Caption="ФИС кодекс";
+
+
+	eFISCodex=new TEdit(form);
+	eFISCodex->Parent = form;
+	eFISCodex->Name="eFISCodex"+form->Name;
+	eFISCodex->Font->Size=10;
+	eFISCodex->Top=lFISCodex->Top+lFISCodex->Height+2;
+	eFISCodex->Left=lID->Left;
+	eFISCodex->Width=90;
+	eFISCodex->Visible=true;
+	eFISCodex->Text="";
+
+	lInfoName= new TLabel(form);
+	lInfoName->Parent = form;
+	lInfoName->Name="lInfoName"+form->Name;
+	lInfoName->AutoSize=true;
+	lInfoName->Alignment=taCenter;
+	lInfoName->Transparent=false;
+	lInfoName->Top=eFISCodex->Top+eFISCodex->Height+5;
+	lInfoName->Left=lID->Left;
+	lInfoName->Visible=true;
+	lInfoName->Caption="Название соревнования";
+
+	eInfoName=new TEdit(form);
+	eInfoName->Parent = form;
+	eInfoName->Name="eInfoName"+form->Name;
+	eInfoName->Font->Size=10;
+	eInfoName->Top=lInfoName->Top+lInfoName->Height+2;
+	eInfoName->Left=lID->Left;
+	eInfoName->Width=500;
+	eInfoName->Visible=true;
+	eInfoName->Text="";
+
+	lSLiport=new TLabel(form);
+	lSLiport->Parent = form;
+	lSLiport->Name="lSLimport";
+	lSLiport->AutoSize=true;
+	lSLiport->Font->Size=10;
+	lSLiport->Top=eInfoName->Top+eInfoName->Height+5;
+	lSLiport->Left=eInfoName->Left;
+	lSLiport->Transparent=false;
+	lSLiport->Color=clLime;
+	lSLiport->Visible=true;
+	lSLiport->Caption="Импорт стартового списка ";
+	lSLiport->OnMouseDown=mouse_down;
+
+	lSLiportN=new TLabel(form);
+	lSLiportN->Parent = form;
+	lSLiportN->Name="lSLimportN";
+	lSLiport->AutoSize=false;
+	lSLiportN->Font->Size=10;
+	lSLiportN->Top=lSLiport->Top+lSLiport->Height+2;
+	lSLiportN->Left=lSLiport->Left;
+	lSLiportN->Width=eInfoName->Width;
+	lSLiportN->Transparent=false;
+	lSLiportN->Visible=true;
+	lSLiportN->Caption="";
+
+	form->Width=eInfoName->Left+eInfoName->Width+20;
+	form->Height=lSLiportN->Top+lSLiportN->Height+45;
+
+	TBorderIcons tempBI = form->BorderIcons;
+//	tempBI >> biSystemMenu;
+	tempBI >> biMinimize;
+	tempBI >> biMaximize;
+	tempBI >> biHelp;
+	form->BorderIcons = tempBI;
+}//end of proc
+//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void __fastcall Races::LocationsStartList(TForm* form){
+String str;
+_viewRL *vsl;
+int iN;
+form->Width=600;
+#if 0
+	if(!viewSL.empty()){
+		viewSL.clear();
+
+	}
+	if(eCompetition!=NULL)	delete eCompetition,eCompetition=NULL;
+	if(lbl!=NULL)	delete lbl,lbl=NULL;
+	if(panel3!=NULL)	delete panel3,panel3=NULL;
+	if(panel2!=NULL)	delete panel2,panel2=NULL;
+	if(panel1!=NULL)	delete panel1,panel1=NULL;
+	iN=this->getRacesN();
+
+	panel1= new TPanel(form);
+	panel1->Parent = form;
+	panel1->Name="P1"+form->Name;
+	panel1->Font->Size=12;
+	panel1->Alignment=taLeftJustify;
+	panel1->VerticalAlignment=taAlignTop;
+	panel1->Top=3;
+	panel1->Left=2;
+	panel1->Visible=true;
+
+	str.sprintf(L"Races");
+	panel1->Caption=str;
+
+	panel2= new TPanel(panel1);
+	panel2->Parent = panel1;
+	panel2->Name="P2"+form->Name;
+	panel2->Font->Size=12;
+	panel2->Alignment=taLeftJustify;
+	panel2->VerticalAlignment=taAlignTop;
+	panel2->Top=SNHeight;
+	panel2->Left=2;
+	panel2->Visible=true;
+	panel2->Caption="";
+
+	lbl= new TLabel(panel2);
+	lbl->Parent = panel2;
+	lbl->Name="Label"+form->Name;
+	lbl->AutoSize=false;
+	lbl->Alignment=taCenter;
+	lbl->Transparent=false;
+	lbl->Top=SNHeight;
+	lbl->Left=3;
+	lbl->Width=SNWidth;
+	lbl->Visible=true;
+	lbl->Caption="+";
+
+	lbl->OnMouseDown=mouse_down;
+	lbl->OnDblClick=mouse_DblClick;
+
+	eCompetition=new TEdit(panel2);
+	eCompetition->Parent = panel2;
+	eCompetition->Name="P2"+form->Name;
+	eCompetition->Font->Size=12;
+	eCompetition->Top=SNHeight;
+	eCompetition->Left=34;
+	eCompetition->Width=CodexWidth;
+	eCompetition->Visible=true;
+	str=Now().FormatString("yyyymmdd01");
+	eCompetition->Text=str;
+
+
+	panel3= new TPanel(panel2);
+	panel3->Parent = panel2;
+	panel3->Name="P3"+form->Name;
+	panel3->Font->Size=12;
+	panel3->Alignment=taLeftJustify;
+	panel3->VerticalAlignment=taAlignTop;
+	panel3->Top=18*2+8;
+	panel3->Left=3;
+	panel3->Width=panel2->Width-panel3->Left;
+	panel3->Visible=true;
+	panel3->Caption="";
+
+
+	String astr=Application->ExeName;
+	astr=StringReplace(astr,".\\","",TReplaceFlags()<<rfReplaceAll<<rfIgnoreCase);
+	astr=ChangeFileExt( astr, ".INI" );
+	IniUltraAlpSki=new TIniFile(astr);
+	iN=IniUltraAlpSki->ReadInteger("Competitions","Number",0);
+	RacePack rp;
+	RacesList.clear();
+	for (int ii = 1; ii <= iN; ii++) {
+		astr=IniUltraAlpSki->ReadString("Competition "+String(ii),"ID",0);
+		rp.path="";
+		rp.Codex=astr;
+		RacesList.push_back(rp);
+	}
+	delete  IniUltraAlpSki;
+
+	viewSL.reserve(iN);
+	auto sz= viewSL.capacity();
+	for(int i=0;i<iN;++i){
+		vsl=new _viewRL(panel3,i,this,lbl);
+		viewSL.push_back(*vsl);
+		if(sz!=viewSL.capacity()){
+			sz=viewSL.capacity();
+		}
+	}
+	panel3->Height=48+(iN+1)*18;
+	panel2->Height=panel3->Height;
+	panel1->Height=panel2->Height+2;
+	panel3->Color=clGradientActiveCaption;
+	panel2->Color=clAqua;
+	panel1->Color=clLime;
+	panel1->ShowCaption=true;panel1->Caption="Регистрация";panel1->Font->Size=10;
+	panel2->ShowCaption=true;panel2->Caption="соревнований:";panel2->Font->Size=panel1->Font->Size;
+	panel3->ShowCaption=true;panel3->Caption="3333333";panel3->Font->Size=panel1->Font->Size;
+	panel3->Width=SNWidth+CodexWidth+3*2;
 	panel2->Width=panel3->Width+2*panel3->Left;
 	panel1->Width=panel2->Width+2*panel2->Left;
 	pRaceViews->Width=panel1->Width+2*panel1->Left+15;
@@ -558,12 +949,13 @@ int iN;
 	image->Width=40;
 	image->Picture=F366->Image1->Picture;
 */
-
+#endif
 }//end of proc
+//-----------------------------------------------------------------------------
 
 
 void __fastcall Races::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
-int ik=Key;
+int ik=Key,iflag=0;
 int ichecklines=checkLines(),iracersN=this->getRacesN();
 int icurH,icurN,
 	iformH=pRaceViews->Height,
@@ -602,8 +994,70 @@ int icurH,icurN,
 			}
 			Key=0;
 	   break;
+	   default:
+		   iflag=1;
 	}
-	std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+	if(iflag!=1)
+		std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+	String sname=viewSL[icurrRace].RCodex->Caption;
+	pRaceStartList->Caption="Стартовый список соревнования "+sname;
+	pRaceInfo->Caption="Описание соревнования "+sname;
+
+	FillRaceDescription();
+}
+//------------------------------------------------------------------------------
+void __fastcall Races::SaveInfo2INI(void){
+	String 	astr,sN,sDateINI,sCodexINI,sEVENT,sSLFile;
+	sN=viewSL[icurrRace].SN->Caption;
+	sCodexINI=eFISCodex->Text;
+	sDateINI=eDate->Text;
+	sEVENT=eInfoName->Text;
+	sSLFile=lSLiportN->Caption;
+
+	IniUltraAlpSki=new TIniFile(ApplicationPath);
+	IniUltraAlpSki->WriteString("Competition "+sN,"DATE",sDateINI);
+	IniUltraAlpSki->WriteString("Competition "+sN,"FISCODEX",sCodexINI);
+	IniUltraAlpSki->WriteString("Competition "+sN,"EVENT",sEVENT);
+	IniUltraAlpSki->WriteString("Competition "+sN,"SLFILE",sSLFile);
+	delete  IniUltraAlpSki;IniUltraAlpSki=NULL;
+	lID->Color=clLime;
+}
+//----------------------------------------------------------------------------
+void __fastcall Races::FillRaceDescription(void){
+	String 	astr,sDateINI,sCodexINI,sEVENT,sSLFile,
+			sname=viewSL[icurrRace].RCodex->Caption,
+			sN=viewSL[icurrRace].SN->Caption;
+	lID->Caption=sname;
+	lID->Color=clLime;
+
+	IniUltraAlpSki=new TIniFile(ApplicationPath);
+	astr=IniUltraAlpSki->ReadString("Competition "+sN,"ID","");
+	sDateINI=IniUltraAlpSki->ReadString("Competition "+sN,"DATE","");
+	sCodexINI=IniUltraAlpSki->ReadString("Competition "+sN,"FISCODEX","");
+	sEVENT=IniUltraAlpSki->ReadString("Competition "+sN,"EVENT","");
+	sSLFile=IniUltraAlpSki->ReadString("Competition "+sN,"SLFILE","");
+
+
+	delete  IniUltraAlpSki;IniUltraAlpSki=NULL;
+
+
+	eDate->Text=sDateINI;
+	eFISCodex->Text=sCodexINI;
+	eInfoName->Text=sEVENT;
+    lSLiportN->Caption=sSLFile;
+/*
+	if(eDate->Text.Length()==0){
+		String str1=sname.SubString(7,2)+"."+sname.SubString(5,2)+"."+sname.SubString(1,4);
+		eDate->Text=str1;
+	}
+*/
+}
+//------------------------------------------------------------------------------
+void __fastcall Races::form_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift){
+int i=0;
+lID->Color=clRed;
+}
+void __fastcall Races::form_key_down_startlist(TObject *Sender, WORD &Key, TShiftState Shift){
 }
 //_____________________________________________________________________________
 //_____________________________________________________________________________
@@ -622,8 +1076,8 @@ int ipaneltop=panel3->Top;
 //______________________________________________________________________________
 int __fastcall Races::checkLines(void){
 int iHeight=pRaceViews->Height,iN,ih,itop;
-	ih=viewSL[0].SN->Height;
-	itop=viewSL[0].SN->Top+3*ih;
+	ih=SNHeight;
+	itop=SNHeight+3*ih;
 	iN=(iHeight-itop)/ih;
 	return iN;
  }
@@ -639,11 +1093,69 @@ int i=vsl.SN->Tag;
 	}
 }
 //______________________________________________________________________________
+void __fastcall Races::radio_click(TObject *Sender){
+int i=0;
+TRadioButton *rb=dynamic_cast<TRadioButton*>(Sender);
+String str;
+  str=rb->Caption;
+  i=rb->Tag;
+  lID->Color=clRed;
+}
 void __fastcall Races::mouse_down(TObject *Sender, TMouseButton Button,
   TShiftState Shift, int X, int Y){
+  TLabel *lblmoused=dynamic_cast<TLabel*>(Sender);
 	ilastcurrRace=icurrRace;
-	icurrRace=dynamic_cast<TLabel*>(Sender)->Tag;
-	std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+	String 	str=lblmoused->Caption,
+			sname=lblmoused->Name;
+	if(sname=="lID"){
+		SaveInfo2INI();
+		return;
+	}
+	if(sname=="lSLimport"){
+		if (StartListFileDialog->Execute()){
+		  sname=StartListFileDialog->FileName;
+		  if(sname.Pos(".csv")>0)
+			  lSLiportN->Caption=sname;
+		}
+		return;
+	}
+	if (str=="+") {
+		RacePack rp;
+		rp.Codex=eCompetition->Text;
+		vector < RacePack > *rpp;
+
+		int ii=RacesList.size(),irc=1;
+		for(int ij=0;ij<ii;++ij){
+			if (RacesList[ij].Codex  == rp.Codex) {
+				irc=0;
+				break;
+			}
+		}
+		if (irc) {
+			RacesList.push_back(rp);
+			sort(RacesList.begin(),RacesList.end(),[](const RacePack  &a,const RacePack &b){return a.Codex >b.Codex;});
+
+			int number_Of_competitions=0;
+
+			IniUltraAlpSki=new TIniFile(ApplicationPath);
+			for (RacePack  &a:RacesList) {
+				++number_Of_competitions;
+				String astr=a.Codex;
+				IniUltraAlpSki->WriteString("Competition "+String(number_Of_competitions),"ID",astr);
+			}
+			IniUltraAlpSki->WriteInteger("Competitions","Number",number_Of_competitions);
+			delete  IniUltraAlpSki;IniUltraAlpSki=NULL;
+
+			showView();
+			eCompetition->Text=rp.Codex;
+		}
+	}
+	else{
+		icurrRace=dynamic_cast<TLabel*>(Sender)->Tag;
+		std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+		FillRaceDescription();
+
+	}
 }//end of proc
 //------------------------------------------------------------------------------
 void __fastcall Races::mouse_DblClick(TObject *Sender)
@@ -651,6 +1163,26 @@ void __fastcall Races::mouse_DblClick(TObject *Sender)
 int i;
 }
 //_____________________________________________________________________________
+void Races::LoadFromPath(String path){
+	RacePack rp;
+	TSearchRec sr;
+	String spath=path+"*.usr";
+	RacesList.clear();
+	if (FindFirst(spath, faAnyFile | faDirectory, sr) == 0){
+		rp.path=path+sr.Name;
+		int  ipos=sr.Name.Pos(".usr");
+		rp.Codex=sr.Name.SubString(1,ipos-1);
+		RacesList.push_back(rp);
 
+		while (FindNext(sr) == 0){
+			rp.path=path+sr.Name;
+			ipos=sr.Name.Pos(".usr");
+			rp.Codex=sr.Name.SubString(1,ipos-1);
+			RacesList.push_back(rp);
+		}
+	}
+
+	FindClose(sr);
+};
 
 #pragma package(smart_init)
