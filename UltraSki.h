@@ -20,6 +20,12 @@
 #include <Data.DB.hpp>
 #include <Data.Win.ADODB.hpp>
 #include <Vcl.Dialogs.hpp>
+#include <Vcl.BaseImageCollection.hpp>
+#include <Vcl.ImageCollection.hpp>
+#include <System.ImageList.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
+#include <Vcl.ImgList.hpp>
+#include <Vcl.Mask.hpp>
 
 //---------------------------------------------------------------------------
 class TfUltraSki : public TForm
@@ -37,6 +43,11 @@ __published:	// IDE-managed Components
 	TFileOpenDialog *FileOpenDialog1;
 	TRadioGroup *RadioGroup1;
 	TRadioButton *RadioButton2;
+	TImageCollection *ImageCollection1;
+	TButton *Button1;
+	TImage *Image1;
+	TImageList *ImageList1;
+	TMaskEdit *MaskEdit1;
 	void __fastcall Timer1Timer(TObject *Sender);
 
 private:	// User declarations

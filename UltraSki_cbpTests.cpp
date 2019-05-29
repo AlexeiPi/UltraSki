@@ -8,6 +8,8 @@
 #include <tchar.h>
 #include <vcl.h>
 #include <GUITestRunner.hpp>
+USEFORM("UltraSki.cpp", fUltraSki);
+//---------------------------------------------------------------------------
 String udiag;
 
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)

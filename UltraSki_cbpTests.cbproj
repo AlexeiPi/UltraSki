@@ -60,7 +60,7 @@
         <ILINK_TranslatedLibraryPath>$(BDSLIB)\$(PLATFORM)\release\$(LANGDIR);$(ILINK_TranslatedLibraryPath)</ILINK_TranslatedLibraryPath>
         <ProjectType>CppVCLApplication</ProjectType>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <AllPackageLibs>rtl.lib;vcl.lib;xmlrtl.lib;IndySystem.lib;IndyCore.lib;dbrtl.lib;adortl.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;xmlrtl.lib;IndySystem.lib;IndyCore.lib;dbrtl.lib;adortl.lib;vclwinx.lib;vclimg.lib</AllPackageLibs>
         <ILINK_LibraryPath>..\;..\..\;$(BDSLIB)\$(PLATFORM)\debug;$(BDS)\source\dunit\src;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Multithreaded>true</Multithreaded>
         <_TCHARMapping>wchar_t</_TCHARMapping>
@@ -112,7 +112,7 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <LinkPackageStatics>rtl.lib;vcl.lib;xmlrtl.lib;IndySystem.lib;IndyCore.lib;dbrtl.lib;adortl.lib</LinkPackageStatics>
+        <LinkPackageStatics>rtl.lib;vcl.lib;xmlrtl.lib;IndySystem.lib;IndyCore.lib;dbrtl.lib;adortl.lib;vclwinx.lib;vclimg.lib</LinkPackageStatics>
         <BCC_UseClassicCompiler>false</BCC_UseClassicCompiler>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -150,9 +150,16 @@
             <DependentOn>TestRaceViews.h</DependentOn>
             <BuildOrder>6</BuildOrder>
         </CppCompile>
+        <CppCompile Include="UltraSki.cpp">
+            <Form>fUltraSki</Form>
+            <FormType>dfm</FormType>
+            <DependentOn>UltraSki.h</DependentOn>
+            <BuildOrder>7</BuildOrder>
+        </CppCompile>
         <CppCompile Include="UltraSki_cbpTests.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>
+        <FormResources Include="UltraSki.dfm"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

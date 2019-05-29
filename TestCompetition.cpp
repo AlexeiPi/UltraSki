@@ -10,7 +10,7 @@ RaceResults rrcl,rrcl1;
 RaceList rcl,rcl1;
 extern String udiag;
 String str;
-TIdTCPClient *LiveFIS;
+extern TIdTCPClient *LiveFIS;
 
 //-------------------------------------------------------------------------------
 class TTestRace : public TTestCase
@@ -90,7 +90,7 @@ void __fastcall TTestRace::TearDown(){}
 //_____________________________________________________________________________
 void __fastcall TTestRace::LiveFISRaceclear(){
 String Str,Str1;
-int  iCodex=9872;
+int  iCodex=9871;
 	r.setCodex(iCodex);
 	r.setLiveFISpassword("08101957");
 
@@ -106,7 +106,7 @@ int  iCodex=9872;
 //------------------------------------------------------------------------------
 void __fastcall TTestRace::LiveFISRacemeteo(){
 String Str,Str1;
-int  iCodex=9872;
+int  iCodex=9871;
 	r.setCodex(iCodex);
 	r.setLiveFISpassword("08101957");
 	Str=r.LiveFISRacemeteo("1");
@@ -120,7 +120,7 @@ int  iCodex=9872;
 }
 //------------------------------------------------------------------------------
 void __fastcall TTestRace::LiveFISRaceinfo(){
-int  iCodex=9872;
+int  iCodex=9871;
 String Str,Str1;
 String  sDiscipline="DH";
 String  sCategory="UNI";
@@ -160,7 +160,7 @@ String  sCategory="UNI";
 //------------------------------------------------------------------------------
 void __fastcall TTestRace::LiveFISRaceactiverun(){
 String Str,Str1;
-int  iCodex=9872;
+int  iCodex=9871;
 	r.setCodex(iCodex);
 	r.setLiveFISpassword("08101957");
 
@@ -176,7 +176,7 @@ int  iCodex=9872;
 //------------------------------------------------------------------------------
 void __fastcall TTestRace::LiveFISRacemessage(){
 String Str,Str1,strTIME;
-int  iCodex=9872;
+int  iCodex=9871;
 	r.setCodex(iCodex);
 	r.setLiveFISpassword("08101957");
 	DateTimeToString(strTIME, "h:mm:ss", Now());
@@ -193,7 +193,7 @@ int  iCodex=9872;
 //------------------------------------------------------------------------------
 void __fastcall TTestRace::LiveFISRacestartLIST(){
 String Str,Str1,strTIME;
-int  iCodex=9872;
+int  iCodex=9871;
 	rcl.setCodex(iCodex);
 	rcl.setLiveFISpassword("08101957");
 	DateTimeToString(strTIME, "h:mm:ss", Now());
