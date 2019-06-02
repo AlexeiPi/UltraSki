@@ -26,29 +26,23 @@
 #include <Vcl.Imaging.jpeg.hpp>
 #include <Vcl.ImgList.hpp>
 #include <Vcl.Mask.hpp>
+#include <Vcl.Imaging.pngimage.hpp>
+#include <Vcl.Imaging.GIFImg.hpp>
+#include <Vcl.ComCtrls.hpp>
 
 //---------------------------------------------------------------------------
 class TfUltraSki : public TForm
 {
 __published:	// IDE-managed Components
 	TTimer *Timer1;
-	TXMLDocument *XMLDocument1;
-	TIdTCPClient *LiveFIS;
-	TADOTable *ADOTable1;
-	TDataSource *DataSource1;
-	TADOConnection *ADOConnection1;
-	TPanel *Panel1;
-	TLabel *Label1;
-	TEdit *Edit1;
-	TFileOpenDialog *FileOpenDialog1;
-	TRadioGroup *RadioGroup1;
-	TRadioButton *RadioButton2;
-	TImageCollection *ImageCollection1;
-	TButton *Button1;
 	TImage *Image1;
-	TImageList *ImageList1;
-	TMaskEdit *MaskEdit1;
+	TImage *Image2;
+	TLabel *pINFO;
+	TEdit *emessage2FIS;
+	TImage *Image3;
 	void __fastcall Timer1Timer(TObject *Sender);
+	void __fastcall Image2Click(TObject *Sender);
+	void __fastcall pINFOClick(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations

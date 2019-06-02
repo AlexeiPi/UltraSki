@@ -39,7 +39,7 @@ class Race{
 		//Tempunit-Longunit-Speedunit-Windunit
 		int Season;// 2012 for Juni 2011 - May 2012 integer
 		int Codex;
-		String Nation;
+		String Nation="RUS";
 		String Discipline;
 		String Category;
 		String Type;   //Type of content Startlist Partial Unofficial Official
@@ -49,9 +49,9 @@ class Race{
 		String Place;
 		String Slope;
 		TDate Racedate;
-		String Tempunit;
-		String Longunit;
-		String Speedunit;
+		String Tempunit="C";
+		String Longunit="m";
+		String Speedunit="kmh";
 		String Windunit;
 		String Usedfislist;
 		float Appliedpenalty;
@@ -117,11 +117,7 @@ class Race{
 			float Racepoints;
 			String Level;//	final smallfinal semifinal quarterfinaleightfinal qualification sixteenfinal thirtytwofinal sixtyfourfinal
 		};
-/*
-Order number of intermediate point
-1-98 	= intermediate points
-99 		= Finish
-*/
+/* Order number of intermediate point 1-98	= intermediate points      99 = Finish */
 		struct Intermediate{
 			String Time;
 			String Diff;
@@ -189,13 +185,12 @@ Order number of intermediate point
 		String getSoftwareversion(){return Softwareversion;};
 
 //______LIVE FIS________________________________________________________________________
+
 		String __fastcall LiveFISRaceclear(void);
 		String __fastcall LiveFISRacemeteo(String srun);
 		String __fastcall LiveFISRaceinfo(String srun);
 		String __fastcall LiveFISRacemessage(String message);
 		String __fastcall LiveFISRaceactiverun(String srun);
-
-
  };
 #endif
 //______________________________________________________________________________

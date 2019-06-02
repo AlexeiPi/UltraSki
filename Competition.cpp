@@ -4,8 +4,11 @@
 
 #include "Competition.h"
 #include <StrUtils.hpp>
-TIniFile *IniUltraAlpSki;//ini file\
+TIniFile *IniUltraAlpSki;//ini file
+AnsiString toLatin(AnsiString &srussian);
 //____________________________________________________________________________
+//-----------------------------------------------------------------------------
+
 String __fastcall Race::LiveFISRaceclear(void){
 String str,strTIME;
 	String sCODEX=Codex;
@@ -81,9 +84,14 @@ String str,strTIME;
 return str;
 }
 //______________________________________________________________________________
-String __fastcall Race::LiveFISRacemessage(String message){
+String __fastcall Race::LiveFISRacemessage(String anymessage){
 
-String str,strTIME;
+String str,strTIME,message;
+AnsiString astr;
+	astr=anymessage;
+	astr=toLatin(astr);
+	message=astr;
+
 	String sCODEX=Codex;
 	String sPASSWORD=LiveFISpassword.c_str();
 	DateTimeToString(strTIME, "hhmmsszzz", Now());
@@ -153,13 +161,13 @@ return str;
 //------------------------------------------------------------------------------
 AnsiString toLatin(AnsiString &srussian){
 AnsiString ret="",senglish="",rLet,eLet;
-AnsiString rus[]={" ","À", "à", "Á","á","Â","â","Ã","ã","¥","´","Ä","ä","Å","å","ª", "º", "Æ", "æ", "Ç", "ç", "È", "è", "²", "³", "¯", "¿", "É", "é", "Ê", "ê",
+AnsiString rus[]={" ","À", "à", "Á","á","Â","â","Ã","ã","Ä","ä","Å","å","¨", "¸", "Æ", "æ", "Ç", "ç", "È", "è", "É", "é", "Ê", "ê",
 "Ë", "ë", "Ì", "ì", "Í", "í", "Î", "î", "Ï", "ï","Ð", "ð", "Ñ", "ñ", "Ò", "ò", "Ó", "ó", "Ô", "ô","Õ", "õ", "Ö", "ö", "×", "÷","Ø", "ø",
 "Ù", "ù", "Ü", "ü", "Þ", "þ","ß", "ÿ", "Û", "û", "Ú", "ú", "¨", "¸", "Ý", "ý"};
 
-AnsiString eng[]={" ","A", "a", "B", "b","V", "v","G", "g", "G", "g", "D", "d", "E", "e", "E", "E", "Zh", "zh", "Z", "z", "I", "i", "I", "I", "Yi", "yi", "J", "j", "K", "k",
+AnsiString eng[]={" ","A", "a", "B", "b","V", "v","G", "g", "D", "d", "E", "e", "E", "e", "Zh", "zh", "Z", "z", "I", "i",  "I", "i", "K", "k",
 "L", "l", "M", "m", "N", "n", "O", "o", "P", "p","R", "r", "S", "s", "T", "t", "U", "u", "F", "f","KH", "kh", "TS", "ts", "CH", "ch", "SH", "sh",
-"SHH", "shh", "'", "'", "YU", "yu","YA", "ya", "Y", "y", "", "", "YO", "yo", "E", "e"};
+"SHCH", "shch", "", "", "IU", "iu","IA", "ia", "Y", "y", "", "", "E", "e", "E", "e"};
 
 int iN=srussian.Length(),iNN=sizeof(rus)/sizeof(rus[0]);
 	for(int i=0; i<iN; i++){
@@ -401,16 +409,33 @@ IXMLNode *nodElement,*titleElement;
 			astr=nodElement->GetNodeName();
 			if(astr=="Title"){
 				astr=nodElement->GetAttribute("TitleNames");
-				item=astr.c_str();
-				regex re("[;]");
+/*				item=astr.c_str();
+				regex re(";");
 				sregex_token_iterator it(item.begin(), item.end(), re, -1);
 				sregex_token_iterator reg_end;
 				TitleString.clear();
 				for (; it != reg_end; ++it) {
 					String Str;
 					item=it->str();
-                    Str=item.c_str();
+					Str=item.c_str();
 					TitleString.push_back(Str);
+				}
+*/
+				int ipos1,ipos2,ipos3;
+				AnsiString substr;
+				ipos1=0;
+				TitleString.clear();
+				while (1){
+					ipos2=PosEx(";", astr, ipos1+1);
+					if (ipos2>0) {
+						substr=astr.SubString(ipos1+1,ipos2-ipos1-1);
+						TitleString.push_back(substr);
+						ipos1=ipos2;
+					}
+					else{
+						break;
+					}
+
 				}
 			}
 			else{

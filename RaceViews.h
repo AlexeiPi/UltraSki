@@ -19,13 +19,11 @@ class RaceStartListView:public RaceList{
 		TLabel *FC;
 		TLabel *FIO;
 
-
-
 		_viewSL(TPanel*p,int i,RaceList *rL,TLabel *lbl){//constructor
 			AnsiString str;
 			SN=new TLabel(p);
-			SN->Name="SN"+AnsiString(i);
 			SN->Parent = p;
+			SN->Name="SN"+AnsiString(i);
 			SN->AutoSize=false;
 			SN->Transparent=false;
 			SN->Tag=i;
@@ -75,12 +73,14 @@ class RaceStartListView:public RaceList{
 			FIO->Caption=str;
 			FIO->OnMouseDown = SN->OnMouseDown;
 		}
+		~_viewSL(){
+		}
 	};
 //______________________________________________________________________________
 		vector < _viewSL > viewSL;
 		TForm *pRaceSLViews;
-		TPanel *panel1,*panel2,*panel3;
-		TLabel *lbl;
+		TPanel *apanel1,*panel2,*panel3;
+		TLabel *l2live;
 		TImage *image;
 
 
@@ -95,8 +95,83 @@ class RaceStartListView:public RaceList{
 		  void __fastcall  setXMLpath(AnsiString apath){XMLpath=apath;}
 		  AnsiString  __fastcall getXMLpath(void){return XMLpath;};
 
-		RaceStartListView():pRaceSLViews(NULL){}
+		RaceStartListView():pRaceSLViews(NULL){
+			panel3=NULL;
+			panel2=NULL;
+			apanel1=NULL;
+			l2live=NULL;
+
+			pRaceSLViews=new TForm(Application);
+			pRaceSLViews->Caption="Стартовый список";
+			pRaceSLViews->Name="RaceStartListForm";
+			pRaceSLViews->DoubleBuffered=true;
+			pRaceSLViews->KeyPreview=true;
+            pRaceSLViews->OnKeyDown=form_key_down;
+
+			TBorderIcons tempBI;
+			tempBI = pRaceSLViews->BorderIcons;
+			tempBI >> biSystemMenu;
+			tempBI >> biMinimize;
+			tempBI >> biMaximize;
+			tempBI >> biHelp;
+			pRaceSLViews->BorderIcons = tempBI;
+
+
+			apanel1= new TPanel(pRaceSLViews);
+			apanel1->Parent = pRaceSLViews;
+			apanel1->Name="P1SL";
+			apanel1->Font->Size=12;
+			apanel1->Alignment=taLeftJustify;
+			apanel1->VerticalAlignment=taAlignTop;
+			apanel1->Top=3;
+			apanel1->Left=3;
+			apanel1->Visible=true;
+			int ccodex=this->getCodex();
+			//str.sprintf(L"RaceList%d",this->getCodex());
+			apanel1->Caption="";//str;
+
+			l2live= new TLabel(apanel1);
+			l2live->Parent=apanel1;
+			l2live->Font->Size=12;
+			l2live->Top=0;
+			l2live->Left=3;
+			l2live->Height=18;
+			l2live->Top=0;
+			l2live->Name="SL2FIS";
+			l2live->Caption="Нажмите для записи в LiveTiming FIS";
+			l2live->Transparent=false;
+			l2live->Color=clLime;
+			l2live->OnMouseDown=mouse_down;
+
+			panel2= new TPanel(apanel1);
+			panel2->Parent = apanel1;
+			panel2->Name="P2SL";
+			panel2->Font->Size=12;
+			panel2->Alignment=taLeftJustify;
+			panel2->VerticalAlignment=taAlignTop;
+			panel2->Top=18*2;
+			panel2->Left=3;
+			panel2->Visible=true;
+			panel2->Caption="";
+
+			panel3= new TPanel(panel2);
+			panel3->Parent = panel2;
+			panel3->Name="P3SL";
+			panel3->Font->Size=12;
+			panel3->Alignment=taLeftJustify;
+			panel3->VerticalAlignment=taAlignTop;
+			panel3->Top=0;
+			panel3->Left=3;
+			panel3->Visible=true;
+			panel3->Caption="";
+
+		}
+		~RaceStartListView(){
+			DeleteAll();
+		}
+
 		void __fastcall freevcls(_viewSL vsl){
+
 			if(vsl.SN!=NULL){
 				delete vsl.SN;vsl.SN=NULL;
 			}
@@ -107,24 +182,10 @@ class RaceStartListView:public RaceList{
 				delete vsl.FIO;vsl.FIO=NULL;
 			}
 		}
-		~RaceStartListView(){
+		void DeleteAll(void){
 			std::for_each(viewSL.begin(),viewSL.end(),freevcls);
-			if(panel3!=NULL){
-				delete panel3;panel3=NULL;
-			}
-			if(panel2!=NULL){
-				delete panel2;panel2=NULL;
-			}
-			if(panel1!=NULL){
-				delete panel1;panel1=NULL;
-			}
-			if(lbl!=NULL){
-				delete lbl;lbl=NULL;
-			}
-			if(pRaceSLViews!=NULL){
-				delete pRaceSLViews;pRaceSLViews=NULL;
-			}
-
+			if(pRaceSLViews!=NULL)
+				delete pRaceSLViews,pRaceSLViews=NULL;
 		};
 
 		void __fastcall form_key_down(TObject *Sender, WORD &Key, TShiftState Shift);
@@ -133,13 +194,12 @@ class RaceStartListView:public RaceList{
 		void __fastcall showView(int itop,int ileft,int iheight);
 		void __fastcall Locations(TForm* form);
 		void __fastcall setRacersColor(_viewSL vsl);
+		void  __fastcall setCurRacersColor(){
+				std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+		}
+
 		int  __fastcall checkLines(void);
-		void __fastcall CleaSLForm(void){
-			if(pRaceSLViews!=NULL){
-				delete pRaceSLViews;
-				pRaceSLViews=NULL;
-			}
-		};
+		void __fastcall CleaSLForm(void){pRaceSLViews->Hide();};
 
 
 };
@@ -162,6 +222,7 @@ class RaceResultsView:public RaceList{
 class Races:public RaceStartListView{
 	private:
 		int number_Of_competitions;
+		AnsiString sCurrentXMLfilename;
 //=============================================================================
 		struct _viewRL{
 			TLabel *SN;
@@ -208,20 +269,23 @@ class Races:public RaceStartListView{
 		};
 		vector < _viewRL > viewSL;
 		TForm *pRaceViews,*pRaceInfo,*pRaceStartList;
+		//TMaskEdit *eCompetition;
 		TEdit *eCompetition;
 ///        String sLastRegistered;
 
 
 		TPanel *panel1,*panel2,*panel3;
-		TLabel *lbl;
+		TLabel *lplus,*lCompetition,*lminus;
 		TLabel *lFISCodex,*lDate,*lSLimportN,*lSLimport,*lID,*lInfoName;
-		TEdit *eFISCodex,*eInfoName;
+		TEdit *eInfoName;
+		TMaskEdit *eFISCodex;
+		TImage *imageFIS;
 		TMaskEdit *eDate;
 		TOpenDialog *StartListFileDialog;
 		TRadioButton *rb1,*rb2,*rb3,*rb4,*rb5,*rb6,*rb7,*rb8,*rb9,*rb10;
 		TRadioGroup *grpGender,*grpDiscipline;
 
-		int icurrRace=1,ilastcurrRace=-1;
+		int icurrRace=0,ilastcurrRace=-1;
 		int iTopLine=1,iBottomLine;
 		int iActiveLine=1;
 
@@ -237,25 +301,44 @@ class Races:public RaceStartListView{
 		String ApplicationPath;
 		String ImportedFileName;
 
+		TStringList* Sections;
+		TStringList* Values;
+
 //-----------------------------------------------------------------------------
 	public:
 		Races(){
+			TBorderIcons tempBI;
 			String str="";
+				number_Of_competitions=0;
 				DefaultPath=ExtractFilePath(Application->ExeName);
+
 				pRaceViews=new TForm(Application);
-				pRaceViews->Caption="";
+				pRaceViews->Caption="Регистрация";
+				pRaceViews->Name="RaceViewsForm";
+				pRaceViews->DoubleBuffered=true;
 				pRaceViews->KeyPreview=true;
+				pRaceViews->OnHide=FormHide;
+				pRaceViews->OnKeyDown=form_key_down;
+				pRaceViews->OnResize=form_resize;
+
 				pRaceInfo=new TForm(Application);
-				pRaceInfo->Caption="";
+				pRaceInfo->Caption="Описание соревнования";
+				pRaceInfo->Name="RaceInfoForm";
+				pRaceInfo->DoubleBuffered=true;
 				pRaceInfo->KeyPreview=true;
-				pRaceStartList=new TForm(Application);
-				pRaceStartList->Caption="";
-				pRaceStartList->KeyPreview=true;
+				pRaceInfo->OnHide=FormHide;
+				pRaceInfo->OnDestroy=FormDestroy;
+				tempBI = pRaceInfo->BorderIcons;
+				tempBI >> biSystemMenu;
+				tempBI >> biMinimize;
+				tempBI >> biMaximize;
+				tempBI >> biHelp;
+				pRaceInfo->BorderIcons = tempBI;
 
-				StartListFileDialog=new TOpenDialog(pRaceStartList);
+				StartListFileDialog=new TOpenDialog(pRaceInfo);
 
+				lplus=lCompetition=lminus=NULL;
 				eCompetition=NULL;
-				lbl=NULL;
 				rb1=rb2=rb3=rb4=rb5=rb6=rb7=rb8=rb9=rb10=NULL;
 				grpDiscipline=grpGender=NULL;
 				lInfoName=NULL;lID=NULL;lSLimport=NULL;lSLimportN=NULL;
@@ -263,11 +346,32 @@ class Races:public RaceStartListView{
 				ApplicationPath=Application->ExeName;
 				ApplicationPath=StringReplace(ApplicationPath,".\\","",TReplaceFlags()<<rfReplaceAll<<rfIgnoreCase);
 				ApplicationPath=ChangeFileExt( ApplicationPath, ".INI" );
+				DefaultPath=ExtractFilePath(ApplicationPath);
+
+				IniUltraAlpSki=new TIniFile(ApplicationPath);
+				Sections = new TStringList;
+				Values = new TStringList;
+
+
 		};
-		~Races(){delete pRaceViews;};
+		~Races(){
+			delete Sections;Sections=NULL;
+			delete Values;Values=NULL;
+			delete IniUltraAlpSki;Values=NULL;
+
+			if(pRaceInfo!=NULL)
+				delete pRaceInfo,pRaceInfo=NULL;
+			if(pRaceViews!=NULL)
+				delete pRaceViews,pRaceViews=NULL;
+
+		};
 		void LoadFromPath(String path);
 		int getRacesN(){return RacesList.size();};
 //------------------------------------------------------------------------------
+		int getNumberOfRaces(void){return RacesList.size();};
+		int getCurrRace(void){return icurrRace;};
+		void setCurrRace(int icr){icurrRace=icr;};
+
 		void setDefaultPath(String path){DefaultPath=path;};
 		String getDefaultPath(void){return DefaultPath;};
 
@@ -297,18 +401,25 @@ class Races:public RaceStartListView{
 		void __fastcall form_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift);
 		void __fastcall form_key_down_startlist(TObject *Sender, WORD &Key, TShiftState Shift);
 		void __fastcall edit_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift);
-        void __fastcall maskedit_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift);
+		void __fastcall maskedit_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift);
 
 
 		void __fastcall form_resize(TObject *Sender);
 		void __fastcall mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
 		void __fastcall radio_click(TObject *Sender);
 		void __fastcall mouse_DblClick(TObject *Sender);
+		void __fastcall FormDestroy(TObject *Sender);
+		void __fastcall FormHide(TObject *Sender);
 
 		int __fastcall checkLines(void);
 		void __fastcall setRacersColor(_viewRL vsl);
 		void __fastcall FillRaceDescription(void);
+		void __fastcall FillRaceInfo(void);
+		void __fastcall FillRaceSL(void);
 		void __fastcall SaveInfo2INI(void);
+		void __fastcall ReadINIsections(TIniFile *ini);
+		int __fastcall LiveFISconnect(void);
+		void __fastcall SetFocus(void){pRaceViews->SetFocus();};
 };
 //______________________________________________________________________________
 
