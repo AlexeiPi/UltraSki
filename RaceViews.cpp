@@ -11,6 +11,18 @@ using namespace std;
 extern PACKAGE TfUltraSki *fUltraSki;
 AnsiString toLatin(AnsiString &srussian);
 TIdTCPClient *LiveFIS;
+//=============================================================================
+void __fastcall SetClipBoard(AnsiString aboard){
+	const char* output = aboard.c_str();
+	const size_t len = strlen(output) + 1;
+	HGLOBAL hMem =  GlobalAlloc(GMEM_MOVEABLE, len);
+	memcpy(GlobalLock(hMem), output, len);
+	GlobalUnlock(hMem);
+	OpenClipboard(0);
+	EmptyClipboard();
+	SetClipboardData(CF_TEXT, hMem);
+	CloseClipboard();
+}
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::form_resize(TObject *Sender){
 int ichecklines=checkLines(),
@@ -119,6 +131,7 @@ void __fastcall RaceStartListView::mouse_down(TObject *Sender, TMouseButton Butt
 /*		setCodex(iCodex);
 */
 		if (iCodex>0) {
+			SetClipBoard("http://live.fis-ski.com/lv-a"+AnsiString(iCodex)+".htm#/startlist");
 
 			if (LiveFIS!=NULL){
 				if(LiveFIS->Connected())

@@ -75,7 +75,7 @@ String str,strTIME;
 	String sPlace="<place>"+sPLACE+"</place>";
 	String sTemperature="<tempunit>C</tempunit><longunit>m</longunit><speedunit>kmh</speedunit>";
 	String SRunno="<run no=\""+sRUNNO+"\"><discipline>"+sDISCIPLINE+"</discipline><start /><finish /><height /><length /><gates /><turninggates />";
-	String SYMDHM="<year>"+getRaceyyyy()+"</year><month>"+getRacemm()+"</month><day>"+getRacedd()+"</day><hour>"+getRacemm()+"</hour><minute>"+getRacedd()+"</minute>";
+	String SYMDHM="<year>"+getRaceyyyy()+"</year><month>"+getRacemm()+"</month><day>"+getRacedd()+"</day><hour>"+getRaceth()+"</hour><minute>"+getRacetm()+"</minute>";
 	String SRacedef="<racedef><inter i=\""+sINTER+"\" /></racedef>";
 	String SEnding="</run></raceinfo><command><activerun no=\""+sRUNNO+"\" /></command></livetiming>";
 ///<command><activerun no=\""+sRUNNO+"\"/></command>

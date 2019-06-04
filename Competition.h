@@ -16,7 +16,7 @@
 #include <Xml.XMLDoc.hpp>
 #include "IniFiles.hpp"
 
-
+void __fastcall SetClipBoard(AnsiString aboard);
 extern TIniFile *IniUltraAlpSki;//ini file
 
 
@@ -49,6 +49,7 @@ class Race{
 		String Place;
 		String Slope;
 		TDate Racedate;
+		TTime Racetime;
 		String Tempunit="C";
 		String Longunit="m";
 		String Speedunit="kmh";
@@ -59,7 +60,7 @@ class Race{
 		String Timingby;
 		String Dataprocessingby;
 		String Softwarecompany;
-		String Softwarename;
+		String Softwarename="UltraSki";
 		String Softwareversion;
 		struct Jury{
 			String Lastname;
@@ -103,7 +104,7 @@ class Race{
 			String Fiscode;
 			String Lastname;
 			String Firstname;
-			String Gender;//M L
+			String Gender;//M L T
 			String Nation;
 			int Yearofbirth;
 			String Clubname;
@@ -143,7 +144,10 @@ class Race{
 		void setLiveFISpassword(String liveFISpassword){LiveFISpassword=liveFISpassword;};
 		String getLiveFISpassword(){return LiveFISpassword;};
 
-		void setCodex(int icodex){Codex=icodex;};
+		void setCodex(int icodex){
+			Codex=icodex;
+			SetClipBoard("http://live.fis-ski.com/lv-al"+AnsiString(icodex)+".htm#/startlist");
+		};
 		int getCodex(){
 			return Codex;
 		};
@@ -168,9 +172,15 @@ class Race{
 
 
 		String getRaceyyyy(){String str;DateTimeToString(str, "yyyy", Racedate);return str;};
-		String getRacemm(){String str;DateTimeToString(str, "m", Racedate);return str;};
+		String getRacemm(){String str;DateTimeToString(str, "M", Racedate);return str;};
 		String getRacedd(){String str;DateTimeToString(str, "d", Racedate);return str;};
+		String getRaceth(){String str;str=Racetime.FormatString(L"hh");;return str;};
+		String getRacetm(){String str;
+			str=Racetime.FormatString(L"nn");
+			return str;
+		};
 		void setRacedate(TDate racedate){Racedate=racedate;};
+		void setRacetime(TTime racetime){Racetime=racetime;};
 
 		void setTimingby(String timingby){Timingby=timingby;};
 		String getTimingby(){return Timingby;};
