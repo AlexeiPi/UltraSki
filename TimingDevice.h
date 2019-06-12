@@ -38,11 +38,11 @@ private:
 		TLabel *lSN,*lSNb;//seq number
 		TLabel *lLine,*lbLine;//pulse line 0-correction according to FIS rules, 1-start, 2-8 intermediate, 9-finish physical
 		TEdit *eTime;//electronic time
-		TEdit *emTime;//emulated time
+		TLabel *emTime;//emulated time
 		TEdit *emBTime;//backup time
 
-		_viewTK(TPanel*p,int i,Timing *tm1,Timing *tm2,TLabel *lbl){//constructor
-			AnsiString str,aline="",aSN="",aTOD="",bline="",bSN="",bTOD="";
+		_viewTK(TPanel*p,int i,float idiff,Timing *tm1,Timing *tm2,TLabel *lbl){//constructor
+			AnsiString str,aline="",aSN="",aTOD="",bline="",bSN="",bTOD="",adiff="";
 			if(tm1!=NULL){
 				aSN=tm1->icurrpulseNumber;
 				aline=tm1->electroLine;
@@ -53,6 +53,11 @@ private:
 				bline=tm2->electroLine;
 				bTOD=tm2->TimeOfDay;
 			}
+			if((tm1!=NULL)&&(tm1!=NULL))
+				adiff.sprintf("%0.4f",idiff);
+			else
+	            adiff="";
+
 
 
 			p1=dynamic_cast<TPanel*> (p->FindComponent("Panel"+IntToStr(i)));
@@ -115,21 +120,21 @@ private:
 			}
 			eTime->Text=aTOD;
 
-			emTime=dynamic_cast<TEdit*> (p1->FindComponent("tmemTime"));
+			emTime=dynamic_cast<TLabel*> (p1->FindComponent("tmemTime"));
 			if(emTime==NULL){
-				emTime=new TEdit(p1);
+				emTime=new TLabel(p1);
 				emTime->Name="tmemTime";
 				emTime->Parent = p1;
 				emTime->AutoSize=false;
 				emTime->Tag=lSN->Tag;
 				emTime->Font->Size=lSN->Font->Size;
-				emTime->Width=eTime->Width;
+				emTime->Width=eTime->Width-30;
 				emTime->Height=lSN->Height;
 				emTime->Top=lSN->Top;
 				emTime->Left=eTime->Left+eTime->Width;
-				emTime->Alignment=taLeftJustify;
+				emTime->Alignment=taRightJustify;
 			}
-			emTime->Text="";
+			emTime->Caption=adiff;
 
 			lSNb=dynamic_cast<TLabel*> (p1->FindComponent("tmlSNb"));
 			if(lSNb==NULL){
@@ -144,7 +149,7 @@ private:
 				lSNb->Width=lSN->Width;
 				lSNb->Height=18;
 				lSNb->Top=0;
-				lSNb->Left=emTime->Left+emTime->Width+5;
+				lSNb->Left=emTime->Left+emTime->Width+17;
 				lSNb->Alignment=taCenter;
 			}
 			lSNb->Caption=bSN;
@@ -212,6 +217,7 @@ private:
 public:
 	TimeKeeping(){
 	AnsiString astr;
+	    randomize();
 		pTMViews=new TForm(Application);
 		pTMViews->DoubleBuffered=true;
 		pTMViews->OnResize=form_resize;

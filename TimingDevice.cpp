@@ -9,6 +9,7 @@
 TIniFile *IniUltraTimeKeeping;//ini file
 extern Races *rcs;
 /*
+DateUtils.MilliSecondsBetween(Now, 0);
     TFormatSettings fs = TFormatSettings::Create();
     fs.DecimalSeparator = '.';
     TDateTime dateTime = StrToDateTime("02/02/2016 01:00:00.123", fs);
@@ -46,7 +47,7 @@ int iN=-1;
 		lsynch= new TLabel(panel1);
 		lsynch->Parent = panel1;
 		lsynch->Name="lsynch";
-		lsynch->Color=clLime;
+		lsynch->Color=clRed;
 		lsynch->Font->Size=12;
 		lsynch->AutoSize=true;
 		lsynch->Alignment=taCenter;
@@ -528,20 +529,28 @@ AnsiString astr;
 	IniUltraTimeKeeping->WriteString(astr,"Type",atype+aname);
 }
 //------------------------------------------------------------------------------
+#include <stdlib.h>
 void __fastcall TimeKeeping::mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y){
 TLabel *lblmoused=dynamic_cast<TLabel*>(Sender);
 String 	str=lblmoused->Caption,sname=lblmoused->Name;
 AnsiString astr,atime,aa,bb;
 int a,b;
-	srand( time(NULL));randomize();b=random(9);a=random(9);
+//	srand(time(NULL));randomize();b=random(9);a=random(9);
+	b=random(9);a=random(9);
 	aa.sprintf("%d",a);
 	bb.sprintf("%d",b);
 	astr=str;
 	astr=sname;
 	atime=_getTimeHHSSZZZ();
 	if(sname=="lsynch"){
-		eAsynch->Text=atime+aa;
-		eBsynch->Text=atime+bb;
+		if(lblmoused->Color==clLime){
+			lblmoused->Color=clRed;
+			lblmoused->Font->Color=clYellow;
+		}
+		else{
+			lsynch->Color=clLime;
+			lblmoused->Font->Color=clRed;
+		}
 	}
 	else{
 		if(sname=="i10"||sname=="i20"||sname=="i30"||sname=="i40"){
@@ -557,7 +566,8 @@ int a,b;
 		else{
 			int ipos=sname.Pos("B");
 			if(sname.Pos("F")){
-				srand(time(NULL));randomize();b=random(999);a=random(999);
+				//srand(time(NULL));randomize();
+				b=random(999);a=random(999);
 				atime.SetLength(10);
 				aa.sprintf("%03d",a);
 				bb.sprintf("%03d",b);
@@ -605,9 +615,11 @@ void __fastcall TimeKeeping::show_viewTK(void){
 	auto tmlsz= TimingList.size();
 	for(int i=0,j=0;i<iN;++i){
 		int secondsbetween;
+		float it1,it2;
+		float idiff;
 		Timing *tm1,*tm2,*tmp1,*tmp2;
 		TTime time1,time2;
-		AnsiString asystem,bsystem,atime,btime;
+		AnsiString asystem,bsystem,atime,btime,ahh,amm,ass,azzzz,bhh,bmm,bss,bzzzz,adiff;
 		tm1=&TimingList[tmlsz-j-1];tm2=&TimingList[tmlsz-j-2];
 		asystem=tm1->electroLine.SubString(1,1);bsystem=tm2->electroLine.SubString(1,1);
 		atime=tm1->TimeOfDay;atime.SetLength(10);
@@ -619,16 +631,39 @@ void __fastcall TimeKeeping::show_viewTK(void){
 			tmp1=NULL;tmp2=NULL;
 			if(asystem=="A")tmp1=tm1;
 			if(asystem=="B")tmp2=tm1;
-            ++j;
+			++j;
+			idiff=0;
 		}
 		else{
 			if(asystem=="A")tmp1=tm1;
 			if(asystem=="B")tmp2=tm1;
 			if(bsystem=="A")tmp1=tm2;
 			if(bsystem=="B")tmp2=tm2;
+			if(tmp1->electroLine=="AS"&&lsynch->Color==clLime){
+				lsynch->Color=clRed;
+                lsynch->Font->Color=clYellow;
+				eAsynch->Text=tmp1->TimeOfDay;
+				eBsynch->Text=tmp2->TimeOfDay;
+
+			}
+			float idif;
+			ahh=tmp1->TimeOfDay.SubString(1,2);
+			amm=tmp1->TimeOfDay.SubString(4,2);
+			ass=tmp1->TimeOfDay.SubString(7,2);
+			azzzz=tmp1->TimeOfDay.SubString(10,4);
+			bhh=tmp2->TimeOfDay.SubString(1,2);
+			bmm=tmp2->TimeOfDay.SubString(4,2);
+			bss=tmp2->TimeOfDay.SubString(7,2);
+			bzzzz=tmp2->TimeOfDay.SubString(10,4);
+			it1=/*ahh.ToDouble()*60*60+amm.ToDouble()*60+ass.ToDouble()+*/azzzz.ToDouble()/10000;
+			it2=/*bhh.ToDouble()*60*60+bmm.ToDouble()*60+bss.ToDouble()+*/bzzzz.ToDouble()/10000;
+			idiff=(it2-it1);
 			j+=2;
+
+
+
 		}
-		vtk=new _viewTK(panel3,i,tmp1,tmp2,lsynch);
+		vtk=new _viewTK(panel3,i,idiff,tmp1,tmp2,lsynch);
 		viewTK.push_back(*vtk);
 		if(sz!=viewTK.capacity()){
 			sz=viewTK.capacity();
