@@ -36,6 +36,13 @@
 #include <IdSSL.hpp>
 #include <IdSSLOpenSSL.hpp>
 
+#include <Vcl.Imaging.GIFImg.hpp>
+#include <vector>
+//---------------------------------------------------------------------------
+
+using namespace std;
+//---------------------------------------------------------------------------
+AnsiString __fastcall _getTimeHHSSZZZ(void);
 //---------------------------------------------------------------------------
 class TfUltraSki : public TForm
 {
@@ -45,14 +52,16 @@ __published:	// IDE-managed Components
 	TImage *Image2;
 	TLabel *pINFO;
 	TEdit *emessage2FIS;
-	TImage *Image3;
+	TImage *imTimeMachine;
 	TIdHTTP *IdHTTP1;
 	TIdSSLIOHandlerSocketOpenSSL *IdSSLIOHandlerSocketOpenSSL1;
 	TMemo *Memo1;
+	TLabel *Label1;
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall Image2Click(TObject *Sender);
 	void __fastcall pINFOClick(TObject *Sender);
 	void __fastcall Image1Click(TObject *Sender);
+	void __fastcall imTimeMachineClick(TObject *Sender);
 
 private:	// User declarations
 public:		// User declarations

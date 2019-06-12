@@ -1,15 +1,18 @@
 //---------------------------------------------------------------------------
-
 #ifndef RaceViewsH
 #define RaceViewsH
 #include <vcl.h>
+#include<algorithm>
 
 #include "UltraSki.h"
+#include "TimingDevice.h"
 #include "Racer.h"
 #include "Competition.h"
-//---------------------------------------------------------------------------
 
-class RaceStartListView:public RaceList{
+
+
+//---------------------------------------------------------------------------
+class RaceStartListView: public RaceList{
 	private:
 
 //------------------------------------------------------------------------------
@@ -204,6 +207,7 @@ class RaceStartListView:public RaceList{
 
 };
 //---------------------------------------------------------------------------
+class RaceResults;
 class RaceResultsView:public RaceList{
 	private:
 		RaceResults *RR;
@@ -280,7 +284,7 @@ class Races:public RaceStartListView{
 		TEdit *eInfoName;
 		TMaskEdit *eFISCodex;
 		TImage *imageFIS;
-		TMaskEdit *eDate;
+		TMaskEdit *eDate,*eTime;
 		TOpenDialog *StartListFileDialog;
 		TRadioButton *rb1,*rb2,*rb3,*rb4,*rb5,*rb6,*rb7,*rb8,*rb9,*rb10;
 		TRadioGroup *grpGender,*grpDiscipline;
@@ -420,10 +424,9 @@ class Races:public RaceStartListView{
 		void __fastcall ReadINIsections(TIniFile *ini);
 		int __fastcall LiveFISconnect(void);
 		void __fastcall SetFocus(void){pRaceViews->SetFocus();};
+		int __fastcall GetLeftInfo(void){return pRaceInfo->Left;}
+		int __fastcall GetBottomInfo(void){return pRaceInfo->Top+pRaceInfo->Height;}
+
 };
 //______________________________________________________________________________
-
-
-
-
 #endif

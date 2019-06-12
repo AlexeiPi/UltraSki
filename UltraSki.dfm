@@ -2,9 +2,10 @@ object fUltraSki: TfUltraSki
   Left = 0
   Top = 0
   Caption = 'UltraSki'
-  ClientHeight = 150
-  ClientWidth = 635
+  ClientHeight = 149
+  ClientWidth = 524
   Color = clBtnFace
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -23239,7 +23240,7 @@ object fUltraSki: TfUltraSki
   object pINFO: TLabel
     Left = 1
     Top = 3
-    Width = 482
+    Width = 409
     Height = 17
     AutoSize = False
     Caption = #1053#1072#1078#1084#1080#1090#1077' '#1076#1083#1103' '#1086#1090#1087#1088#1072#1074#1082#1080' '#1085#1072' '#1089#1072#1081#1090'  FIS'
@@ -23248,7 +23249,7 @@ object fUltraSki: TfUltraSki
     Transparent = False
     OnClick = pINFOClick
   end
-  object Image3: TImage
+  object imTimeMachine: TImage
     Left = 289
     Top = 39
     Width = 121
@@ -29199,23 +29200,33 @@ object fUltraSki: TfUltraSki
       A03319B23B8922AE0000000049454E44AE426082}
     Stretch = True
     Transparent = True
+    OnClick = imTimeMachineClick
+  end
+  object Label1: TLabel
+    Left = 584
+    Top = 56
+    Width = 31
+    Height = 13
+    Caption = 'Label1'
+    Color = clAqua
+    ParentColor = False
+    Transparent = False
   end
   object emessage2FIS: TEdit
     Left = 1
     Top = 18
-    Width = 482
+    Width = 409
     Height = 21
     TabOrder = 0
   end
   object Memo1: TMemo
-    Left = 481
-    Top = 0
-    Width = 185
-    Height = 89
+    Left = 416
+    Top = 40
+    Width = 107
+    Height = 102
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
-    Visible = False
   end
   object Timer1: TTimer
     Interval = 500
@@ -29238,8 +29249,7 @@ object fUltraSki: TfUltraSki
     Request.Ranges.Units = 'bytes'
     Request.Ranges = <>
     HTTPOptions = [hoForceEncodeParams]
-    Left = 408
-    Top = 40
+    Top = 112
   end
   object IdSSLIOHandlerSocketOpenSSL1: TIdSSLIOHandlerSocketOpenSSL
     MaxLineAction = maException
@@ -29250,7 +29260,7 @@ object fUltraSki: TfUltraSki
     SSLOptions.Mode = sslmUnassigned
     SSLOptions.VerifyMode = []
     SSLOptions.VerifyDepth = 0
-    Left = 488
-    Top = 96
+    Left = 24
+    Top = 112
   end
 end

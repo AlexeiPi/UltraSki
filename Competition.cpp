@@ -368,13 +368,21 @@ String Str;
 			work+=w1+";";
 		}
 		nodNew->SetAttribute("TitleNames", work);
-
+		int isn=-1;
 		for (auto irs = 0;irs<rSize;++irs){
 			IXMLNode *nodNew = racelistXML->ChildNodes->Last()->AddChild(L"Racer");
 			rrs=Racers[irs].size();
 			for (auto iirs = 0;iirs<rrs;++iirs){
 				Str=Racers[irs][iirs];
-				nodNew->SetAttribute(Racers[0][iirs], Racers[irs][iirs]);
+				auto a0=Racers[0][iirs],aI=Racers[irs][iirs];
+				if(a0=="SN"&&irs>0)
+					isn=iirs;
+				if(a0=="FC"&&irs>0){
+					if(aI.Length()==0)
+						aI="9999"+Racers[irs][isn];
+				}
+
+				nodNew->SetAttribute(a0, aI);
 			}
 		}
 		racelistXML->SaveToFile(filename);

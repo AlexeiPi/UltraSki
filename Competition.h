@@ -1,4 +1,5 @@
 //---------------------------------------------------------------------------
+
 #ifndef CompetitionH
 #define CompetitionH
 #include "UltraSki.h"
@@ -19,6 +20,7 @@
 void __fastcall SetClipBoard(AnsiString aboard);
 extern TIniFile *IniUltraAlpSki;//ini file
 
+enum _COMPETITION_ENUMS_{SNHeight=18,SNWidth=30,CodexWidth=90};
 
 
 using namespace std;
@@ -26,7 +28,7 @@ class Race;
 class RaceList;
 class RaceStartListView;
 class RaceResults;
-enum {SNHeight=18,SNWidth=30,CodexWidth=90};
+
 //---------------------------------------------------------------------------
 #if 1
 class Race;
@@ -179,8 +181,10 @@ class Race{
 			str=Racetime.FormatString(L"nn");
 			return str;
 		};
-		void setRacedate(TDate racedate){Racedate=racedate;};
-		void setRacetime(TTime racetime){Racetime=racetime;};
+		void setRacedate(TDate racedate){
+			Racedate=racedate;};
+		void setRacetime(TTime racetime){
+			Racetime=racetime;};
 
 		void setTimingby(String timingby){Timingby=timingby;};
 		String getTimingby(){return Timingby;};

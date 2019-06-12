@@ -7,19 +7,24 @@
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
+
 #include "Racer.h"
 #include "Competition.h"
 #include "RaceViews.h"
-#include <Vcl.Imaging.GIFImg.hpp>
+#include "TimingDevice.h"
+
+
 TfUltraSki *fUltraSki;
 extern TIdTCPClient *LiveFIS;
 AnsiString toLatin(AnsiString &srussian);
 //extern PACKAGE TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 Races *rcs;
+TimeKeeping *tk;
 
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner): TForm(Owner){
 	rcs=new Races;
+	tk=new TimeKeeping;
 	TGIFImage *GIF = dynamic_cast<TGIFImage*>(Image2->Picture->Graphic);
 	Application->OnException = MyException;
 
@@ -161,9 +166,6 @@ void __fastcall TfUltraSki::Image2Click(TObject *Sender){
 	}
 }
 //---------------------------------------------------------------------------
-
-
-
 void __fastcall TfUltraSki::pINFOClick(TObject *Sender){
 	if( LiveFIS->Connected() ){
 	String Str;
@@ -186,9 +188,9 @@ void __fastcall TfUltraSki::pINFOClick(TObject *Sender){
 		}
 		rcs->setEventname(astr);
 		rcs->setSlope("Slope");
-		rcs->setRacetime(TTime("11:47"));
+//		rcs->setRacetime(TTime("11:47"));
 		AnsiString ahour= rcs->getRaceth(),amin= rcs->getRacetm();
-		rcs->setRacetime(TTime("09:05:17"));
+		//rcs->setRacetime(TTime("09:05:17"));
 		ahour= rcs->getRaceth(),amin= rcs->getRacetm();
 
 
@@ -212,15 +214,9 @@ void __fastcall TfUltraSki::pINFOClick(TObject *Sender){
 		}
 
 	}
-
-
-
 }
 //---------------------------------------------------------------------------
-
-
-void __fastcall TfUltraSki::Image1Click(TObject *Sender)
-{
+void __fastcall TfUltraSki::Image1Click(TObject *Sender){
 AnsiString astr;
 	astr.sprintf("https://vimeo.com/offsideexplained/videos/");
     astr.sprintf("http://yandex.ru");
@@ -232,6 +228,42 @@ AnsiString astr;
 			Memo1->SelStart = Memo1->GetTextLen();
 			Memo1->SelText = WhichFailedToLoad();
 		}
+}
+//---------------------------------------------------------------------------
+AnsiString __fastcall _getTimeHHSSZZZ(void){
+int ih,im,is,ims;
+AnsiString astr;
+	SYSTEMTIME sys;
+	FILETIME lsys;
+	GetSystemTime(&sys);
+	ih=sys.wHour+3;
+	im=sys.wMinute;
+	is=sys.wSecond;
+	ims=sys.wMilliseconds;
+	astr.sprintf("%02d:%02d:%02d.%03d",ih,im,is,ims);
+	return astr;
+}
+//---------------------------------------------------------------------------
+void __fastcall TfUltraSki::imTimeMachineClick(TObject *Sender){
+
+	Memo1->Lines->Add(_getTimeHHSSZZZ());
+	tk->showTimeKeeping();
+	tk->SetLeftTop(rcs->GetLeftInfo(),rcs->GetBottomInfo());
+
+
+	int iN=tk->getPulsesN();
+	if(iN>0){
+/*
+		iN=rcs->getCurrRace();
+		rcs->showInfo();
+		rcs->setCurrRace(iN);
+		iN=rcs->getCurrRace();
+		rcs->setCurRacersColor();
+		iN=rcs->getCurrRace();
+		rcs->SetFocus();
+*/
+	}
+
 }
 //---------------------------------------------------------------------------
 

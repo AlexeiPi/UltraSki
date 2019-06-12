@@ -7,8 +7,13 @@
 #include <shellapi.h>
 #pragma comment(lib,"shell32")
 
+#include "Competition.h"
+
 using namespace std;
 extern PACKAGE TfUltraSki *fUltraSki;
+extern TimeKeeping *tk;
+extern Races *rcs;
+
 AnsiString toLatin(AnsiString &srussian);
 TIdTCPClient *LiveFIS;
 //=============================================================================
@@ -274,6 +279,8 @@ String astr;
 		ileft=pRaceInfo->Left+pRaceInfo->Width;
 		showView(itop,ileft,-1);
 	}
+    if(tk!=NULL)
+		tk->SetLeftTop(pRaceInfo->Left,pRaceInfo->Top+pRaceInfo->Height);
 }
 //------------------------------------------------------------------------------
 void __fastcall Races::showStartList(){
@@ -519,7 +526,7 @@ int iN;
 		grpGender->Items->Add("Men");
 		grpGender->Items->Add("Ladies");
 		grpGender->Items->Add("Mixed");
-		grpGender->Left = lID->Left+lID->Width+20;
+		grpGender->Left = lID->Left+lID->Width+50;
 		grpGender->Top = 50;
 		grpGender->Height = 40;
 		grpGender->Width = 224;
@@ -541,7 +548,7 @@ int iN;
 		grpDiscipline->Items->Add("KOG");
 		grpDiscipline->Items->Add("PGS");
 		grpDiscipline->Items->Add("PSL");
-		grpDiscipline->Left = lID->Left+lID->Width+20;
+		grpDiscipline->Left = grpGender->Left;
 		grpDiscipline->Top = 6;
 		grpDiscipline->Height = 40;
 		grpDiscipline->Width = 430;
@@ -561,7 +568,7 @@ int iN;
 		lDate->Top=lID->Top+lID->Height+5;
 		lDate->Left=lID->Left;
 		lDate->Visible=true;
-		lDate->Caption="Дата соревнования";
+		lDate->Caption="Дата и время соревнования";
 		lDate->OnMouseDown=mouse_down;
 
 
@@ -576,6 +583,18 @@ int iN;
 		eDate->Visible=true;
 		eDate->Text="";
 		eDate->OnKeyDown=maskedit_key_down_info;
+
+		eTime=new TMaskEdit(form);
+		eTime->EditMask="!99:99;1;_";
+		eTime->Parent = form;
+		eTime->Name="eTime";
+		eTime->Font->Size=10;
+		eTime->Top=eDate->Top;
+		eTime->Left=eDate->Left+eDate->Width;
+		eTime->Width=40;
+		eTime->Visible=true;
+		eTime->Text="";
+		eTime->OnKeyDown=maskedit_key_down_info;
 
 		imageFIS=new TImage(form);
 		imageFIS->Parent = form;
@@ -659,7 +678,7 @@ int iN;
 		lSLimportN->Visible=true;
 		lSLimportN->Caption="";
 
-		form->Width=eInfoName->Left+eInfoName->Width+20;
+		form->Width=eInfoName->Left+eInfoName->Width+55;
 		form->Height=lSLimportN->Top+lSLimportN->Height+45;
 
 		TBorderIcons tempBI = form->BorderIcons;
@@ -766,20 +785,22 @@ int icurH,icurH1,icurN,
 		}
 	}
 	catch(...){
-		ShowMessage("Прииплылии 3");
+		ShowMessage("Приплыли 3");
 	}
 }
 //------------------------------------------------------------------------------
 void __fastcall Races::SaveInfo2INI(void){
-	String 	sID,astr,sN,sDateINI,sCodexINI,sEVENT,sSLFile;
+	String 	sID,astr,sN,sDateINI,sTimeINI,sCodexINI,sEVENT,sSLFile;
 	sN=viewSL[icurrRace].SN->Caption;
 	sCodexINI=eFISCodex->Text;
 	sDateINI=eDate->Text;
+	sTimeINI=eTime->Text;
 	sEVENT=eInfoName->Text;
 	sSLFile=lSLimportN->Caption;
 	sID=lID->Caption;
 
 	IniUltraAlpSki->WriteString("Competition#"+sID,"DATE",sDateINI);
+	IniUltraAlpSki->WriteString("Competition#"+sID,"TIME",sTimeINI);
 	IniUltraAlpSki->WriteString("Competition#"+sID,"FISCODEX",sCodexINI);
 	IniUltraAlpSki->WriteString("Competition#"+sID,"EVENT",sEVENT);
 	IniUltraAlpSki->WriteString("Competition#"+sID,"SLFILE",sSLFile);
@@ -788,17 +809,18 @@ void __fastcall Races::SaveInfo2INI(void){
 	IniUltraAlpSki->UpdateFile();
 	setEventname(sEVENT);
 	setRacedate(TDate(sDateINI));
+	setRacetime(TTime(sTimeINI));
 
 	lID->Color=clLime;
 }
 //----------------------------------------------------------------------------
 void __fastcall Races::FillRaceInfo(void){
-String 	astr,sDateINI,sCodexINI,sEVENT,sSLFile,sname,sN;
+String 	astr,sDateINI,sTimeINI,sCodexINI,sEVENT,sSLFile,sname,sN;
 	if(icurrRace<0)return;
 	try{
-	sname=viewSL[icurrRace].RCodex->Caption;
-	lCompetition->Caption=sname;
-	eCompetition->Text=sname;
+		sname=viewSL[icurrRace].RCodex->Caption;
+		lCompetition->Caption=sname;
+		eCompetition->Text=sname;
 	}
 	catch(...){
 		int i=0;
@@ -814,11 +836,22 @@ String 	astr,sDateINI,sCodexINI,sEVENT,sSLFile,sname,sN;
 	}
 	astr=IniUltraAlpSki->ReadString("Competition#"+sname,"ID","");
 	sDateINI=IniUltraAlpSki->ReadString("Competition#"+sname,"DATE","");
+	sTimeINI=IniUltraAlpSki->ReadString("Competition#"+sname,"TIME","");
+	sTimeINI=IniUltraAlpSki->ReadString("Competition#"+sname,"TIME","");
 	sCodexINI=IniUltraAlpSki->ReadString("Competition#"+sname,"FISCODEX","0");
+
 
 	try{
 		int icodex=StrToInt(sCodexINI);
 		setCodex(icodex);
+		if(icodex>0/*==9872||icodex==9871*/)
+			LiveFISconnect();
+		else{
+			if(LiveFIS){
+				delete LiveFIS;
+                LiveFIS=NULL;
+			}
+		}
 	}
 	catch(...){
 		sCodexINI=0;
@@ -826,7 +859,9 @@ String 	astr,sDateINI,sCodexINI,sEVENT,sSLFile,sname,sN;
 
 	sEVENT=IniUltraAlpSki->ReadString("Competition#"+sname,"EVENT","");
 	setEventname(sEVENT);
+
 	sSLFile=IniUltraAlpSki->ReadString("Competition#"+sname,"SLFILE","");
+
 	astr=IniUltraAlpSki->ReadString("Competition#"+sname,"DISCIPLINE","");
 	setDiscipline(astr);
 	grpDiscipline->ItemIndex=-1;
@@ -850,6 +885,13 @@ String 	astr,sDateINI,sCodexINI,sEVENT,sSLFile,sname,sN;
 
 
 	eDate->Text=sDateINI;
+	if(sDateINI.Length()>0)
+		setRacedate(TDate(sDateINI));
+	eTime->Text=sTimeINI;
+	if(sTimeINI.Length()>0)
+		setRacetime(TTime(sTimeINI));
+
+
 	eFISCodex->Text=sCodexINI;
 	eInfoName->Text=sEVENT;
 	lSLimportN->Caption=sSLFile;
@@ -897,6 +939,10 @@ astr=edt->Name;
 		lID->Color=clRed;
 	return;
 	}
+	if(astr=="eTime"||astr=="eDate"){
+		lID->Color=clRed;
+	return;
+	}
 astr=edt->Name;
 String sEdit=edt->Text;
 bool flag;
@@ -908,7 +954,7 @@ bool flag;
 		if(flag)
 			edt->Text=td.FormatString("dd.mm.yyyy");
 	}
-	edt->Color=flag?clLime:clRed;
+///	edt->Color=flag?clLime:clRed;
 }
 //------------------------------------------------------------------------------
 void __fastcall Races::edit_key_down_info(TObject *Sender, WORD &Key, TShiftState Shift){
@@ -1036,6 +1082,9 @@ void __fastcall Races::mouse_down(TObject *Sender, TMouseButton Button,
 			sname=lblmoused->Name;
 	if(sname=="RaceDate"){
 		eDate->Text=Now().FormatString("dd.mm.yyyy");
+		rcs->setRacedate(TDate(eDate->Text));
+		eTime->Text=Now().FormatString("hh:MM");
+		rcs->setRacetime(TTime(eTime->Text));
 		lID->Color=clRed;
 		return;
 	}
