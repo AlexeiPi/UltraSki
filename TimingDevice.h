@@ -38,6 +38,7 @@ private:
 		int icurrpulseNumber;
 		AnsiString TimeOfDay;
 		AnsiString electroLine;
+		AnsiString racecode;
 		AnsiString BIB;
 		AnsiString DNF;
 		AnsiString DSQ;
@@ -68,8 +69,10 @@ private:
 
 
 		TPanel *p1;
+        TLabel *lRaceCode;
 		TEdit *eBIB;
-		TLabel *lDNF,*lDSQ;//seq number
+		TLabel *lDNF,*lDSQ,*lbibLapse;//seq number
+
 		TLabel *lSN,*lSNb;//seq number
 		TLabel *lLine,*lbLine;//pulse line 0-correction according to FIS rules, 1-start, 2-8 intermediate, 9-finish physical
 		TEdit *eTime;//electronic time
@@ -77,14 +80,17 @@ private:
 		TEdit *emBTime;//backup time
 
 		_viewTK(TPanel*p,int ileftoffset,int iwidth,int i,float idiff,Timing *tm1,Timing *tm2,TLabel *lbl){//constructor
-			AnsiString str,aline="",aSN="",aBIB="",aDSQ="",aDNF="",aTOD="",bline="",bSN="",bTOD="",adiff="";
+			AnsiString str,aline="",aSN="",aBIB="",aDSQ="",aDNF=""
+			,aRACECODE="",aBIBLAPSE="",aTOD="",bline="",bSN="",bTOD="",adiff="";
 			int isn=0;
+			aBIBLAPSE="1:22.33";
 			if(tm1!=NULL){
 				isn=tm1->icurrpulseNumber;
 				aSN=isn;
 				aline=tm1->electroLine;
 				aTOD=tm1->TimeOfDay;
 				aBIB=tm1->BIB;
+				aRACECODE=tm1->racecode;
 				aDSQ=tm1->DSQ;
 				aDNF=tm1->DNF;
 			}
@@ -97,7 +103,9 @@ private:
 					aBIB=tm2->BIB;
 					aDSQ=tm2->DSQ;
 					aDNF=tm2->DNF;
-                }
+					aBIB=tm2->BIB;
+					aRACECODE=tm2->racecode;
+				}
 			}
 			if((tm1!=NULL)&&(tm2!=NULL))
 				adiff.sprintf("%0.4f",idiff);
@@ -114,6 +122,24 @@ private:
 				p1->ShowCaption=false;
 			}
 
+			lRaceCode=dynamic_cast<TLabel*> (p1->FindComponent("tmlRaceCode"));
+			if(lRaceCode==NULL){
+				lRaceCode=new TLabel(p1);
+				lRaceCode->Parent = p1;
+				lRaceCode->Name="tmlRaceCode";
+				lRaceCode->AutoSize=false;
+				lRaceCode->Transparent=false;
+				lRaceCode->Font->Size=8;
+				lRaceCode->Width=90;
+				lRaceCode->Height=18;
+				lRaceCode->Top=0;
+				lRaceCode->Left=2;
+				lRaceCode->Alignment=taLeftJustify;
+				lRaceCode->OnMouseDown=lbl->OnMouseDown;
+			}
+			lRaceCode->Caption=aRACECODE;
+
+
 			lDNF=dynamic_cast<TLabel*> (p1->FindComponent("tmlDNF"));
 			if(lDNF==NULL){
 				lDNF=new TLabel(p1);
@@ -122,16 +148,17 @@ private:
 				lDNF->AutoSize=false;
 				lDNF->Transparent=false;
 				lDNF->Font->Size=8;
-				lDNF->Width=30;
+				lDNF->Width=10;
 				lDNF->Height=18;
 				lDNF->Top=0;
 				lDNF->Left=ileftoffset-6;
 				lDNF->Alignment=taCenter;
-				lDNF->Caption="DNF";
+				lDNF->Caption="F";
 				lDNF->OnMouseDown=lbl->OnMouseDown;
 			}
 			lDNF->Tag=isn;
-			lDNF->Color=aDNF=="DNF"?clRed:clWhite;
+			lDNF->Color=aDNF=="F"?clRed:clWhite;
+			lDNF->Font->Color=lDNF->Color==clRed?clYellow:clBlack;
 
 			lDSQ=dynamic_cast<TLabel*> (p1->FindComponent("tmlDSQ"));
 			if(lDSQ==NULL){
@@ -142,14 +169,15 @@ private:
 				lDSQ->Transparent=false;
 				lDSQ->Font->Size=lDNF->Font->Size;
 				lDSQ->Width=lDNF->Width;
-				lDSQ->Height=18;
-				lDSQ->Top=0;
+				lDSQ->Height=lDNF->Height;
+				lDSQ->Top=lDNF->Top;
 				lDSQ->Left=lDNF->Left+lDNF->Width+2;
 				lDSQ->Alignment=taCenter;
-				lDSQ->Caption="DSQ";
+				lDSQ->Caption="Q";
 				lDSQ->OnMouseDown=lbl->OnMouseDown;
 			}
-			lDSQ->Color=aDSQ=="DSQ"?clRed:clWhite;
+			lDSQ->Color=aDSQ=="Q"?clRed:clWhite;
+			lDSQ->Font->Color=lDSQ->Color==clRed?clYellow:clBlack;
 			lDSQ->Tag=isn;
 
 
@@ -161,13 +189,31 @@ private:
 				eBIB->AutoSize=false;
 				eBIB->Tag=i;
 				eBIB->Font->Size=lDNF->Font->Size;
-				eBIB->Width=30;
+				eBIB->Width=25;
 				eBIB->Height=18;
 				eBIB->Top=0;
 				eBIB->Left=lDSQ->Left+lDSQ->Width;
 				eBIB->Alignment=taCenter;
 			}
 			eBIB->Text=aBIB;
+
+			lbibLapse=dynamic_cast<TLabel*> (p1->FindComponent("tmlbibLapse"));
+			if(lbibLapse==NULL){
+				lbibLapse=new TLabel(p1);
+				lbibLapse->Parent = p1;
+				lbibLapse->Name="tmlbibLapse";
+				lbibLapse->AutoSize=false;
+				lbibLapse->Transparent=false;
+				lbibLapse->Tag=i;
+				lbibLapse->Color=clWhite;
+				lbibLapse->Font->Size=8;
+				lbibLapse->Width=40;
+				lbibLapse->Height=18;
+				lbibLapse->Top=0;
+				lbibLapse->Left=eBIB->Left+eBIB->Width+2;
+				lbibLapse->Alignment=taCenter;
+			}
+			lbibLapse->Caption=aBIBLAPSE;
 
 			lSN=dynamic_cast<TLabel*> (p1->FindComponent("tmlSN"));
 			if(lSN==NULL){
@@ -178,7 +224,7 @@ private:
 				lSN->Transparent=false;
 				lSN->Tag=i;
 				lSN->Color=clWhite;
-				lSN->Font->Size=10;
+				lSN->Font->Size=8;
 				lSN->Width=40;
 				lSN->Height=18;
 				lSN->Top=0;
@@ -211,7 +257,7 @@ private:
 				eTime->Parent = p1;
 				eTime->AutoSize=false;
 				eTime->Tag=lSN->Tag;
-				eTime->Font->Size=lSN->Font->Size;
+				eTime->Font->Size=10;
 				eTime->Width=90;
 				eTime->Height=lSN->Height;
 				eTime->Top=lSN->Top;
@@ -227,7 +273,7 @@ private:
 				emTime->Parent = p1;
 				emTime->AutoSize=false;
 				emTime->Tag=lSN->Tag;
-				emTime->Font->Size=lSN->Font->Size;
+				emTime->Font->Size=eTime->Font->Size;
 				emTime->Width=eTime->Width-30;
 				emTime->Height=lSN->Height;
 				emTime->Top=lSN->Top;
@@ -243,7 +289,7 @@ private:
 				emBTime->Parent = p1;
 				emBTime->AutoSize=false;
 				emBTime->Tag=lSN->Tag;
-				emBTime->Font->Size=lSN->Font->Size;
+				emBTime->Font->Size=eTime->Font->Size;
 				emBTime->Width=eTime->Width;
 				emBTime->Height=lSN->Height;
 				emBTime->Top=lSN->Top;
@@ -281,7 +327,7 @@ private:
 				lSNb->Transparent=false;
 				lSNb->Tag=i;
 				lSNb->Color=clWhite;
-				lSNb->Font->Size=10;
+				lSNb->Font->Size=lSN->Font->Size;
 				lSNb->Width=lSN->Width;
 				lSNb->Height=18;
 				lSNb->Top=0;
@@ -307,6 +353,7 @@ private:
 	AnsiString ApplicationPath,DefaultPath;
 	TStringList* Sections;
 	TStringList* Values;
+	TDateTime  LastStartTime;
 
 public:
 	TimeKeeping(){
@@ -392,6 +439,29 @@ public:
 	void __fastcall TimePut(AnsiString atype,AnsiString aname,AnsiString atime);
 	void __fastcall SetRaceCode(AnsiString aRaceCode){if(lRaceCode->Color==clLime){eRaceCode->Text=aRaceCode;lRaceCode->Color=clRed;lRaceCode->Font->Color=clYellow;}};
 	void __fastcall SetBIBonStart(AnsiString abibonstart){if(lBIBonStart->Color==clLime){eBIBonStart->Text=abibonstart;lBIBonStart->Color=clRed;lBIBonStart->Font->Color=clYellow;}};
+	void __fastcall Set_DSQ_DNF(TLabel *lblmoused);
+	void __fastcall Set_Red_Lime_Color(TLabel *lblmoused);
+	void __fastcall SetLastStartTime(TDateTime lastdatetime){LastStartTime=lastdatetime;};
+	AnsiString __fastcall Secs2MSS(int isecs){AnsiString atime;int imin;imin=isecs/60;isecs=isecs%60;atime.sprintf("%0d:%02d",imin,isecs);return atime;};
+	AnsiString __fastcall mSecs2MSSHH(int imsecs){
+										AnsiString atime,aminsec,amsecs;
+										int isecs;
+										isecs=imsecs/1000;imsecs%=1000;
+										amsecs.sprintf("%03d",imsecs);
+										amsecs.SubString(1,2);
+										aminsec=Secs2MSS(isecs);
+										atime.sprintf("%s.%s",aminsec.c_str(),amsecs.c_str());return atime;
+	};
+	AnsiString __fastcall uSecs2MSSHH(int iusecs){
+										AnsiString atime,aminsec,ausecs;
+										int isecs;
+										isecs=iusecs/10000;iusecs%=10000;
+										ausecs.sprintf("%03d",iusecs);
+										ausecs.SubString(1,2);
+										aminsec=Secs2MSS(isecs);
+										atime.sprintf("%s.%s",aminsec.c_str(),ausecs.c_str());return atime;
+	};
+	void __fastcall ProcessINI(int iN,AnsiString &atod,AnsiString &atype,AnsiString &arace,AnsiString &abib,AnsiString &adnf,AnsiString &adsq);
 };
 #endif
 //---------------------------------------------------------------------------

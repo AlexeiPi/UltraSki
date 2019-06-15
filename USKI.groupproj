@@ -9,6 +9,9 @@
         <Projects Include="UltraSki_cbpTests.cbproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="..\TESTLAB\Project1.cbproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -35,14 +38,23 @@
     <Target Name="UltraSki_cbpTests:Make">
         <MSBuild Projects="UltraSki_cbpTests.cbproj" Targets="Make"/>
     </Target>
+    <Target Name="Project1">
+        <MSBuild Projects="..\TESTLAB\Project1.cbproj"/>
+    </Target>
+    <Target Name="Project1:Clean">
+        <MSBuild Projects="..\TESTLAB\Project1.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Project1:Make">
+        <MSBuild Projects="..\TESTLAB\Project1.cbproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="Ultra_Ski;UltraSki_cbpTests"/>
+        <CallTarget Targets="Ultra_Ski;UltraSki_cbpTests;Project1"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="Ultra_Ski:Clean;UltraSki_cbpTests:Clean"/>
+        <CallTarget Targets="Ultra_Ski:Clean;UltraSki_cbpTests:Clean;Project1:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="Ultra_Ski:Make;UltraSki_cbpTests:Make"/>
+        <CallTarget Targets="Ultra_Ski:Make;UltraSki_cbpTests:Make;Project1:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

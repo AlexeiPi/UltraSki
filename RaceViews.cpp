@@ -527,7 +527,7 @@ int iN;
 		grpGender->Items->Add("Men");
 		grpGender->Items->Add("Ladies");
 		grpGender->Items->Add("Mixed");
-		grpGender->Left = lID->Left+lID->Width+50;
+		grpGender->Left = lID->Left+lID->Width+50+30;
 		grpGender->Top = 50;
 		grpGender->Height = 40;
 		grpGender->Width = 224;
@@ -649,7 +649,7 @@ int iN;
 		eInfoName->Font->Size=10;
 		eInfoName->Top=lInfoName->Top+lInfoName->Height+2;
 		eInfoName->Left=lID->Left;
-		eInfoName->Width=550;
+		eInfoName->Width=grpDiscipline->Width+grpDiscipline->Left-2;
 		eInfoName->Visible=true;
 		eInfoName->Text="";
 		eInfoName->OnKeyDown=edit_key_down_info;//edit_key_down_info;
@@ -679,7 +679,7 @@ int iN;
 		lSLimportN->Visible=true;
 		lSLimportN->Caption="";
 
-		form->Width=eInfoName->Left+eInfoName->Width+55;
+		form->Width=eInfoName->Left+eInfoName->Width+55+15;
 		form->Height=lSLimportN->Top+lSLimportN->Height+45;
 
 		TBorderIcons tempBI = form->BorderIcons;

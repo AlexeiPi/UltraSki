@@ -3,8 +3,13 @@
 #pragma hdrstop
 
 #include "TimingDevice.h"
+#include "ProcessTimingINI.h"
+
 #include <DateUtils.hpp>
 #include <System.IOUtils.hpp>
+#include <stdlib.h>
+#include <algorithm>
+
 using namespace std;
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
@@ -169,7 +174,7 @@ const int GridWidth=90;
 		l0pulse->Alignment=taCenter;
 		l0pulse->Transparent=false;
 		l0pulse->Top=eBIBonStart->Top;
-		l0pulse->Width=SNWidth;
+		l0pulse->Width=SNWidth+13;
 		l0pulse->Left=eBIBonStart->Left+eBIBonStart->Width+2;
 		l0pulse->Visible=true;
 		l0pulse->Caption="";
@@ -288,7 +293,7 @@ const int GridWidth=90;
 		lpulse->Left=2;
 		lpulse->Width=GridWidth;
 		lpulse->Visible=true;
-		lpulse->Caption="Система A";
+		lpulse->Caption="Система A ->";
 		lpulse->OnMouseDown=mouse_down;
 	}
 
@@ -403,7 +408,7 @@ const int GridWidth=90;
 		lBpulse->Left=lpulse->Left;
 		lBpulse->Width=GridWidth;
 		lBpulse->Visible=true;
-		lBpulse->Caption="Система B";
+		lBpulse->Caption="Система B ->";
 		lBpulse->OnMouseDown=mouse_down;
 	}
 
@@ -536,36 +541,14 @@ const int GridWidth=90;
 	}
 
 
-	iN=IniUltraTimeKeeping->ReadInteger("TimeKeeping","Number",0);
+///	iN=IniUltraTimeKeeping->ReadInteger("TimeKeeping","Number",0);
 	Timing tm;
 	TimingList.clear();
 
-
-
-
 	AnsiString aafileini=rcs->getDefaultPath()+"TimeKeeping.INI";
-	AnsiString _iniarea;
-	if (FileExists(aafileini)) {
-		 _iniarea=TFile::ReadAllText(aafileini);
-		string iniarea =_iniarea.c_str();
-		int ipos;
-		iN=0;
-		ipos=iniarea.find("Time#",1);
-		int jjj=0,ipos1;
-		while (ipos>0){
-			iN++;
-			AnsiString atod,atype;
-			ipos1=iniarea.find("]",ipos);
-			atod=iniarea.substr(ipos+5,ipos1-ipos-5).c_str();
-			tm.icurrpulseNumber=iN;
-			tm.TimeOfDay=atod;
-			ipos=iniarea.find("Type=",ipos+18);
-			atype=iniarea.substr(ipos+5,3).c_str();
-			tm.electroLine=atype;
-			TimingList.push_back(tm);
 
-			ipos=iniarea.find("Time#",ipos+5);
-		}
+	if (FileExists(aafileini)) {
+		ProcessTimingINI(aafileini);
 	}
 	else{
 		tm.icurrpulseNumber=1;
@@ -577,29 +560,6 @@ const int GridWidth=90;
 		tm.electroLine="BS";
 		TimingList.push_back(tm);
 	}
-
-
-
-/*	IniUltraTimeKeeping->ReadSections(Sections);
-	AnsiString ssection;
-	for (int i=0; i<Sections->Count; i++) {
-		ssection=Sections->Strings[i];
-		ipos=ssection.Pos("Time#");
-		if(ipos>0){
-			AnsiString atod,atype;
-			iN++;
-			atod=ssection;ipos=ssection.Pos("#");ssection.Delete(1,ipos);
-			tm.icurrpulseNumber=iN;tm.TimeOfDay=ssection;
-
-			atype=IniUltraTimeKeeping->ReadString(atod,"TYPE","");
-			tm.electroLine=atype;
-			TimingList.push_back(tm);
-		}
-	}
-*/
-
-/*sort(TimingList.begin(),TimingList.end(),[](const Timing  &a,const Timing &b){return a.icurrpulseNumber >b.icurrpulseNumber;});*/
-
 	show_viewTK();
 
 	panel1->ShowCaption=false;panel1->Caption="Удаление:";panel1->Font->Size=10;
@@ -627,141 +587,157 @@ void __fastcall TimeKeeping::showTimeKeeping(void){
 //------------------------------------------------------------------------------
 void __fastcall TimeKeeping::TimePut(AnsiString atype,AnsiString aname,AnsiString atime){
 Timing tm;
-AnsiString astr;
+AnsiString astr,aracecode=Trim(eRaceCode->Text),abib=Trim(eBIBonStart->Text);
 	tm.TimeOfDay=atime;
 	tm.electroLine=atype+aname;
 	tm.icurrpulseNumber=TimingList.size()+1;
+	tm.racecode=aracecode;
+	tm.BIB=abib;
 	TimingList.push_back(tm);
 
 	astr=atype+"Time#"+atime;
-	IniUltraTimeKeeping->WriteString(astr,"Type",atype+aname);
+	IniUltraTimeKeeping->WriteString(astr,"Type","{t"+atype+aname+"}");
+	IniUltraTimeKeeping->WriteString(astr,"RC","{r"+aracecode+"}");
+	IniUltraTimeKeeping->WriteString(astr,"BIB","{b"+abib+"}");
 }
 //------------------------------------------------------------------------------
-#include <stdlib.h>
+void __fastcall TimeKeeping::Set_DSQ_DNF(TLabel *lblmoused){
+int itag;
+AnsiString astr,atime,aline,atype;
+	itag=lblmoused->Tag-1;
+	TimingList[itag].DSQ="";
+	TimingList[itag].DNF="";
+
+	if(lblmoused->Color==clRed){
+			lblmoused->Color=clWhite;
+	}
+		else{
+			lblmoused->Color=clRed;
+			if(lblmoused->Caption=="Q")
+				TimingList[itag].DSQ="Q";
+			if(lblmoused->Caption=="F")
+				TimingList[itag].DNF="F";
+	}
+	atime=TimingList[itag].TimeOfDay;
+	aline=TimingList[itag].electroLine;
+	atype=aline.SubString(1,1);
+	astr=atype+"Time#"+atime;
+	IniUltraTimeKeeping->WriteString(astr,"Q","{q"+TimingList[itag].DSQ+"}");
+	IniUltraTimeKeeping->WriteString(astr,"F","{f"+TimingList[itag].DNF+"}");
+
+	show_viewTK();
+}
+//------------------------------------------------------------------------------
+void __fastcall TimeKeeping::Set_Red_Lime_Color(TLabel *lblmoused){
+	if(lblmoused->Color==clLime){
+		lblmoused->Color=clRed;
+		lblmoused->Font->Color=clYellow;
+	}
+	else{
+		lblmoused->Color=clLime;
+		lblmoused->Font->Color=clRed;
+	}
+}
+//------------------------------------------------------------------------------
 void __fastcall TimeKeeping::mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y){
 TLabel *lblmoused=dynamic_cast<TLabel*>(Sender);
 String 	str=lblmoused->Caption,sname=lblmoused->Name;
 AnsiString astr,atime,atype,aline,aa,bb;
 int a,b,itag;
-//	srand(time(NULL));randomize();b=random(9);a=random(9);
 	b=random(9);a=random(9);
 	aa.sprintf("%d",a);
 	bb.sprintf("%d",b);
 	astr=str;
 	astr=sname;
 	atime=_getTimeHHSSZZZ();
-	if(sname=="tmlDSQ" || sname=="tmlDNF"){
-		itag=lblmoused->Tag-1;
-		TimingList[itag].DSQ="";
-		TimingList[itag].DNF="";
-
-		if(lblmoused->Color==clRed){
-				lblmoused->Color=clWhite;
+	if(sname=="tmlRaceCode"){
+	    sname="";
+	}
+	if(sname=="tmlDSQ" || sname=="tmlDNF")
+		Set_DSQ_DNF(lblmoused),sname="";
+	if(sname=="lsynch"||sname=="lRaceCode"||sname=="lBIBonStart")
+		Set_Red_Lime_Color(lblmoused),sname="";
+	if(sname=="i10"||sname=="i20"||sname=="i30"||sname=="i40")
+		Set_Red_Lime_Color(lblmoused),sname="";
+	if(sname=="lPulseA"){
+		lpulseValue->Caption="";lpulseValue1->Caption="";lpulseValue2->Caption="";lpulseValue3->Caption="";lpulseValue4->Caption="";lpulseValue5->Caption="";lpulseValue6->Caption="";
+		sname="";
+	}
+	if(sname=="lPulseB"){
+		lBpulseValue->Caption="";lBpulseValue1->Caption="";lBpulseValue2->Caption="";lBpulseValue3->Caption="";lBpulseValue4->Caption="";lBpulseValue5->Caption="";lBpulseValue6->Caption="";
+		sname="";
+	}
+	if(sname.Length()>0){//timing events left, mouse simulation of real timing devices
+		int ipos=sname.Pos("B");
+		if(sname.Pos("S")){
+			l0pulse->Color=clLime;
+			l0pulse->Visible=true;
+			l0pulse->Caption="0";
+			SetLastStartTime(Now());
 		}
+		if(sname.Pos("F")){
+			b=random(999);a=random(999);
+			atime.SetLength(10);
+			aa.sprintf("%03d",a);
+			bb.sprintf("%03d",b);
+		}
+		if(ipos==0){
+			lblmoused->Caption=atime+aa;
+			if (Shift.Contains(ssCtrl)){
+				TimePut("A",sname,atime+aa);
+			}
 			else{
-				lblmoused->Color=clRed;
-				if(lblmoused->Caption=="DSQ")
-					TimingList[itag].DSQ="DSQ";
-				if(lblmoused->Caption=="DNF")
-					TimingList[itag].DNF="DNF";
-		}
-		atime=TimingList[itag].TimeOfDay;
-		aline=TimingList[itag].electroLine;
-		atype=aline.SubString(1,1);
-		astr=atype+"Time#"+atime;
-		IniUltraTimeKeeping->WriteString(astr,"DSQ","{"+TimingList[itag].DSQ+"}");
-		IniUltraTimeKeeping->WriteString(astr,"DNF","{"+TimingList[itag].DNF+"}");
-
-		show_viewTK();
-		return;
-	}
-
-
-	if(sname=="lsynch"||sname=="lRaceCode"||sname=="lBIBonStart"){
-		if(lblmoused->Color==clLime){
-			lblmoused->Color=clRed;
-			lblmoused->Font->Color=clYellow;
-		}
-		else{
-			lblmoused->Color=clLime;
-			lblmoused->Font->Color=clRed;
-		}
-	}
-	else{
-		if(sname=="i10"||sname=="i20"||sname=="i30"||sname=="i40"){
-			if(lblmoused->Color==clRed)lblmoused->Color=clLime; else lblmoused->Color=clRed;
-		}
-		else
-		if(sname=="lPulseA"){
-			lpulseValue->Caption="";lpulseValue1->Caption="";lpulseValue2->Caption="";lpulseValue3->Caption="";lpulseValue4->Caption="";lpulseValue5->Caption="";lpulseValue6->Caption="";
-		}
-		else if(sname=="lPulseB"){
-			lBpulseValue->Caption="";lBpulseValue1->Caption="";lBpulseValue2->Caption="";lBpulseValue3->Caption="";lBpulseValue4->Caption="";lBpulseValue5->Caption="";lBpulseValue6->Caption="";
-		}
-		else{
-			int ipos=sname.Pos("B");
-			if(sname.Pos("S")){
-			   ////	l0pulse->Caption="ON";
-				l0pulse->Color=clLime;
-			}
-			if(sname.Pos("F")){
-				b=random(999);a=random(999);
-				atime.SetLength(10);
-				aa.sprintf("%03d",a);
-				bb.sprintf("%03d",b);
-			}
-			if(ipos==0){
-				lblmoused->Caption=atime+aa;
-				if (Shift.Contains(ssCtrl)){
+				if(a>=b){
+					TimePut("B",sname,atime+bb);
 					TimePut("A",sname,atime+aa);
 				}
 				else{
-					if(a>=b){
-						TimePut("B",sname,atime+bb);
-						TimePut("A",sname,atime+aa);
-					}
-					else{
-						TimePut("A",sname,atime+aa);
-						TimePut("B",sname,atime+bb);
-					}
+					TimePut("A",sname,atime+aa);
+					TimePut("B",sname,atime+bb);
 				}
 			}
-			else{
-				TimePut("",sname,atime+bb);
-				lblmoused->Caption=atime+bb;
-			}
-			IniUltraTimeKeeping->UpdateFile();
-
-			show_viewTK();
-
 		}
+		else{
+			TimePut("",sname,atime+bb);
+			lblmoused->Caption=atime+bb;
+		}
+		IniUltraTimeKeeping->UpdateFile();
+
+		show_viewTK();
+
 	}
+
 }//end of proc
 //------------------------------------------------------------------------------
 void __fastcall TimeKeeping::OnTKtimer(TObject *Sender){
 int isecs=0;
 AnsiString atime,atime1,adate;
 TDateTime dateTime1,dateTime;
+TDateTime _now,_last;
+int ih,im,is,ims;
+static int ilastsec;
+SYSTEMTIME sys;
+	GetSystemTime(&sys);
+	ih=(sys.wHour+3)%24;
+	im=sys.wMinute;
+	is=sys.wSecond;
+	ims=sys.wMilliseconds;
+
+	_now=Now();
 	atime=_getTimeHHSSZZZ();
 	pTMViews->Caption=atime;
-
-	if(l0pulse!=NULL&&l0pulse->Color==clLime){
-///		TDateTime _ttime;
-		TDateTime _now;
-///		_ttime=Now();
-		_now=Now();
-		TFormatSettings fs = TFormatSettings::Create();
-		fs.DecimalSeparator = '.';
-		atime=lpulseValue->Caption;atime.SetLength(10);
-		atime1=lBpulseValue->Caption;atime1.SetLength(10);
-        adate=FormatDateTime("dd.mm.yyyy",Now());
-		dateTime = StrToDateTime(adate+" "+atime, fs);
-		dateTime1= StrToDateTime(adate+" "+atime1, fs);
-		if(dateTime1>dateTime)
-			dateTime=dateTime1;
-		isecs=SecondsBetween(_now,dateTime);
-		l0pulse->Visible=isecs<60;
-		l0pulse->Caption=isecs;
+	if(ilastsec!=is){
+	    ilastsec=is;
+		if(l0pulse!=NULL&&l0pulse->Color==clLime){
+			_last=LastStartTime;
+			isecs=SecondsBetween(_now,LastStartTime);
+			if(isecs>=0 and isecs<599){
+				l0pulse->Visible=true;
+				l0pulse->Caption=Secs2MSS(isecs+1);
+			}
+			else
+				l0pulse->Visible=false;
+		}
 	}
 }
 //------------------------------------------------------------------------------
@@ -785,6 +761,7 @@ void __fastcall TimeKeeping::show_viewTK(void){
 		float it1=0,it2=0;
 		float idiff=0;
 		AnsiString asystem="",bsystem="",atime="",btime="",ahh="",amm="",ass="",azzzz="",bhh="",bmm="",bss="",bzzzz="",adiff="";
+        tm1=tm2=tmp1=tmp2=NULL;
 		if(TimingList.size()>0&&(tmlsz-j-1)>=0){
 			tm1=&TimingList[tmlsz-j-1];
 			adsq=tm1->DSQ;
@@ -869,3 +846,19 @@ void __fastcall TimeKeeping::show_viewTK(void){
 	panel1->Height=panel2->Height+2;
 	pTMViews->Show();
 }
+//-----------------------------------------------------------------------------
+void __fastcall TimeKeeping::ProcessINI(int iN,AnsiString &atod,AnsiString &atype,AnsiString &arace,AnsiString &abib,AnsiString &adnf,AnsiString &adsq){
+///	printf("%d %s %s %s %s %s %s\n",iN,atod.c_str(),atype.c_str(),arace.c_str(),abib.c_str(),adnf.c_str(),adsq.c_str());
+Timing tm;
+	tm.icurrpulseNumber=iN;
+	tm.BIB=abib;
+	tm.TimeOfDay=atod;
+	tm.racecode=arace;
+	tm.electroLine=atype;
+	tm.DSQ=adsq;
+	tm.DNF=adnf;
+
+	TimingList.push_back(tm);
+}
+//-----------------------------------------------------------------------------
+
