@@ -4,28 +4,31 @@
 
 #include "TimingDevice.h"
 #include <DateUtils.hpp>
+#include <System.IOUtils.hpp>
+using namespace std;
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 TIniFile *IniUltraTimeKeeping;//ini file
 extern Races *rcs;
 /*
 DateUtils.MilliSecondsBetween(Now, 0);
-    TFormatSettings fs = TFormatSettings::Create();
-    fs.DecimalSeparator = '.';
-    TDateTime dateTime = StrToDateTime("02/02/2016 01:00:00.123", fs);
+	TFormatSettings fs = TFormatSettings::Create();
+	fs.DecimalSeparator = '.';
+	TDateTime dateTime = StrToDateTime("02/02/2016 01:00:00.123", fs);
 	// восстанавливать ничего не нужно
 
 	TDateTime dateTime = StrToDateTime(String().sprintf("12.02.2016 01:02:03%c123",DecimalSeparator));
 	Label1->Caption = FormatDateTime("dd.mm.yyyy hh:nn:ss.zzz",dateTime);
-                                 int    int      int      int
-    TDateTime Value = EncodeTime(Hours, Minutes, Seconds, Milliseconds);
-    edtTime->Text = Value;
+								 int    int      int      int
+	TDateTime Value = EncodeTime(Hours, Minutes, Seconds, Milliseconds);
+	edtTime->Text = Value;
 */
 //---------------------------------------------------------------------------
 void __fastcall TimeKeeping::TimeKeepingLocations(TForm* form){
 String str;
 _viewTK *vsl;
 int iN=-1;
+const int GridWidth=90;
 	iN=this->getPulsesN();
 	if(panel1==NULL){
 		panel1= new TPanel(form);
@@ -43,17 +46,52 @@ int iN=-1;
 		//	panel1->Color=clLime;
 	}
 
+	if(lRaceCode==NULL){
+		lRaceCode= new TLabel(panel1);
+		lRaceCode->Parent = panel1;
+		lRaceCode->Name="lRaceCode";
+		lRaceCode->Color=clRed;
+		lRaceCode->Font->Color=clYellow;
+		lRaceCode->Font->Size=10;
+		lRaceCode->AutoSize=false;
+		lRaceCode->Alignment=taCenter;
+		lRaceCode->Transparent=false;
+		lRaceCode->Top=2;
+		lRaceCode->Width=GridWidth+40;
+		lRaceCode->Left=2;
+		lRaceCode->Visible=true;
+		lRaceCode->Caption="Код соревнования";
+		lRaceCode->OnMouseDown=mouse_down;
+	}
+
+	if(eRaceCode==NULL){
+		eRaceCode=new TMaskEdit(panel1);
+		eRaceCode->EditMask="!9999999999;1;_";
+		eRaceCode->Parent = panel1;
+		eRaceCode->Name="eRaceCode";
+		eRaceCode->Font->Size=10;
+		eRaceCode->AutoSize=false;
+		eRaceCode->Height=18;
+		eRaceCode->Top=lRaceCode->Top;
+		eRaceCode->Left=90+40+5;
+		eRaceCode->Width=90-15;
+		eRaceCode->Visible=true;
+	}
+	eRaceCode->Text="";
+
 	if(lsynch==NULL){
 		lsynch= new TLabel(panel1);
 		lsynch->Parent = panel1;
 		lsynch->Name="lsynch";
 		lsynch->Color=clRed;
-		lsynch->Font->Size=12;
-		lsynch->AutoSize=true;
+		lsynch->Font->Color=clYellow;
+		lsynch->Font->Size=lRaceCode->Font->Size;
+		lsynch->AutoSize=false;
 		lsynch->Alignment=taCenter;
 		lsynch->Transparent=false;
-		lsynch->Top=2;
-		lsynch->Left=17;
+		lsynch->Top=eRaceCode->Top;
+		lsynch->Width=90;
+		lsynch->Left=4*(GridWidth+5);
 		lsynch->Visible=true;
 		lsynch->Caption="Сихронизация";
 		lsynch->OnMouseDown=mouse_down;
@@ -88,7 +126,41 @@ int iN=-1;
 		eBsynch->Text="";
 	}
 
-	if(l0pulse==NULL){
+
+	if(lBIBonStart==NULL){
+		lBIBonStart= new TLabel(panel1);
+		lBIBonStart->Parent = panel1;
+		lBIBonStart->Name="lBIBonStart";
+		lBIBonStart->Color=clRed;
+		lBIBonStart->Font->Color=clYellow;
+		lBIBonStart->Font->Size=lRaceCode->Font->Size;
+		lBIBonStart->AutoSize=false;
+		lBIBonStart->Alignment=taCenter;
+		lBIBonStart->Transparent=false;
+		lBIBonStart->Top=lRaceCode->Top+lRaceCode->Height+2;
+		lBIBonStart->Width=lRaceCode->Width;
+		lBIBonStart->Left=lRaceCode->Left;
+		lBIBonStart->Visible=true;
+		lBIBonStart->Caption="BIB на старте";
+		lBIBonStart->OnMouseDown=mouse_down;
+	}
+	if(eBIBonStart==NULL){
+		eBIBonStart=new TMaskEdit(panel1);
+		eBIBonStart->EditMask="!999;1;_";
+		eBIBonStart->Parent = panel1;
+		eBIBonStart->Name="eBIBonStarth";
+		eBIBonStart->Font->Size=eAsynch->Font->Size;
+		eBIBonStart->AutoSize=false;
+		eBIBonStart->Height=eAsynch->Height;
+		eBIBonStart->Top=lBIBonStart->Top;
+		eBIBonStart->Left=eRaceCode->Left;
+		eBIBonStart->Width=30;
+		eBIBonStart->Visible=true;
+	}
+	eBIBonStart->Text="";
+
+
+	if(l0pulse==NULL){//lapse from start
 		l0pulse= new TLabel(panel1);
 		l0pulse->Parent = panel1;
 		l0pulse->Name="l0Pulse";
@@ -96,26 +168,25 @@ int iN=-1;
 		l0pulse->AutoSize=false;
 		l0pulse->Alignment=taCenter;
 		l0pulse->Transparent=false;
-		l0pulse->Top=eAsynch->Top+eAsynch->Height;
-		l0pulse->Left=3;
+		l0pulse->Top=eBIBonStart->Top;
 		l0pulse->Width=SNWidth;
+		l0pulse->Left=eBIBonStart->Left+eBIBonStart->Width+2;
 		l0pulse->Visible=true;
 		l0pulse->Caption="";
 	}
-
 
 	if(l0pulseValue==NULL){
 		l0pulseValue=new TLabel(panel1);
 		l0pulseValue->Parent = panel1;
 		l0pulseValue->Name="S0";
-		l0pulseValue->Caption="START";
+		l0pulseValue->Caption="STA";
 		l0pulseValue->Font->Size=12;
 		l0pulseValue->AutoSize=false;
 		l0pulseValue->Alignment=taCenter;
 		l0pulseValue->Transparent=false;
-		l0pulseValue->Top=l0pulse->Top;
-		l0pulseValue->Left=l0pulse->Left+l0pulse->Width+2;
-		l0pulseValue->Width=90;
+		l0pulseValue->Top=lBIBonStart->Top+lBIBonStart->Height+5;
+		l0pulseValue->Left=1*(GridWidth+5);
+		l0pulseValue->Width=GridWidth;
 		l0pulseValue->Visible=true;
 	}
 
@@ -123,13 +194,13 @@ int iN=-1;
 		l0pulseValue2=new TLabel(panel1);
 		l0pulseValue2->Parent = panel1;
 		l0pulseValue2->Name="i10";
-		l0pulseValue2->Caption="INTER 1";
+		l0pulseValue2->Caption="I1";
 		l0pulseValue2->Font->Size=12;
 		l0pulseValue2->AutoSize=false;
 		l0pulseValue2->Alignment=taCenter;
 		l0pulseValue2->Transparent=false;
-		l0pulseValue2->Top=l0pulse->Top;
-		l0pulseValue2->Left=l0pulseValue->Left+l0pulseValue->Width+2;
+		l0pulseValue2->Top=l0pulseValue->Top;
+		l0pulseValue2->Left=2*(GridWidth+5);
 		l0pulseValue2->Width=l0pulseValue->Width;
 		l0pulseValue2->Visible=true;
 		l0pulseValue2->OnMouseDown = mouse_down;
@@ -140,14 +211,14 @@ int iN=-1;
 		l0pulseValue3=new TLabel(panel1);
 		l0pulseValue3->Parent = panel1;
 		l0pulseValue3->Name="i20";
-		l0pulseValue3->Caption="INTER 2";
+		l0pulseValue3->Caption="I2";
 		l0pulseValue3->Font->Size=12;
 		l0pulseValue3->AutoSize=false;
 		l0pulseValue3->Alignment=taCenter;
 		l0pulseValue3->Transparent=false;
-		l0pulseValue3->Top=l0pulse->Top;
-		l0pulseValue3->Left=l0pulseValue2->Left+l0pulseValue2->Width+2;
+		l0pulseValue3->Top=l0pulseValue->Top;
 		l0pulseValue3->Width=l0pulseValue->Width;
+		l0pulseValue3->Left=3*(GridWidth+5);
 		l0pulseValue3->Visible=true;
 		l0pulseValue3->OnMouseDown = mouse_down;
 
@@ -157,14 +228,14 @@ int iN=-1;
 		l0pulseValue4=new TLabel(panel1);
 		l0pulseValue4->Parent = panel1;
 		l0pulseValue4->Name="i30";
-		l0pulseValue4->Caption="INTER 3";
-		l0pulseValue4->Font->Size=12;
+		l0pulseValue4->Caption="I3";
+		l0pulseValue4->Font->Size=l0pulseValue3->Font->Size;
 		l0pulseValue4->AutoSize=false;
 		l0pulseValue4->Alignment=taCenter;
 		l0pulseValue4->Transparent=false;
-		l0pulseValue4->Top=l0pulse->Top;
-		l0pulseValue4->Left=l0pulseValue3->Left+l0pulseValue3->Width+2;
+		l0pulseValue4->Top=l0pulseValue->Top;
 		l0pulseValue4->Width=l0pulseValue->Width;
+		l0pulseValue4->Left=4*(GridWidth+5);
 		l0pulseValue4->Visible=true;
 		l0pulseValue4->OnMouseDown = mouse_down;
 	}
@@ -173,14 +244,14 @@ int iN=-1;
 		l0pulseValue5=new TLabel(panel1);
 		l0pulseValue5->Parent = panel1;
 		l0pulseValue5->Name="i40";
-		l0pulseValue5->Caption="INTER 4";
+		l0pulseValue5->Caption="I4";
 		l0pulseValue5->Font->Size=12;
 		l0pulseValue5->AutoSize=false;
 		l0pulseValue5->Alignment=taCenter;
 		l0pulseValue5->Transparent=false;
-		l0pulseValue5->Top=l0pulse->Top;
-		l0pulseValue5->Left=l0pulseValue4->Left+l0pulseValue4->Width+2;
+		l0pulseValue5->Top=l0pulseValue->Top;
 		l0pulseValue5->Width=l0pulseValue->Width;
+		l0pulseValue5->Left=5*(GridWidth+5);
 		l0pulseValue5->Visible=true;
 		l0pulseValue5->OnMouseDown = mouse_down;
 
@@ -190,13 +261,13 @@ int iN=-1;
 		l0pulseValue6=new TLabel(panel1);
 		l0pulseValue6->Parent = panel1;
 		l0pulseValue6->Name="F0";
-		l0pulseValue6->Caption="FINISH";
+		l0pulseValue6->Caption="FIN";
 		l0pulseValue6->Font->Size=12;
 		l0pulseValue6->AutoSize=false;
 		l0pulseValue6->Alignment=taCenter;
 		l0pulseValue6->Transparent=false;
-		l0pulseValue6->Top=l0pulse->Top;
-		l0pulseValue6->Left=l0pulseValue5->Left+l0pulseValue5->Width+2;
+		l0pulseValue6->Top=l0pulseValue->Top;
+		l0pulseValue6->Left=6*(GridWidth+5);
 		l0pulseValue6->Width=l0pulseValue->Width;
 		l0pulseValue6->Visible=true;
 	}
@@ -213,11 +284,11 @@ int iN=-1;
 		lpulse->AutoSize=false;
 		lpulse->Alignment=taCenter;
 		lpulse->Transparent=false;
-		lpulse->Top=l0pulse->Top+l0pulse->Height;
-		lpulse->Left=3;
-		lpulse->Width=SNWidth;
+		lpulse->Top=l0pulseValue->Top+l0pulseValue->Height;
+		lpulse->Left=2;
+		lpulse->Width=GridWidth;
 		lpulse->Visible=true;
-		lpulse->Caption="A";
+		lpulse->Caption="Система A";
 		lpulse->OnMouseDown=mouse_down;
 	}
 
@@ -231,7 +302,7 @@ int iN=-1;
 		lpulseValue->Alignment=taCenter;
 		lpulseValue->Transparent=false;
 		lpulseValue->Top=lpulse->Top;
-		lpulseValue->Left=lpulse->Left+lpulse->Width+2;
+		lpulseValue->Left=1*(GridWidth+5);
 		lpulseValue->Width=l0pulseValue->Width;
 		lpulseValue->Color=clAqua;
 		lpulseValue->Visible=true;
@@ -247,7 +318,7 @@ int iN=-1;
 		lpulseValue2->Alignment=taCenter;
 		lpulseValue2->Transparent=false;
 		lpulseValue2->Top=lpulse->Top;
-		lpulseValue2->Left=lpulseValue->Left+lpulseValue->Width+2;
+		lpulseValue2->Left=2*(GridWidth+5);
 		lpulseValue2->Width=lpulseValue->Width;
 		lpulseValue2->Color=clAqua;
 		lpulseValue2->Visible=true;
@@ -264,7 +335,7 @@ int iN=-1;
 		lpulseValue3->Alignment=taCenter;
 		lpulseValue3->Transparent=false;
 		lpulseValue3->Top=lpulse->Top;
-		lpulseValue3->Left=lpulseValue2->Left+lpulseValue2->Width+2;
+		lpulseValue3->Left=3*(GridWidth+5);
 		lpulseValue3->Width=lpulseValue->Width;
 		lpulseValue3->Color=clAqua;
 		lpulseValue3->Visible=true;
@@ -280,7 +351,7 @@ int iN=-1;
 		lpulseValue4->Alignment=taCenter;
 		lpulseValue4->Transparent=false;
 		lpulseValue4->Top=lpulse->Top;
-		lpulseValue4->Left=lpulseValue3->Left+lpulseValue3->Width+2;
+		lpulseValue4->Left=4*(GridWidth+5);
 		lpulseValue4->Width=lpulseValue->Width;
 		lpulseValue4->Color=clAqua;
 		lpulseValue4->Visible=true;
@@ -296,7 +367,7 @@ int iN=-1;
 		lpulseValue5->Alignment=taCenter;
 		lpulseValue5->Transparent=false;
 		lpulseValue5->Top=lpulse->Top;
-		lpulseValue5->Left=lpulseValue4->Left+lpulseValue4->Width+2;
+		lpulseValue5->Left=5*(GridWidth+5);
 		lpulseValue5->Width=lpulseValue->Width;
 		lpulseValue5->Color=clAqua;
 		lpulseValue5->Visible=true;
@@ -312,7 +383,7 @@ int iN=-1;
 		lpulseValue6->Alignment=taCenter;
 		lpulseValue6->Transparent=false;
 		lpulseValue6->Top=lpulse->Top;
-		lpulseValue6->Left=lpulseValue5->Left+lpulseValue5->Width+2;
+		lpulseValue6->Left=6*(GridWidth+5);
 		lpulseValue6->Width=lpulseValue->Width;
 		lpulseValue6->Color=clAqua;
 		lpulseValue6->Visible=true;
@@ -329,10 +400,10 @@ int iN=-1;
 		lBpulse->Alignment=taCenter;
 		lBpulse->Transparent=false;
 		lBpulse->Top=lpulse->Top+lpulse->Height+1;
-		lBpulse->Left=3;
-		lBpulse->Width=SNWidth;
+		lBpulse->Left=lpulse->Left;
+		lBpulse->Width=GridWidth;
 		lBpulse->Visible=true;
-		lBpulse->Caption="B";
+		lBpulse->Caption="Система B";
 		lBpulse->OnMouseDown=mouse_down;
 	}
 
@@ -346,7 +417,7 @@ int iN=-1;
 		lBpulseValue->Alignment=taCenter;
 		lBpulseValue->Transparent=false;
 		lBpulseValue->Top=lBpulse->Top;
-		lBpulseValue->Left=lpulse->Left+lpulse->Width+2;
+		lBpulseValue->Left=lpulseValue->Left;
 		lBpulseValue->Width=lpulseValue->Width;
 		lBpulseValue->Color=clAqua;
 		lBpulseValue->Visible=true;
@@ -362,7 +433,7 @@ int iN=-1;
 		lBpulseValue2->Alignment=taCenter;
 		lBpulseValue2->Transparent=false;
 		lBpulseValue2->Top=lBpulse->Top;
-		lBpulseValue2->Left=lpulseValue->Left+lpulseValue->Width+2;
+		lBpulseValue2->Left=lpulseValue2->Left;
 		lBpulseValue2->Width=lpulseValue->Width;
 		lBpulseValue2->Color=clAqua;
 		lBpulseValue2->Visible=true;
@@ -379,7 +450,7 @@ int iN=-1;
 		lBpulseValue3->Alignment=taCenter;
 		lBpulseValue3->Transparent=false;
 		lBpulseValue3->Top=lBpulse->Top;
-		lBpulseValue3->Left=lpulseValue2->Left+lpulseValue2->Width+2;
+		lBpulseValue3->Left=lpulseValue3->Left;
 		lBpulseValue3->Width=lpulseValue->Width;
 		lBpulseValue3->Color=clAqua;
 		lBpulseValue3->Visible=true;
@@ -395,7 +466,7 @@ int iN=-1;
 		lBpulseValue4->Alignment=taCenter;
 		lBpulseValue4->Transparent=false;
 		lBpulseValue4->Top=lBpulse->Top;
-		lBpulseValue4->Left=lpulseValue3->Left+lpulseValue3->Width+2;
+		lBpulseValue4->Left=lpulseValue4->Left;
 		lBpulseValue4->Width=lpulseValue->Width;
 		lBpulseValue4->Color=clAqua;
 		lBpulseValue4->Visible=true;
@@ -411,7 +482,7 @@ int iN=-1;
 		lBpulseValue5->Alignment=taCenter;
 		lBpulseValue5->Transparent=false;
 		lBpulseValue5->Top=lBpulse->Top;
-		lBpulseValue5->Left=lpulseValue4->Left+lpulseValue4->Width+2;
+		lBpulseValue5->Left=lpulseValue5->Left;
 		lBpulseValue5->Width=lpulseValue->Width;
 		lBpulseValue5->Color=clAqua;
 		lBpulseValue5->Visible=true;
@@ -427,7 +498,7 @@ int iN=-1;
 		lBpulseValue6->Alignment=taCenter;
 		lBpulseValue6->Transparent=false;
 		lBpulseValue6->Top=lBpulse->Top;
-		lBpulseValue6->Left=lpulseValue5->Left+lpulseValue5->Width+2;
+		lBpulseValue6->Left=lpulseValue6->Left;
 		lBpulseValue6->Width=lpulseValue->Width;
 		lBpulseValue6->Color=clAqua;
 		lBpulseValue6->Visible=true;
@@ -468,27 +539,64 @@ int iN=-1;
 	iN=IniUltraTimeKeeping->ReadInteger("TimeKeeping","Number",0);
 	Timing tm;
 	TimingList.clear();
-	iN=0;
-	IniUltraTimeKeeping->ReadSections(Sections);
+
+
+
+
+	AnsiString aafileini=rcs->getDefaultPath()+"TimeKeeping.INI";
+	AnsiString _iniarea;
+	if (FileExists(aafileini)) {
+		 _iniarea=TFile::ReadAllText(aafileini);
+		string iniarea =_iniarea.c_str();
+		int ipos;
+		iN=0;
+		ipos=iniarea.find("Time#",1);
+		int jjj=0,ipos1;
+		while (ipos>0){
+			iN++;
+			AnsiString atod,atype;
+			ipos1=iniarea.find("]",ipos);
+			atod=iniarea.substr(ipos+5,ipos1-ipos-5).c_str();
+			tm.icurrpulseNumber=iN;
+			tm.TimeOfDay=atod;
+			ipos=iniarea.find("Type=",ipos+18);
+			atype=iniarea.substr(ipos+5,3).c_str();
+			tm.electroLine=atype;
+			TimingList.push_back(tm);
+
+			ipos=iniarea.find("Time#",ipos+5);
+		}
+	}
+	else{
+		tm.icurrpulseNumber=1;
+		tm.TimeOfDay="00:00:00.100";
+		tm.electroLine="AS";
+		tm.BIB="";
+		TimingList.push_back(tm);
+		tm.icurrpulseNumber=2;
+		tm.electroLine="BS";
+		TimingList.push_back(tm);
+	}
+
+
+
+/*	IniUltraTimeKeeping->ReadSections(Sections);
 	AnsiString ssection;
-	int ipos;
 	for (int i=0; i<Sections->Count; i++) {
 		ssection=Sections->Strings[i];
 		ipos=ssection.Pos("Time#");
 		if(ipos>0){
 			AnsiString atod,atype;
 			iN++;
-			atod=ssection;
-			ipos=ssection.Pos("#");
-			ssection.Delete(1,ipos);
-			tm.icurrpulseNumber=iN;
-			tm.TimeOfDay=ssection;
+			atod=ssection;ipos=ssection.Pos("#");ssection.Delete(1,ipos);
+			tm.icurrpulseNumber=iN;tm.TimeOfDay=ssection;
 
 			atype=IniUltraTimeKeeping->ReadString(atod,"TYPE","");
 			tm.electroLine=atype;
 			TimingList.push_back(tm);
 		}
 	}
+*/
 
 /*sort(TimingList.begin(),TimingList.end(),[](const Timing  &a,const Timing &b){return a.icurrpulseNumber >b.icurrpulseNumber;});*/
 
@@ -533,8 +641,8 @@ AnsiString astr;
 void __fastcall TimeKeeping::mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y){
 TLabel *lblmoused=dynamic_cast<TLabel*>(Sender);
 String 	str=lblmoused->Caption,sname=lblmoused->Name;
-AnsiString astr,atime,aa,bb;
-int a,b;
+AnsiString astr,atime,atype,aline,aa,bb;
+int a,b,itag;
 //	srand(time(NULL));randomize();b=random(9);a=random(9);
 	b=random(9);a=random(9);
 	aa.sprintf("%d",a);
@@ -542,13 +650,40 @@ int a,b;
 	astr=str;
 	astr=sname;
 	atime=_getTimeHHSSZZZ();
-	if(sname=="lsynch"){
+	if(sname=="tmlDSQ" || sname=="tmlDNF"){
+		itag=lblmoused->Tag-1;
+		TimingList[itag].DSQ="";
+		TimingList[itag].DNF="";
+
+		if(lblmoused->Color==clRed){
+				lblmoused->Color=clWhite;
+		}
+			else{
+				lblmoused->Color=clRed;
+				if(lblmoused->Caption=="DSQ")
+					TimingList[itag].DSQ="DSQ";
+				if(lblmoused->Caption=="DNF")
+					TimingList[itag].DNF="DNF";
+		}
+		atime=TimingList[itag].TimeOfDay;
+		aline=TimingList[itag].electroLine;
+		atype=aline.SubString(1,1);
+		astr=atype+"Time#"+atime;
+		IniUltraTimeKeeping->WriteString(astr,"DSQ","{"+TimingList[itag].DSQ+"}");
+		IniUltraTimeKeeping->WriteString(astr,"DNF","{"+TimingList[itag].DNF+"}");
+
+		show_viewTK();
+		return;
+	}
+
+
+	if(sname=="lsynch"||sname=="lRaceCode"||sname=="lBIBonStart"){
 		if(lblmoused->Color==clLime){
 			lblmoused->Color=clRed;
 			lblmoused->Font->Color=clYellow;
 		}
 		else{
-			lsynch->Color=clLime;
+			lblmoused->Color=clLime;
 			lblmoused->Font->Color=clRed;
 		}
 	}
@@ -565,23 +700,30 @@ int a,b;
 		}
 		else{
 			int ipos=sname.Pos("B");
+			if(sname.Pos("S")){
+			   ////	l0pulse->Caption="ON";
+				l0pulse->Color=clLime;
+			}
 			if(sname.Pos("F")){
-				//srand(time(NULL));randomize();
 				b=random(999);a=random(999);
 				atime.SetLength(10);
 				aa.sprintf("%03d",a);
 				bb.sprintf("%03d",b);
 			}
-
 			if(ipos==0){
 				lblmoused->Caption=atime+aa;
-				if(a>=b){
-					TimePut("B",sname,atime+bb);
+				if (Shift.Contains(ssCtrl)){
 					TimePut("A",sname,atime+aa);
 				}
 				else{
-					TimePut("A",sname,atime+aa);
-					TimePut("B",sname,atime+bb);
+					if(a>=b){
+						TimePut("B",sname,atime+bb);
+						TimePut("A",sname,atime+aa);
+					}
+					else{
+						TimePut("A",sname,atime+aa);
+						TimePut("B",sname,atime+bb);
+					}
 				}
 			}
 			else{
@@ -597,9 +739,30 @@ int a,b;
 }//end of proc
 //------------------------------------------------------------------------------
 void __fastcall TimeKeeping::OnTKtimer(TObject *Sender){
-AnsiString atime;
+int isecs=0;
+AnsiString atime,atime1,adate;
+TDateTime dateTime1,dateTime;
 	atime=_getTimeHHSSZZZ();
 	pTMViews->Caption=atime;
+
+	if(l0pulse!=NULL&&l0pulse->Color==clLime){
+///		TDateTime _ttime;
+		TDateTime _now;
+///		_ttime=Now();
+		_now=Now();
+		TFormatSettings fs = TFormatSettings::Create();
+		fs.DecimalSeparator = '.';
+		atime=lpulseValue->Caption;atime.SetLength(10);
+		atime1=lBpulseValue->Caption;atime1.SetLength(10);
+        adate=FormatDateTime("dd.mm.yyyy",Now());
+		dateTime = StrToDateTime(adate+" "+atime, fs);
+		dateTime1= StrToDateTime(adate+" "+atime1, fs);
+		if(dateTime1>dateTime)
+			dateTime=dateTime1;
+		isecs=SecondsBetween(_now,dateTime);
+		l0pulse->Visible=isecs<60;
+		l0pulse->Caption=isecs;
+	}
 }
 //------------------------------------------------------------------------------
 void __fastcall TimeKeeping::form_resize(TObject *Sender){
@@ -611,22 +774,42 @@ void __fastcall TimeKeeping::show_viewTK(void){
 	iN=(pTMViews->Height-panel2->Top-36)/18;
 	viewTK.reserve(iN);
 	_viewTK *vtk;
-	auto sz= viewTK.capacity();
-	auto tmlsz= TimingList.size();
+	int sz= viewTK.capacity();
+	int tmlsz= TimingList.size();
+
+		Timing *tm1=NULL,*tm2=NULL,*tmp1=NULL,*tmp2=NULL;
+		TTime time1(NULL),time2(NULL);
+		AnsiString adsq;
 	for(int i=0,j=0;i<iN;++i){
-		int secondsbetween;
-		float it1,it2;
-		float idiff;
-		Timing *tm1,*tm2,*tmp1,*tmp2;
-		TTime time1,time2;
-		AnsiString asystem,bsystem,atime,btime,ahh,amm,ass,azzzz,bhh,bmm,bss,bzzzz,adiff;
-		tm1=&TimingList[tmlsz-j-1];tm2=&TimingList[tmlsz-j-2];
-		asystem=tm1->electroLine.SubString(1,1);bsystem=tm2->electroLine.SubString(1,1);
-		atime=tm1->TimeOfDay;atime.SetLength(10);
-		btime=tm2->TimeOfDay;btime.SetLength(10);
-		time1=TTime(atime);
-		time2=TTime(btime);
-		secondsbetween=MilliSecondsBetween(time1,time2);
+		int secondsbetween=0;
+		float it1=0,it2=0;
+		float idiff=0;
+		AnsiString asystem="",bsystem="",atime="",btime="",ahh="",amm="",ass="",azzzz="",bhh="",bmm="",bss="",bzzzz="",adiff="";
+		if(TimingList.size()>0&&(tmlsz-j-1)>=0){
+			tm1=&TimingList[tmlsz-j-1];
+			adsq=tm1->DSQ;
+		}
+		if(TimingList.size()>1&&(tmlsz-j-2)>=0)
+			tm2=&TimingList[tmlsz-j-2];
+		if(tm1!=NULL){
+			atime=tm1->TimeOfDay;
+			if(atime.Length()>10){
+				atime.SetLength(10);time1=TTime(atime);
+			}
+			asystem=tm1->electroLine.SubString(1,1);
+		}
+		if(tm2!=NULL){
+			btime=tm2->TimeOfDay;
+			if(btime.Length()>10){
+				btime.SetLength(10);
+				time2=TTime(btime);
+			}
+			bsystem=tm2->electroLine.SubString(1,1);
+		}
+		if(time1!=time2)
+			secondsbetween=MilliSecondsBetween(time1,time2);
+		else
+        	secondsbetween=0;
 		if(secondsbetween>0){
 			tmp1=NULL;tmp2=NULL;
 			if(asystem=="A")tmp1=tm1;
@@ -639,7 +822,7 @@ void __fastcall TimeKeeping::show_viewTK(void){
 			if(asystem=="B")tmp2=tm1;
 			if(bsystem=="A")tmp1=tm2;
 			if(bsystem=="B")tmp2=tm2;
-			if(tmp1->electroLine=="AS"&&lsynch->Color==clLime){
+			if(tmp1!=NULL&&tmp1->electroLine=="AS"&&lsynch->Color==clLime){
 				lsynch->Color=clRed;
                 lsynch->Font->Color=clYellow;
 				eAsynch->Text=tmp1->TimeOfDay;
@@ -647,23 +830,35 @@ void __fastcall TimeKeeping::show_viewTK(void){
 
 			}
 			float idif;
-			ahh=tmp1->TimeOfDay.SubString(1,2);
-			amm=tmp1->TimeOfDay.SubString(4,2);
-			ass=tmp1->TimeOfDay.SubString(7,2);
-			azzzz=tmp1->TimeOfDay.SubString(10,4);
-			bhh=tmp2->TimeOfDay.SubString(1,2);
-			bmm=tmp2->TimeOfDay.SubString(4,2);
-			bss=tmp2->TimeOfDay.SubString(7,2);
-			bzzzz=tmp2->TimeOfDay.SubString(10,4);
-			it1=/*ahh.ToDouble()*60*60+amm.ToDouble()*60+ass.ToDouble()+*/azzzz.ToDouble()/10000;
-			it2=/*bhh.ToDouble()*60*60+bmm.ToDouble()*60+bss.ToDouble()+*/bzzzz.ToDouble()/10000;
+			if(tmp1!=NULL){
+				ahh=tmp1->TimeOfDay.SubString(1,2);
+				amm=tmp1->TimeOfDay.SubString(4,2);
+				ass=tmp1->TimeOfDay.SubString(7,2);
+				azzzz=tmp1->TimeOfDay.SubString(10,4);
+				it1=/*ahh.ToDouble()*60*60+amm.ToDouble()*60+ass.ToDouble()+*/azzzz.ToDouble()/10000;
+			}
+			if(tmp2!=NULL){
+				bhh=tmp2->TimeOfDay.SubString(1,2);
+				bmm=tmp2->TimeOfDay.SubString(4,2);
+				bss=tmp2->TimeOfDay.SubString(7,2);
+				bzzzz=tmp2->TimeOfDay.SubString(10,4);
+				it2=/*bhh.ToDouble()*60*60+bmm.ToDouble()*60+bss.ToDouble()+*/bzzzz.ToDouble()/10000;
+			}
 			idiff=(it2-it1);
 			j+=2;
-
-
-
 		}
-		vtk=new _viewTK(panel3,i,idiff,tmp1,tmp2,lsynch);
+/*      ЛЕЧЕНИЕ СИСТЕМЫ А
+		int inonnull=0,backI=0;
+		AnsiString tod;
+		if(tm1==NULL && tm2!=NULL ){
+			for(backI=0;backI<100;++backI){
+				tod=TimingList[i-backI].TimeOfDay;
+			}
+		}
+*/
+
+		int ileftoffset=lBpulseValue->Left,iwidth=lBpulseValue->Width;
+		vtk=new _viewTK(panel3,ileftoffset,iwidth,i,idiff,tmp1,tmp2,lsynch);
 		viewTK.push_back(*vtk);
 		if(sz!=viewTK.capacity()){
 			sz=viewTK.capacity();

@@ -3,7 +3,7 @@ object fUltraSki: TfUltraSki
   Top = 0
   Caption = 'UltraSki'
   ClientHeight = 149
-  ClientWidth = 524
+  ClientWidth = 644
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -23240,7 +23240,7 @@ object fUltraSki: TfUltraSki
   object pINFO: TLabel
     Left = 1
     Top = 3
-    Width = 409
+    Width = 634
     Height = 17
     AutoSize = False
     Caption = #1053#1072#1078#1084#1080#1090#1077' '#1076#1083#1103' '#1086#1090#1087#1088#1072#1074#1082#1080' '#1085#1072' '#1089#1072#1081#1090'  FIS'
@@ -29203,8 +29203,8 @@ object fUltraSki: TfUltraSki
     OnClick = imTimeMachineClick
   end
   object Label1: TLabel
-    Left = 584
-    Top = 56
+    Left = 416
+    Top = 128
     Width = 31
     Height = 13
     Caption = 'Label1'
@@ -29215,15 +29215,16 @@ object fUltraSki: TfUltraSki
   object emessage2FIS: TEdit
     Left = 1
     Top = 18
-    Width = 409
+    Width = 634
     Height = 21
     TabOrder = 0
   end
   object Memo1: TMemo
     Left = 416
-    Top = 40
-    Width = 107
-    Height = 102
+    Top = 39
+    Width = 220
+    Height = 105
+    Color = clWhite
     Lines.Strings = (
       'Memo1')
     TabOrder = 1
@@ -29262,5 +29263,19 @@ object fUltraSki: TfUltraSki
     SSLOptions.VerifyDepth = 0
     Left = 24
     Top = 112
+  end
+  object FISftp: TIdFTP
+    IPVersion = Id_IPv4
+    Host = 'ftp.fis-ski.com'
+    Passive = True
+    ConnectTimeout = 0
+    Password = 'anonymous@example.com'
+    NATKeepAlive.UseKeepAlive = False
+    NATKeepAlive.IdleTimeMS = 0
+    NATKeepAlive.IntervalMS = 0
+    ProxySettings.ProxyType = fpcmNone
+    ProxySettings.Port = 0
+    Left = 8
+    Top = 48
   end
 end

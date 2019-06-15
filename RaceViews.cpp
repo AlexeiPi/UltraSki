@@ -60,6 +60,7 @@ TColor cl1=clActiveCaption,cl2=clWhite,cl;
 	vsl.SN->Color=cl;
 	vsl.FC->Color=cl;
 	vsl.FIO->Color=cl;
+	if(i==icurrRacer)	tk->SetBIBonStart(vsl.SN->Caption);
 }
 //______________________________________________________________________________
 void __fastcall RaceStartListView::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
@@ -819,6 +820,7 @@ String 	astr,sDateINI,sTimeINI,sCodexINI,sEVENT,sSLFile,sname,sN;
 	if(icurrRace<0)return;
 	try{
 		sname=viewSL[icurrRace].RCodex->Caption;
+		tk->SetRaceCode(sname);
 		lCompetition->Caption=sname;
 		eCompetition->Text=sname;
 	}
@@ -1099,7 +1101,6 @@ void __fastcall Races::mouse_down(TObject *Sender, TMouseButton Button,
 	if(sname=="lID"){
 		String sCodexINI=eFISCodex->Text;
 		SaveInfo2INI();
-
 		int  iCodex;
 		try{
 			iCodex=StrToFloat(sCodexINI);

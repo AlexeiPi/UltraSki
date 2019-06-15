@@ -37,6 +37,8 @@
 #include <IdSSLOpenSSL.hpp>
 
 #include <Vcl.Imaging.GIFImg.hpp>
+#include <IdExplicitTLSClientServerBase.hpp>
+#include <IdFTP.hpp>
 #include <vector>
 //---------------------------------------------------------------------------
 
@@ -57,6 +59,7 @@ __published:	// IDE-managed Components
 	TIdSSLIOHandlerSocketOpenSSL *IdSSLIOHandlerSocketOpenSSL1;
 	TMemo *Memo1;
 	TLabel *Label1;
+	TIdFTP *FISftp;
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall Image2Click(TObject *Sender);
 	void __fastcall pINFOClick(TObject *Sender);

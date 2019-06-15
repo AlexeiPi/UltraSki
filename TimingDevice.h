@@ -16,10 +16,40 @@ using namespace std;
 enum timemachinelines{FISemulation=0,startline=1,inter1=2,inter2=3,inter3=4,inter4=5,finishline=9};
 class TimeKeeping{
 private:
+	TForm *pTMViews;
+	TTimer *TKtimer;
+	TLabel *lsynch;
+	TMaskEdit *eAsynch,*eBsynch;
+
+	TMaskEdit *eRaceCode,*eBIBonStart;
+	TLabel *lRaceCode,*lBIBonStart;
+
+
+
+	TLabel *l0pulse,*lpulse,*lBpulse;
+
+	TLabel *l0pulseValue,*l0pulseValue1,*l0pulseValue2,*l0pulseValue3,*l0pulseValue4,*l0pulseValue5,*l0pulseValue6;
+	TLabel *lpulseValue,*lpulseValue1,*lpulseValue2,*lpulseValue3,*lpulseValue4,*lpulseValue5,*lpulseValue6;
+	TLabel *lBpulseValue,*lBpulseValue1,*lBpulseValue2,*lBpulseValue3,*lBpulseValue4,*lBpulseValue5,*lBpulseValue6;
+	TPanel *panel3,*panel2,*panel1;
+
+
 	struct Timing{
 		int icurrpulseNumber;
 		AnsiString TimeOfDay;
 		AnsiString electroLine;
+		AnsiString BIB;
+		AnsiString DNF;
+		AnsiString DSQ;
+		Timing(){
+			icurrpulseNumber=0;
+			TimeOfDay="";
+			electroLine="";
+			BIB="";
+			DNF="";
+			DSQ="";
+		}
+
 	};
 	vector < Timing > TimingList;
 
@@ -28,6 +58,9 @@ private:
 		String Number;
 	};
 
+
+
+
 	struct _viewTK{
 		TPanel *ptk;
 		TLabel *lAS,*lAt1,*lAt2,*lAt3,*lAt4,*lAF;
@@ -35,30 +68,41 @@ private:
 
 
 		TPanel *p1;
+		TEdit *eBIB;
+		TLabel *lDNF,*lDSQ;//seq number
 		TLabel *lSN,*lSNb;//seq number
 		TLabel *lLine,*lbLine;//pulse line 0-correction according to FIS rules, 1-start, 2-8 intermediate, 9-finish physical
 		TEdit *eTime;//electronic time
 		TLabel *emTime;//emulated time
 		TEdit *emBTime;//backup time
 
-		_viewTK(TPanel*p,int i,float idiff,Timing *tm1,Timing *tm2,TLabel *lbl){//constructor
-			AnsiString str,aline="",aSN="",aTOD="",bline="",bSN="",bTOD="",adiff="";
+		_viewTK(TPanel*p,int ileftoffset,int iwidth,int i,float idiff,Timing *tm1,Timing *tm2,TLabel *lbl){//constructor
+			AnsiString str,aline="",aSN="",aBIB="",aDSQ="",aDNF="",aTOD="",bline="",bSN="",bTOD="",adiff="";
+			int isn=0;
 			if(tm1!=NULL){
-				aSN=tm1->icurrpulseNumber;
+				isn=tm1->icurrpulseNumber;
+				aSN=isn;
 				aline=tm1->electroLine;
 				aTOD=tm1->TimeOfDay;
+				aBIB=tm1->BIB;
+				aDSQ=tm1->DSQ;
+				aDNF=tm1->DNF;
 			}
 			if(tm2!=NULL){
-				bSN=tm2->icurrpulseNumber;
+				isn=tm2->icurrpulseNumber;
+				bSN=isn;
 				bline=tm2->electroLine;
 				bTOD=tm2->TimeOfDay;
+				if(aDSQ.Length()==0&&aDNF.Length()==0){
+					aBIB=tm2->BIB;
+					aDSQ=tm2->DSQ;
+					aDNF=tm2->DNF;
+                }
 			}
-			if((tm1!=NULL)&&(tm1!=NULL))
+			if((tm1!=NULL)&&(tm2!=NULL))
 				adiff.sprintf("%0.4f",idiff);
 			else
-	            adiff="";
-
-
+				adiff="";
 
 			p1=dynamic_cast<TPanel*> (p->FindComponent("Panel"+IntToStr(i)));
 			if(!p1){
@@ -67,8 +111,64 @@ private:
 				p1->Name="Panel"+IntToStr(i);
 				p1->DoubleBuffered=true;
 				p1->Top=i*18;
-                p1->ShowCaption=false;
+				p1->ShowCaption=false;
 			}
+
+			lDNF=dynamic_cast<TLabel*> (p1->FindComponent("tmlDNF"));
+			if(lDNF==NULL){
+				lDNF=new TLabel(p1);
+				lDNF->Parent = p1;
+				lDNF->Name="tmlDNF";
+				lDNF->AutoSize=false;
+				lDNF->Transparent=false;
+				lDNF->Font->Size=8;
+				lDNF->Width=30;
+				lDNF->Height=18;
+				lDNF->Top=0;
+				lDNF->Left=ileftoffset-6;
+				lDNF->Alignment=taCenter;
+				lDNF->Caption="DNF";
+				lDNF->OnMouseDown=lbl->OnMouseDown;
+			}
+			lDNF->Tag=isn;
+			lDNF->Color=aDNF=="DNF"?clRed:clWhite;
+
+			lDSQ=dynamic_cast<TLabel*> (p1->FindComponent("tmlDSQ"));
+			if(lDSQ==NULL){
+				lDSQ=new TLabel(p1);
+				lDSQ->Parent = p1;
+				lDSQ->Name="tmlDSQ";
+				lDSQ->AutoSize=false;
+				lDSQ->Transparent=false;
+				lDSQ->Font->Size=lDNF->Font->Size;
+				lDSQ->Width=lDNF->Width;
+				lDSQ->Height=18;
+				lDSQ->Top=0;
+				lDSQ->Left=lDNF->Left+lDNF->Width+2;
+				lDSQ->Alignment=taCenter;
+				lDSQ->Caption="DSQ";
+				lDSQ->OnMouseDown=lbl->OnMouseDown;
+			}
+			lDSQ->Color=aDSQ=="DSQ"?clRed:clWhite;
+			lDSQ->Tag=isn;
+
+
+			eBIB=dynamic_cast<TEdit*> (p1->FindComponent("tmeBIB"));
+			if(eBIB==NULL){
+				eBIB=new TEdit(p1);
+				eBIB->Name="tmeBIB";
+				eBIB->Parent = p1;
+				eBIB->AutoSize=false;
+				eBIB->Tag=i;
+				eBIB->Font->Size=lDNF->Font->Size;
+				eBIB->Width=30;
+				eBIB->Height=18;
+				eBIB->Top=0;
+				eBIB->Left=lDSQ->Left+lDSQ->Width;
+				eBIB->Alignment=taCenter;
+			}
+			eBIB->Text=aBIB;
+
 			lSN=dynamic_cast<TLabel*> (p1->FindComponent("tmlSN"));
 			if(lSN==NULL){
 				lSN=new TLabel(p1);
@@ -82,7 +182,7 @@ private:
 				lSN->Width=40;
 				lSN->Height=18;
 				lSN->Top=0;
-				lSN->Left=1;
+				lSN->Left=ileftoffset+iwidth+20;////lpulseValue2->Left;
 				lSN->Alignment=taCenter;
 			}
 			lSN->Caption=aSN;
@@ -115,7 +215,7 @@ private:
 				eTime->Width=90;
 				eTime->Height=lSN->Height;
 				eTime->Top=lSN->Top;
-				eTime->Left=lLine->Left+lLine->Width;
+				eTime->Left=ileftoffset+2*iwidth+5;
 				eTime->Alignment=taLeftJustify;
 			}
 			eTime->Text=aTOD;
@@ -131,28 +231,26 @@ private:
 				emTime->Width=eTime->Width-30;
 				emTime->Height=lSN->Height;
 				emTime->Top=lSN->Top;
-				emTime->Left=eTime->Left+eTime->Width;
+				emTime->Left=ileftoffset+3*(iwidth+5);
 				emTime->Alignment=taRightJustify;
 			}
 			emTime->Caption=adiff;
 
-			lSNb=dynamic_cast<TLabel*> (p1->FindComponent("tmlSNb"));
-			if(lSNb==NULL){
-				lSNb=new TLabel(p1);
-				lSNb->Parent = p1;
-				lSNb->Name="tmlSNb";
-				lSNb->AutoSize=false;
-				lSNb->Transparent=false;
-				lSNb->Tag=i;
-				lSNb->Color=clWhite;
-				lSNb->Font->Size=10;
-				lSNb->Width=lSN->Width;
-				lSNb->Height=18;
-				lSNb->Top=0;
-				lSNb->Left=emTime->Left+emTime->Width+17;
-				lSNb->Alignment=taCenter;
+			emBTime=dynamic_cast<TEdit*> (p1->FindComponent("tmembTime"));
+			if(emBTime==NULL){
+				emBTime=new TEdit(p1);
+				emBTime->Name="tmembTime";
+				emBTime->Parent = p1;
+				emBTime->AutoSize=false;
+				emBTime->Tag=lSN->Tag;
+				emBTime->Font->Size=lSN->Font->Size;
+				emBTime->Width=eTime->Width;
+				emBTime->Height=lSN->Height;
+				emBTime->Top=lSN->Top;
+				emBTime->Left=ileftoffset+4*(iwidth+5)-5;
+				emBTime->Alignment=taLeftJustify;
 			}
-			lSNb->Caption=bSN;
+			emBTime->Text=bTOD;
 
 			lbLine=dynamic_cast<TLabel*> (p1->FindComponent("tmlbLine"));
 			if(lbLine==NULL){
@@ -167,29 +265,35 @@ private:
 				lbLine->Width=lLine->Width;
 				lbLine->Height=lSN->Height;
 				lbLine->Top=lSN->Top;
-				lbLine->Left=lSNb->Left+lSNb->Width+1;
+				lbLine->Left=emBTime->Left+emBTime->Width+5;
 				lbLine->Alignment=taCenter;
 			}
 			lbLine->Caption=bline;
 
 
 
-			emBTime=dynamic_cast<TEdit*> (p1->FindComponent("tmembTime"));
-			if(emBTime==NULL){
-				emBTime=new TEdit(p1);
-				emBTime->Name="tmembTime";
-				emBTime->Parent = p1;
-				emBTime->AutoSize=false;
-				emBTime->Tag=lSN->Tag;
-				emBTime->Font->Size=lSN->Font->Size;
-				emBTime->Width=eTime->Width;
-				emBTime->Height=lSN->Height;
-				emBTime->Top=lSN->Top;
-				emBTime->Left=lbLine->Left+lbLine->Width+1;
-				emBTime->Alignment=taLeftJustify;
+			lSNb=dynamic_cast<TLabel*> (p1->FindComponent("tmlSNb"));
+			if(lSNb==NULL){
+				lSNb=new TLabel(p1);
+				lSNb->Parent = p1;
+				lSNb->Name="tmlSNb";
+				lSNb->AutoSize=false;
+				lSNb->Transparent=false;
+				lSNb->Tag=i;
+				lSNb->Color=clWhite;
+				lSNb->Font->Size=10;
+				lSNb->Width=lSN->Width;
+				lSNb->Height=18;
+				lSNb->Top=0;
+				lSNb->Left=lbLine->Left+lbLine->Width+2;
+				lSNb->Alignment=taCenter;
 			}
-			emBTime->Text=bTOD;
-			p1->Width=emBTime->Left+emBTime->Width+5;
+			lSNb->Caption=bSN;
+
+
+
+
+			p1->Width=ileftoffset+6*(iwidth+5);
 ///			str="";
 ///			emTime->Text=str;
 //			emTime->OnKeyDown = lSN->OnMouseDown;
@@ -198,16 +302,6 @@ private:
 		}
 	};
 	vector < _viewTK > viewTK;
-	TForm *pTMViews;
-	TTimer *TKtimer;
-	TLabel *lsynch;
-	TMaskEdit *eAsynch,*eBsynch;
-	TLabel *l0pulse,*lpulse,*lBpulse;
-
-	TLabel *l0pulseValue,*l0pulseValue1,*l0pulseValue2,*l0pulseValue3,*l0pulseValue4,*l0pulseValue5,*l0pulseValue6;
-	TLabel *lpulseValue,*lpulseValue1,*lpulseValue2,*lpulseValue3,*lpulseValue4,*lpulseValue5,*lpulseValue6;
-	TLabel *lBpulseValue,*lBpulseValue1,*lBpulseValue2,*lBpulseValue3,*lBpulseValue4,*lBpulseValue5,*lBpulseValue6;
-	TPanel *panel3,*panel2,*panel1;
 
 
 	AnsiString ApplicationPath,DefaultPath;
@@ -229,6 +323,8 @@ public:
 		panel3=NULL;panel2=NULL;panel1=NULL;
 		lsynch=NULL;
 		eAsynch=eBsynch=NULL;
+		eRaceCode=eBIBonStart=NULL;
+		lRaceCode=lBIBonStart=NULL;
 		l0pulse=NULL;l0pulseValue=NULL;l0pulseValue1=NULL;l0pulseValue2=NULL;l0pulseValue3=NULL;l0pulseValue4=NULL;l0pulseValue5=NULL;l0pulseValue6=NULL;
 		lpulse=NULL;lpulseValue=NULL;lpulseValue1=NULL;lpulseValue2=NULL;lpulseValue3=NULL;lpulseValue4=NULL;lpulseValue5=NULL;lpulseValue6=NULL;
 		lBpulse=NULL;lBpulseValue=NULL;lBpulseValue1=NULL;lBpulseValue2=NULL;lBpulseValue3=NULL;lBpulseValue4=NULL;lBpulseValue5=NULL;lBpulseValue6=NULL;
@@ -252,6 +348,11 @@ public:
 		if(lsynch!=NULL){delete lsynch;lsynch=NULL;}
 		if(eAsynch!=NULL){delete eAsynch;eAsynch=NULL;}
 		if(eBsynch!=NULL){delete eBsynch;eBsynch=NULL;}
+		if(eRaceCode!=NULL){delete eRaceCode;eRaceCode=NULL;}
+		if(eBIBonStart!=NULL){delete eBIBonStart;eBIBonStart=NULL;}
+		if(lRaceCode!=NULL){delete lRaceCode;lRaceCode=NULL;}
+		if(lBIBonStart!=NULL){delete lBIBonStart;lBIBonStart=NULL;}
+
 
 		if(l0pulse!=NULL){delete l0pulse;l0pulse=NULL;}
 		if(l0pulseValue!=NULL){delete l0pulseValue;l0pulseValue=NULL;}
@@ -289,6 +390,8 @@ public:
 	void __fastcall form_resize(TObject *Sender);
 	void __fastcall show_viewTK(void);
 	void __fastcall TimePut(AnsiString atype,AnsiString aname,AnsiString atime);
+	void __fastcall SetRaceCode(AnsiString aRaceCode){if(lRaceCode->Color==clLime){eRaceCode->Text=aRaceCode;lRaceCode->Color=clRed;lRaceCode->Font->Color=clYellow;}};
+	void __fastcall SetBIBonStart(AnsiString abibonstart){if(lBIBonStart->Color==clLime){eBIBonStart->Text=abibonstart;lBIBonStart->Color=clRed;lBIBonStart->Font->Color=clYellow;}};
 };
 #endif
 //---------------------------------------------------------------------------

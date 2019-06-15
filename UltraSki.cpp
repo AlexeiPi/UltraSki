@@ -12,8 +12,11 @@
 #include "Competition.h"
 #include "RaceViews.h"
 #include "TimingDevice.h"
+#include "System.Zip.hpp"
 
-
+//------------------------------------------------------------------------------
+void __fastcall UnZIP(AnsiString afiledir,AnsiString afilename);
+//------------------------------------------------------------------------------
 TfUltraSki *fUltraSki;
 extern TIdTCPClient *LiveFIS;
 AnsiString toLatin(AnsiString &srussian);
@@ -218,8 +221,10 @@ void __fastcall TfUltraSki::pINFOClick(TObject *Sender){
 //---------------------------------------------------------------------------
 void __fastcall TfUltraSki::Image1Click(TObject *Sender){
 AnsiString astr;
+int idirs;
+/*
 	astr.sprintf("https://vimeo.com/offsideexplained/videos/");
-    astr.sprintf("http://yandex.ru");
+	astr.sprintf("http://yandex.ru");
 		try {
 			astr = IdHTTP1->Get(astr);//////get CHANNELs page
 		}
@@ -228,6 +233,93 @@ AnsiString astr;
 			Memo1->SelStart = Memo1->GetTextLen();
 			Memo1->SelText = WhichFailedToLoad();
 		}
+*/
+
+	if( FISftp->Connected() ) FISftp->Disconnect();
+	FISftp->Host = "ftp.fis-ski.com";
+	FISftp->Port = 21;
+	FISftp->Password ="anonymous@example.com";
+	FISftp->Username ="anonymous";
+	FISftp->Passive = true;
+	FISftp->AutoLogin = true;
+	try	{
+		FISftp->Connect();
+	}
+	catch(...){
+		ShowMessage( "Сервер не отвечает" );
+		if( FISftp->Connected() ) FISftp->Disconnect();
+		return;
+	}
+   unsigned short iyear,imonth,iday;
+   Now().DecodeDate(&iyear, &imonth, &iday);
+   AnsiString ayear(iyear);
+
+	FISftp->ChangeDir("/Software/Files/Competitors/");
+	FISftp->List(NULL, "*.zip",false);
+   idirs =  FISftp->DirectoryListing->Count;
+   Memo1->Lines->Add("Competitors-----------");
+   for(int j=0,i = 0; i < idirs; ++i){
+		TIdFTPListItem *Item = FISftp->DirectoryListing->Items[i];
+		astr=Item->FileName;
+		if(astr.Pos(ayear))
+			Memo1->Lines->Add(AnsiString(++j)+" "+astr);
+	}
+
+	TIdFTPListItems* Files = FISftp->DirectoryListing;
+	idirs = Files->Count;
+	FISftp->ChangeDir("/Software/Files/Fislist/");
+
+
+	FISftp->List(NULL, "ALFP*F.zip",false);
+///	FISftp->ExtListDir(NULL, "ALFP*F.zip");// bad try
+
+	idirs=-1;
+   idirs =  FISftp->DirectoryListing->Count;
+   Memo1->Lines->Add("Fislist------------");
+
+   int isize,i,ipos,ilargestid=0;
+   TDateTime adate,youngest(NULL),bestdate;
+   AnsiString id,ayoungestfilename="",largestid="",bestid;
+   for(i = 0; i < idirs; ++i){
+		TIdFTPListItem *Item = FISftp->DirectoryListing->Items[i];
+////		adate=Item->ModifiedDate;    // bad try
+		astr=Item->FileName;
+		id=astr.SubString(5,astr.Length()-4);
+		ipos=id.Pos("F.zip");
+		if(ipos>0){
+			id=id.SubString(1,ipos-1);
+			if(TryStrToInt(id,ipos)){
+				if(ilargestid<ipos){
+					adate=FISftp->FileDate(astr,true);
+					ilargestid=ipos;
+					largestid=id;
+					bestid=astr;
+					bestdate=adate;
+					Memo1->Lines->Add(AnsiString(i+1)+" "+astr+" "+DateToStr(adate));
+				}
+			}
+		}
+	}
+	Memo1->Lines->Add("Loading the latest file ...");
+	Memo1->Lines->Add(bestid+" "+DateToStr(bestdate));
+	astr=rcs->getDefaultPath()+bestid;
+	if(FileExists(astr)){
+		Memo1->Lines->Add("No need for downloading!!!");
+		Memo1->Lines->Add("Can be found as ");
+		Memo1->Lines->Add(astr);
+	}
+	else{
+		FISftp->Get(bestid, astr, True);
+		///UnZIP(rcs->getDefaultPath(),bestid);
+	}
+	Memo1->Lines->Add("...Done!");
+
+	UnZIP(rcs->getDefaultPath(),bestid);
+/*
+	FISftp->Get("ALFP1219F.zip", "d://ALFP1219F.zip", True);
+	FISftp->Get("ALFP1919F.zip", "d://ALFP1919F.zip", True);
+*/
+	////  ftp://ftp.fis-ski.com/Software/Files/Calendar/
 }
 //---------------------------------------------------------------------------
 AnsiString __fastcall _getTimeHHSSZZZ(void){
@@ -236,7 +328,7 @@ AnsiString astr;
 	SYSTEMTIME sys;
 	FILETIME lsys;
 	GetSystemTime(&sys);
-	ih=sys.wHour+3;
+	ih=(sys.wHour+3)%24;
 	im=sys.wMinute;
 	is=sys.wSecond;
 	ims=sys.wMilliseconds;
@@ -266,4 +358,17 @@ void __fastcall TfUltraSki::imTimeMachineClick(TObject *Sender){
 
 }
 //---------------------------------------------------------------------------
+void __fastcall UnZIP(AnsiString afiledir,AnsiString afilename){
+ TZipFile *zip=new TZipFile;
+ AnsiString astr;
+	zip->Open(afiledir+afilename,zmRead);
+	astr=afilename.SubString(1,afilename.Pos(".zip")-1);
+	astr=afiledir+astr+"\\";
+	fUltraSki->Memo1->Lines->Add("Starting unzip to");
+	fUltraSki->Memo1->Lines->Add(astr+" ...");
 
+	zip->ExtractAll(astr);
+	fUltraSki->Memo1->Lines->Add("...Done!");
+	zip->Close();
+	delete zip;
+}
