@@ -2,52 +2,86 @@
 
 #ifndef UltraSkiH
 #define UltraSkiH
-//---------------------------------------------------------------------------
-#include <System.Classes.hpp>
-#include <Vcl.Controls.hpp>
-#include <Vcl.StdCtrls.hpp>
-#include <Vcl.Forms.hpp>
-#include <Vcl.ExtCtrls.hpp>
 
-#include "IniFiles.hpp"
-#include <Xml.XMLDoc.hpp>
-#include <Xml.xmldom.hpp>
-#include <Xml.XMLIntf.hpp>
+#define BOOST_USE_WINDOWS_H
+
+//---------------------------------------------------------------------------
+#include <Vcl.Controls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.StdCtrls.hpp>
 #include <IdBaseComponent.hpp>
 #include <IdComponent.hpp>
-#include <IdTCPClient.hpp>
-#include <IdTCPConnection.hpp>
-#include <Data.DB.hpp>
-#include <Data.Win.ADODB.hpp>
-#include <Vcl.Dialogs.hpp>
-#include <Vcl.BaseImageCollection.hpp>
-#include <Vcl.ImageCollection.hpp>
-#include <System.ImageList.hpp>
-#include <Vcl.Imaging.jpeg.hpp>
-#include <Vcl.ImgList.hpp>
-#include <Vcl.Mask.hpp>
-#include <Vcl.Imaging.pngimage.hpp>
-#include <Vcl.Imaging.GIFImg.hpp>
-#include <Vcl.ComCtrls.hpp>
+#include <IdExplicitTLSClientServerBase.hpp>
+#include <IdFTP.hpp>
 #include <IdHTTP.hpp>
 #include <IdIOHandler.hpp>
 #include <IdIOHandlerSocket.hpp>
 #include <IdIOHandlerStack.hpp>
 #include <IdSSL.hpp>
 #include <IdSSLOpenSSL.hpp>
+#include <IdTCPClient.hpp>
+#include <IdTCPConnection.hpp>
+#include <System.Classes.hpp>
+#include <Vcl.Imaging.pngimage.hpp>
 
-#include <Vcl.Imaging.GIFImg.hpp>
-#include <IdExplicitTLSClientServerBase.hpp>
-#include <IdFTP.hpp>
-#include <vector>
+
+	#include "IniFiles.hpp"
+	#include <System.ImageList.hpp>
+	#include "System.SysUtils.hpp"
+	#include "System.Zip.hpp"
+	#include <System.IOUtils.hpp>
+
+	#include <Vcl.BaseImageCollection.hpp>
+	#include <Vcl.Dialogs.hpp>
+	#include <Vcl.ImageCollection.hpp>
+	#include <Vcl.Imaging.jpeg.hpp>
+	#include <Vcl.Imaging.GIFImg.hpp>
+	#include <Vcl.ImgList.hpp>
+	#include <Vcl.Mask.hpp>
+
+	#include <Xml.XMLDoc.hpp>
+	#include <Xml.xmldom.hpp>
+	#include <Xml.XMLIntf.hpp>
+
+	#include <Data.DB.hpp>
+	#include <Data.Win.ADODB.hpp>
+
+	//---------------------------------------------------------------------------
+	#include <DateUtils.hpp>
+
+	#include <fstream>
+	#include <iostream>
+	#include <stdlib.h>
+
+	//---------------------------------------------------------------------------
+	#include <algorithm>
+	#include <vector>
+	#include <shellapi.h>
 //---------------------------------------------------------------------------
+extern TIniFile *IniUltraAlpSki;//ini file
+extern TIniFile *IniUltraTimeKeeping;//ini file
+extern TIdTCPClient *LiveFIS;
+
+AnsiString toLatin(AnsiString &srussian);
+void __fastcall SetClipBoard(AnsiString aboard);
+//---------------------------------------------------------------------------
+/*using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+*/
+
+//============================================================================
+
+//============================================================================
 
 using namespace std;
 //---------------------------------------------------------------------------
 AnsiString __fastcall _getTimeHHSSZZZ(void);
+AnsiString __fastcall _getTimeHHSSZZZZ(void);
 //---------------------------------------------------------------------------
-class TfUltraSki : public TForm
-{
+class TfUltraSki : public TForm{
 __published:	// IDE-managed Components
 	TTimer *Timer1;
 	TImage *Image1;
@@ -65,6 +99,8 @@ __published:	// IDE-managed Components
 	void __fastcall pINFOClick(TObject *Sender);
 	void __fastcall Image1Click(TObject *Sender);
 	void __fastcall imTimeMachineClick(TObject *Sender);
+	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+          TPoint &MousePos, bool &Handled);
 
 private:	// User declarations
 public:		// User declarations
@@ -72,6 +108,5 @@ public:		// User declarations
     void __fastcall MyException( TObject *Sender, Exception *E );
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 #endif

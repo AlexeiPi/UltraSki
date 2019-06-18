@@ -2,6 +2,7 @@
 #ifndef RacerH
 #define RacerH
 #include <vcl.h>
+
 enum NameLanguage{rus=0,lat};
 class Person {
 	private:

@@ -3,6 +3,7 @@
 #ifndef CompetitionH
 #define CompetitionH
 #include "UltraSki.h"
+/*
 #include <vcl.h>
 
 #include <iostream>
@@ -15,10 +16,11 @@
 #include <iostream>
 
 #include <Xml.XMLDoc.hpp>
-#include "IniFiles.hpp"
+*/
+//#include "IniFiles.hpp"
 
-void __fastcall SetClipBoard(AnsiString aboard);
-extern TIniFile *IniUltraAlpSki;//ini file
+//void __fastcall SetClipBoard(AnsiString aboard);
+//extern TIniFile *IniUltraAlpSki;//ini file
 
 enum _COMPETITION_ENUMS_{SNHeight=18,SNWidth=30,CodexWidth=90};
 

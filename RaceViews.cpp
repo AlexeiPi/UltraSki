@@ -1,21 +1,17 @@
 //---------------------------------------------------------------------------
 #pragma hdrstop
 #include "RaceViews.h"
-#include "System.SysUtils.hpp"
+#include "TimingDevice.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#include <shellapi.h>
 #pragma comment(lib,"shell32")
 
-#include "Competition.h"
 
-using namespace std;
 extern PACKAGE TfUltraSki *fUltraSki;
 extern TimeKeeping *tk;
 extern Races *rcs;
-
-AnsiString toLatin(AnsiString &srussian);
 TIdTCPClient *LiveFIS;
+
 //=============================================================================
 void __fastcall SetClipBoard(AnsiString aboard){
 	const char* output = aboard.c_str();
@@ -56,11 +52,18 @@ int i=vsl.SN->Tag;
 if (i==0) return;
 TColor cl1=clActiveCaption,cl2=clWhite,cl;
 	vsl.SN->Color=clActiveCaption;
-	cl=(i==icurrRacer)?cl1:cl2;
+	if(i==icurrRacer){
+		if(tk)
+			tk->SetBIBonStart(vsl.SN->Caption);
+
+		cl=cl1;
+	}
+	else
+		cl=cl2;
+///	cl=(i==icurrRacer)?cl1:cl2;
 	vsl.SN->Color=cl;
 	vsl.FC->Color=cl;
 	vsl.FIO->Color=cl;
-	if(i==icurrRacer)	tk->SetBIBonStart(vsl.SN->Caption);
 }
 //______________________________________________________________________________
 void __fastcall RaceStartListView::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
@@ -71,15 +74,15 @@ int icurH,icurN,
 	ipaneltop=panel3->Top;
 	icurN=icurrRacer;
 	switch(Key){
-	   case 35:
+	   case 35://end
 			icurrRacer=iracersN-1;
 			panel3->Top=(18*(ichecklines-iracersN+1));
 	   break;
-	   case 36:
+	   case 36: //home
 			icurrRacer=1;
 			panel3->Top=0;
 	   break;
-	   case 40:
+	   case 40://down
 			if(icurrRacer<iracersN-1){
 				icurH=(icurN+5)*18;
 				if((icurH+ipaneltop)>iformH)
@@ -90,7 +93,7 @@ int icurH,icurN,
 			}
 			else icurrRacer=iracersN-1;
 	   break;
-	   case 38:
+	   case 38://up
 			if(icurrRacer>1){
 				icurH=(icurrRacer-2)*18;
 				if(icurH+ipaneltop<0)
@@ -104,7 +107,7 @@ int icurH,icurN,
 			}
 	   break;
 	}
-	std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+	for(auto i:viewSL)setRacersColor(i);
 }
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::showView(int itop,int ileft,int iheight){
@@ -123,6 +126,61 @@ String astr;
 		pRaceSLViews->Top=itop;
 		pRaceSLViews->Left=ileft;
 	}
+}
+//_____________________________________________________________________________
+void __fastcall RaceStartListView::mouse_DblClick(TObject *Sender){
+int i;
+AnsiString astr;
+i=1;
+	astr=viewSL[icurrRacer].SN->Caption;
+	tk->ForceBIBonStart(astr);
+}
+//_____________________________________________________________________________
+void __fastcall RaceStartListView::SetCurRacer(int inewcurracer){
+int isteps;
+int ichecklines=checkLines(),iracersN=getRacersN();
+int icurH,icurN,
+	iformH=pRaceSLViews->Height,
+	ipaneltop=panel3->Top;
+	icurN=icurrRacer;
+
+	ilastcurrRacer=icurrRacer;
+
+	if(icurrRacer==inewcurracer)return;
+	if(icurrRacer>inewcurracer){
+	   isteps=icurrRacer-inewcurracer-1;
+	   while(isteps-->=0){
+		   --icurrRacer;
+			if(icurrRacer>1){
+				icurH=(icurrRacer-2)*18;
+				if(icurH+ipaneltop<0)
+					panel3->Top+=18;
+				//icurrRacer--;
+				icurN=icurrRacer;
+			}
+			else{
+				icurrRacer=1;
+				panel3->Top=0;
+			}
+	   }
+	}
+	else{
+	   isteps=inewcurracer-icurrRacer+1;
+	   while(--isteps>0){
+			if(icurrRacer<iracersN-1){
+				icurH=(icurN+5)*18;
+				if((icurH+ipaneltop)>iformH)
+					panel3->Top-=18;
+
+				icurrRacer++;
+				icurH=icurrRacer*18;
+			}
+			else icurrRacer=iracersN-1;
+	   }
+	}
+
+	for(auto i:viewSL)
+		setRacersColor(i);
 }
 //_____________________________________________________________________________
 void __fastcall RaceStartListView::mouse_down(TObject *Sender, TMouseButton Button,
@@ -205,22 +263,8 @@ try{
 
 	}
 	else{
-		ilastcurrRacer=icurrRacer;
-		icurrRacer=dynamic_cast<TLabel*>(Sender)->Tag;
-
-		std::for_each(viewSL.begin(),viewSL.end(),setRacersColor
-	/*    ///lambda function sample
-			[this] (_viewSL vsl) {
-				TColor cl1=clActiveCaption,cl2=clWhite,cl;
-				int i=vsl.SN->Tag;
-				vsl.SN->Color=clActiveCaption;
-				cl=(i==icurrRacer)?cl1:cl2;
-				vsl.SN->Color=cl;
-				vsl.FC->Color=cl;
-				vsl.FIO->Color=cl;
-			}
-	*/
-		);
+		int irc=dynamic_cast<TLabel*>(Sender)->Tag;
+		SetCurRacer(irc);
 	}
 }//end of proc
 //_____________________________________________________________________________
@@ -230,7 +274,8 @@ _viewSL *vsl;
 int iN;
 
 	if(!viewSL.empty()){
-		std::for_each(viewSL.begin(),viewSL.end(),freevcls);
+		for(auto i:viewSL)
+			freevcls(i);
 		viewSL.clear();
     }
 	iN=this->getRacersN();
@@ -309,106 +354,122 @@ int iN;
 		viewSL.clear();
 
 	}
-	if(eCompetition!=NULL)	{delete eCompetition,eCompetition=NULL;}
-	if(lplus!=NULL)	{delete lplus,lplus=NULL;}
-	if(panel3!=NULL)	{delete panel3,panel3=NULL;}
-	if(panel2!=NULL)	{delete panel2,panel2=NULL;}
-	if(panel1!=NULL)	{delete panel1,panel1=NULL;}
+//	if(eCompetition!=NULL)	{delete eCompetition,eCompetition=NULL;}
+//	if(lplus!=NULL)	{delete lplus,lplus=NULL;}
+//	if(panel3!=NULL)	{delete panel3,panel3=NULL;}
+//	if(panel2!=NULL)	{delete panel2,panel2=NULL;}
+//	if(panel1!=NULL)	{delete panel1,panel1=NULL;}
 	iN=this->getRacesN();
 
-	panel1= new TPanel(form);
-	panel1->Parent = form;
-	panel1->Name="P1";
-	panel1->Font->Size=12;
-	panel1->Alignment=taLeftJustify;
-	panel1->VerticalAlignment=taAlignTop;
-	panel1->Top=3;
-	panel1->Left=2;
-	panel1->Width=form->Width-panel1->Left;
-	panel1->Visible=true;
-///	int ccodex=this->getCodex();
-	str.sprintf(L"Races");
-	panel1->Caption="";//str;
+	panel1=dynamic_cast<TPanel*> (form->FindComponent("P1"));
+	if(!panel1){
+		panel1= new TPanel(form);
+		panel1->Parent = form;
+		panel1->Name="P1";
+		panel1->Font->Size=12;
+		panel1->Alignment=taLeftJustify;
+		panel1->VerticalAlignment=taAlignTop;
+		panel1->Top=3;
+		panel1->Left=2;
+		panel1->Width=form->Width-panel1->Left;
+		panel1->Visible=true;
+		str.sprintf(L"Races");
+		panel1->Caption="";//str;
+	}
 
 
-	lminus= new TLabel(panel1);
-	lminus->Parent = panel1;
-	lminus->Name="LMinus";
-	lminus->AutoSize=false;
-	lminus->Alignment=taCenter;
-	lminus->Transparent=false;
-	lminus->Top=0;//SNHeight;
-	lminus->Left=3;
-	lminus->Width=SNWidth;
-	lminus->Visible=true;
-	lminus->Color=clRed;
-	lminus->Caption="-";
-	lminus->OnMouseDown=mouse_down;
+	lminus=dynamic_cast<TLabel*> (panel1->FindComponent("LMinus"));
+	if(lminus==NULL){
+		lminus= new TLabel(panel1);
+		lminus->Parent = panel1;
+		lminus->Name="LMinus";
+		lminus->AutoSize=false;
+		lminus->Alignment=taCenter;
+		lminus->Transparent=false;
+		lminus->Top=0;//SNHeight;
+		lminus->Left=3;
+		lminus->Width=SNWidth;
+		lminus->Visible=true;
+		lminus->Color=clRed;
+		lminus->Caption="-";
+		lminus->OnMouseDown=mouse_down;
+	}
 
-	lCompetition=new TLabel(panel1);
-	lCompetition->Parent = panel1;
-	lCompetition->Name="lCompetition";
-	lCompetition->Font->Size=12;
-	lCompetition->Top=lminus->Top;
-	lCompetition->Left=34;
-	lCompetition->Width=CodexWidth;
-	lCompetition->Visible=true;
-//	str=icurrRace;
-//	lCompetition->Caption=str;
+	lCompetition=dynamic_cast<TLabel*> (panel1->FindComponent("lCompetition"));
+	if(lCompetition==NULL){
+		lCompetition=new TLabel(panel1);
+		lCompetition->Parent = panel1;
+		lCompetition->Name="lCompetition";
+		lCompetition->Font->Size=12;
+		lCompetition->Top=lminus->Top;
+		lCompetition->Left=34;
+		lCompetition->Width=CodexWidth;
+		lCompetition->Visible=true;
+	}
 
-	lplus= new TLabel(panel1);
-	lplus->Parent = panel1;
-	lplus->Name="LPlus";
-	lplus->AutoSize=false;
-	lplus->Alignment=taCenter;
-	lplus->Transparent=false;
-	lplus->Top=lminus->Top+lminus->Height;
-	lplus->Left=3;
-	lplus->Width=SNWidth;
-	lplus->Visible=true;
-	lplus->Caption="+";
+	lplus=dynamic_cast<TLabel*> (panel1->FindComponent("LPlus"));
+	if(lplus==NULL){
+		lplus= new TLabel(panel1);
+		lplus->Parent = panel1;
+		lplus->Name="LPlus";
+		lplus->AutoSize=false;
+		lplus->Alignment=taCenter;
+		lplus->Transparent=false;
+		lplus->Top=lminus->Top+lminus->Height;
+		lplus->Left=3;
+		lplus->Width=SNWidth;
+		lplus->Visible=true;
+		lplus->Color=clLime;
+		lplus->Caption="+";
 
-	lplus->OnMouseDown=mouse_down;
-	lplus->OnDblClick=mouse_DblClick;
+		lplus->OnMouseDown=mouse_down;
+		lplus->OnDblClick=mouse_DblClick;
+	}
 
 
 
 //	eCompetition=new TMaskEdit(panel2);
 ///	eCompetition->EditMask="!0000000000;1;_";
-	eCompetition=new TEdit(panel1);
-	eCompetition->Parent = panel1;
-	eCompetition->Name="eCompetition";
-	eCompetition->Font->Size=12;
-	eCompetition->Top=lplus->Top;
-	eCompetition->Left=34;
-	eCompetition->Width=CodexWidth;
-	eCompetition->Visible=true;
-	str=Now().FormatString("yyyymmdd01");
-	eCompetition->Text=str;
+	if(eCompetition==NULL){
+		eCompetition=new TEdit(panel1);
+		eCompetition->Parent = panel1;
+		eCompetition->Name="eCompetition";
+		eCompetition->Font->Size=12;
+		eCompetition->Top=lplus->Top;
+		eCompetition->Left=lCompetition->Left;
+		eCompetition->Width=CodexWidth;
+		eCompetition->Visible=true;
+		str=Now().FormatString("yyyymmdd01");
+		eCompetition->Text=str;
+	}
 
-	panel2= new TPanel(panel1);
-	panel2->Parent = panel1;
-	panel2->Name="P2";
-	panel2->Font->Size=12;
-	panel2->Alignment=taLeftJustify;
-	panel2->VerticalAlignment=taAlignTop;
-	panel2->Top=eCompetition->Top+eCompetition->Height;
-	panel2->Left=2;
-	panel2->Width=panel1->Width-panel2->Left;
-	panel2->Visible=true;
-	panel2->Caption="";
+	if(panel2==NULL){
+		panel2= new TPanel(panel1);
+		panel2->Parent = panel1;
+		panel2->Name="P2";
+		panel2->Font->Size=12;
+		panel2->Alignment=taLeftJustify;
+		panel2->VerticalAlignment=taAlignTop;
+		panel2->Top=eCompetition->Top+eCompetition->Height;
+		panel2->Left=2;
+		panel2->Width=panel1->Width-panel2->Left;
+		panel2->Visible=true;
+		panel2->Caption="";
+	}
 
-	panel3= new TPanel(panel2);
-	panel3->Parent = panel2;
-	panel3->Name="P3";
-	panel3->Font->Size=12;
-	panel3->Alignment=taLeftJustify;
-	panel3->VerticalAlignment=taAlignTop;
-	panel3->Top=0;//18*2+8;
-	panel3->Left=3;
-	panel3->Width=panel2->Width-panel3->Left;
-	panel3->Visible=true;
-	panel3->Caption="";
+	if(panel3==NULL){
+		panel3= new TPanel(panel2);
+		panel3->Parent = panel2;
+		panel3->Name="P3";
+		panel3->Font->Size=12;
+		panel3->Alignment=taLeftJustify;
+		panel3->VerticalAlignment=taAlignTop;
+		panel3->Top=0;//18*2+8;
+		panel3->Left=3;
+		panel3->Width=panel2->Width-panel3->Left;
+		panel3->Visible=true;
+		panel3->Caption="";
+	}
 
 
 //	iN=IniUltraAlpSki->ReadInteger("Competitions","Number",0);
@@ -417,40 +478,45 @@ int iN;
 
 	iN=0;
 	IniUltraAlpSki->ReadSections(Sections);
-	AnsiString ssection;
-	int ipos;
-	for (int i=0; i<Sections->Count; i++) {
-		ssection=Sections->Strings[i];
-		ipos=ssection.Pos("Competition#");
-		if(ipos>0){
-			iN++;
-			ipos=ssection.Pos("#");
-			ssection.Delete(1,ipos);
-			rp.path="";
-			rp.Codex=ssection;
-			RacesList.push_back(rp);
+	if(Sections->Count>0){
+		AnsiString ssection;
+		int ipos;
+		for (int i=0; i<Sections->Count; i++) {
+			ssection=Sections->Strings[i];
+			ipos=ssection.Pos("Competition#");
+			if(ipos>0){
+				iN++;
+				ipos=ssection.Pos("#");
+				ssection.Delete(1,ipos);
+				rp.path="";
+				rp.Codex=ssection;
+				RacesList.push_back(rp);
+			}
 		}
-	}
-	sort(RacesList.begin(),RacesList.end(),[](const RacePack  &a,const RacePack &b){
-				return a.Codex >b.Codex;
-	});
+		sort(RacesList.begin(),RacesList.end(),[](const RacePack  &a,const RacePack &b){
+					return a.Codex >b.Codex;
+		});
 
 
-	viewSL.reserve(iN);
-	auto sz= viewSL.capacity();
-	for(int i=0;i<iN;++i){
-		vsl=new _viewRL(panel3,i,this,lplus);
-		viewSL.push_back(*vsl);
-		if(sz!=viewSL.capacity()){
-			sz=viewSL.capacity();
+		viewSL.reserve(iN);
+		auto sz= viewSL.capacity();
+		for(int i=0;i<iN;++i){
+			vsl=new _viewRL(panel3,i,this,lplus);
+			viewSL.push_back(*vsl);
+			if(sz!=viewSL.capacity()){
+				sz=viewSL.capacity();
+			}
 		}
+		panel3->Height=8+iN*18;
 	}
-	panel3->Height=/*48+*/8+iN*18;
+	else
+	    panel3->Height=1;
 	panel2->Height=panel3->Height+2;
-	panel1->Height=panel2->Height+2;
-	panel3->Color=clGradientActiveCaption;
+	panel1->Height=panel1->Height+panel2->Height;
+/*	panel3->Color=clGradientActiveCaption;
 	panel2->Color=clAqua;
 	panel1->Color=clLime;
+*/
 	panel1->ShowCaption=false;panel1->Caption="Удаление:";panel1->Font->Size=10;
 	panel2->ShowCaption=false;panel2->Caption="Добавление:";panel2->Font->Size=panel1->Font->Size;
 	panel3->ShowCaption=false;panel3->Caption="3333333";panel3->Font->Size=panel1->Font->Size;
@@ -501,7 +567,8 @@ AnsiString sname=ff->Name;
 	}
 	if(sname=="RaceViewsForm"){
 		CleaSLForm();
-		pRaceInfo->Hide();
+		if(pRaceInfo!=NULL)
+			pRaceInfo->Hide();
 	}
 }
 void __fastcall Races::LocationsInfo(TForm* form){
@@ -565,6 +632,7 @@ int iN;
 		lDate->AutoSize=true;
 		lDate->Alignment=taCenter;
 		lDate->Transparent=false;
+		lDate->Font->Size=10;
 		lDate->Color=clLime;
 		lDate->Top=lID->Top+lID->Height+5;
 		lDate->Left=lID->Left;
@@ -577,7 +645,7 @@ int iN;
 		eDate->EditMask="!99/99/0000;1;_";
 		eDate->Parent = form;
 		eDate->Name="eDate";
-		eDate->Font->Size=10;
+		eDate->Font->Size=8;
 		eDate->Top=lDate->Top+lDate->Height+2;
 		eDate->Left=lID->Left;
 		eDate->Width=70;
@@ -589,7 +657,7 @@ int iN;
 		eTime->EditMask="!99:99;1;_";
 		eTime->Parent = form;
 		eTime->Name="eTime";
-		eTime->Font->Size=10;
+		eTime->Font->Size=eDate->Font->Size;
 		eTime->Top=eDate->Top;
 		eTime->Left=eDate->Left+eDate->Width;
 		eTime->Width=40;
@@ -624,7 +692,7 @@ int iN;
 		eFISCodex->Parent = form;
 		eFISCodex->EditMask="!0000;1;";
 		eFISCodex->Name="eFISCodex";
-		eFISCodex->Font->Size=10;
+		eFISCodex->Font->Size=eDate->Font->Size;
 		eFISCodex->Top=lFISCodex->Top+lFISCodex->Height+2;
 		eFISCodex->Left=lFISCodex->Left;
 		eFISCodex->Width=35;
@@ -636,6 +704,7 @@ int iN;
 		lInfoName->Parent = form;
 		lInfoName->Name="lInfoName"+form->Name;
 		lInfoName->AutoSize=true;
+		lInfoName->Font->Size=eDate->Font->Size+2;
 		lInfoName->Alignment=taCenter;
 		lInfoName->Transparent=false;
 		lInfoName->Top=eFISCodex->Top+eFISCodex->Height+5;
@@ -646,7 +715,7 @@ int iN;
 		eInfoName=new TEdit(form);
 		eInfoName->Parent = form;
 		eInfoName->Name="eInfoName";
-		eInfoName->Font->Size=10;
+		eInfoName->Font->Size=eDate->Font->Size;
 		eInfoName->Top=lInfoName->Top+lInfoName->Height+2;
 		eInfoName->Left=lID->Left;
 		eInfoName->Width=grpDiscipline->Width+grpDiscipline->Left-2;
@@ -658,7 +727,7 @@ int iN;
 		lSLimport->Parent = form;
 		lSLimport->Name="lSLimport";
 		lSLimport->AutoSize=true;
-		lSLimport->Font->Size=10;
+		lSLimport->Font->Size=eDate->Font->Size+2;
 		lSLimport->Top=eInfoName->Top+eInfoName->Height+5;
 		lSLimport->Left=eInfoName->Left;
 		lSLimport->Transparent=false;
@@ -671,7 +740,7 @@ int iN;
 		lSLimportN->Parent = form;
 		lSLimportN->Name="lSLimportN";
 		lSLimport->AutoSize=false;
-		lSLimportN->Font->Size=10;
+		lSLimportN->Font->Size=eDate->Font->Size;
 		lSLimportN->Top=lSLimport->Top+lSLimport->Height+2;
 		lSLimportN->Left=lSLimport->Left;
 		lSLimportN->Width=eInfoName->Width;
@@ -679,7 +748,7 @@ int iN;
 		lSLimportN->Visible=true;
 		lSLimportN->Caption="";
 
-		form->Width=eInfoName->Left+eInfoName->Width+55+15;
+		form->Width=eInfoName->Left+eInfoName->Width+55;
 		form->Height=lSLimportN->Top+lSLimportN->Height+45;
 
 		TBorderIcons tempBI = form->BorderIcons;
@@ -1072,14 +1141,14 @@ int  iCodex=getCodex(),iConnected=0;//9872;
 	iConnected=LiveFIS->Connected();
 	return iConnected;
 }
-
+//-----------------------------------------------------------------------
 void __fastcall Races::mouse_down(TObject *Sender, TMouseButton Button,
   TShiftState Shift, int X, int Y){
   TLabel *lblmoused=dynamic_cast<TLabel*>(Sender);
   int saveicurrRace=icurrRace,iflag=0;
   icurrRace=dynamic_cast<TLabel*>(Sender)->Tag;
 
-	ilastcurrRace=icurrRace;
+//	ilastcurrRace=icurrRace;
 	String 	str=lblmoused->Caption,
 			sname=lblmoused->Name;
 	if(sname=="RaceDate"){
@@ -1217,15 +1286,31 @@ void __fastcall Races::mouse_down(TObject *Sender, TMouseButton Button,
 		}
 	}
 	else{
-		std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
-		FillRaceDescription();
-		pRaceViews->SetFocus();
+		ShowRaceInfoAndStartList();
+/*		if(ilastcurrRace!=icurrRace){
+			ilastcurrRace=icurrRace;
+			std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
+			FillRaceDescription();
+			pRaceViews->SetFocus();
+		}
+*/
 	}
 }//end of proc
 //------------------------------------------------------------------------------
-void __fastcall Races::mouse_DblClick(TObject *Sender)
-{
+void __fastcall Races::ShowRaceInfoAndStartList(void){
+	if(ilastcurrRace!=icurrRace){
+		ilastcurrRace=icurrRace;
+		for(auto i:viewSL)
+			setRacersColor(i);
+		FillRaceDescription();
+		pRaceViews->SetFocus();
+	}
+}
+//------------------------------------------------------------------------------
+void __fastcall Races::mouse_DblClick(TObject *Sender){
 int i;
+AnsiString astr;
+	tk->ForceRaceCode(RacesList[icurrRace].Codex);
 }
 //_____________________________________________________________________________
 void Races::LoadFromPath(String path){

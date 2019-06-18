@@ -3,31 +3,44 @@
 #pragma hdrstop
 
 #include "TimingDevice.h"
+#include "RaceViews.h"
+
 #include "ProcessTimingINI.h"
 
+/*
 #include <DateUtils.hpp>
+#include <iostream>
 #include <System.IOUtils.hpp>
 #include <stdlib.h>
 #include <algorithm>
-
-using namespace std;
+*/
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-TIniFile *IniUltraTimeKeeping;//ini file
+extern PACKAGE TfUltraSki *fUltraSki;
+extern TimeKeeping *tk;
 extern Races *rcs;
-/*
-DateUtils.MilliSecondsBetween(Now, 0);
-	TFormatSettings fs = TFormatSettings::Create();
-	fs.DecimalSeparator = '.';
-	TDateTime dateTime = StrToDateTime("02/02/2016 01:00:00.123", fs);
-	// восстанавливать ничего не нужно
+TIniFile *IniUltraTimeKeeping;//ini file
+//---------------------------------------------------------------------------
+void __fastcall TimeKeeping::form_key_press(TObject *Sender, System::WideChar &Key){
+///
+}
+//---------------------------------------------------------------------------
+void __fastcall TimeKeeping::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
+AnsiString astr,sname;
+TMaskEdit *edt=dynamic_cast<TMaskEdit*>(Sender);
+int i;
 
-	TDateTime dateTime = StrToDateTime(String().sprintf("12.02.2016 01:02:03%c123",DecimalSeparator));
-	Label1->Caption = FormatDateTime("dd.mm.yyyy hh:nn:ss.zzz",dateTime);
-								 int    int      int      int
-	TDateTime Value = EncodeTime(Hours, Minutes, Seconds, Milliseconds);
-	edtTime->Text = Value;
-*/
+	astr=Trim(edt->Text);
+	sname=edt->Name;
+	if(Key==13){
+		astr=Trim(edt->Text);
+	   try{
+			i=StrToInt(astr);
+			rcs->SetCurRacer(i);
+	   }
+	   catch(...){}
+	}
+}
 //---------------------------------------------------------------------------
 void __fastcall TimeKeeping::TimeKeepingLocations(TForm* form){
 String str;
@@ -74,7 +87,7 @@ const int GridWidth=90;
 		eRaceCode->EditMask="!9999999999;1;_";
 		eRaceCode->Parent = panel1;
 		eRaceCode->Name="eRaceCode";
-		eRaceCode->Font->Size=10;
+		eRaceCode->Font->Size=lRaceCode->Font->Size-2;
 		eRaceCode->AutoSize=false;
 		eRaceCode->Height=18;
 		eRaceCode->Top=lRaceCode->Top;
@@ -82,7 +95,7 @@ const int GridWidth=90;
 		eRaceCode->Width=90-15;
 		eRaceCode->Visible=true;
 	}
-	eRaceCode->Text="";
+	eRaceCode->Text=aCurRaceCode;
 
 	if(lsynch==NULL){
 		lsynch= new TLabel(panel1);
@@ -107,7 +120,7 @@ const int GridWidth=90;
 		eAsynch->EditMask="!99:99:99.9999;1;_";
 		eAsynch->Parent = panel1;
 		eAsynch->Name="eAsynch";
-		eAsynch->Font->Size=10;
+		eAsynch->Font->Size=lRaceCode->Font->Size-1;
 		eAsynch->AutoSize=false;
 		eAsynch->Height=18;
 		eAsynch->Top=lsynch->Top;
@@ -149,18 +162,21 @@ const int GridWidth=90;
 		lBIBonStart->Caption="BIB на старте";
 		lBIBonStart->OnMouseDown=mouse_down;
 	}
+
 	if(eBIBonStart==NULL){
 		eBIBonStart=new TMaskEdit(panel1);
 		eBIBonStart->EditMask="!999;1;_";
 		eBIBonStart->Parent = panel1;
 		eBIBonStart->Name="eBIBonStarth";
-		eBIBonStart->Font->Size=eAsynch->Font->Size;
+		eBIBonStart->Font->Size=eAsynch->Font->Size-1;
 		eBIBonStart->AutoSize=false;
 		eBIBonStart->Height=eAsynch->Height;
 		eBIBonStart->Top=lBIBonStart->Top;
 		eBIBonStart->Left=eRaceCode->Left;
 		eBIBonStart->Width=30;
 		eBIBonStart->Visible=true;
+		eBIBonStart->OnKeyDown=form_key_down;
+
 	}
 	eBIBonStart->Text="";
 
@@ -169,7 +185,7 @@ const int GridWidth=90;
 		l0pulse= new TLabel(panel1);
 		l0pulse->Parent = panel1;
 		l0pulse->Name="l0Pulse";
-		l0pulse->Font->Size=12;
+		l0pulse->Font->Size=10;
 		l0pulse->AutoSize=false;
 		l0pulse->Alignment=taCenter;
 		l0pulse->Transparent=false;
@@ -185,7 +201,8 @@ const int GridWidth=90;
 		l0pulseValue->Parent = panel1;
 		l0pulseValue->Name="S0";
 		l0pulseValue->Caption="STA";
-		l0pulseValue->Font->Size=12;
+		l0pulseValue->Font->Size=l0pulse->Font->Size;
+		l0pulseValue->Font->Style = l0pulseValue->Font->Style >> fsBold;
 		l0pulseValue->AutoSize=false;
 		l0pulseValue->Alignment=taCenter;
 		l0pulseValue->Transparent=false;
@@ -200,7 +217,8 @@ const int GridWidth=90;
 		l0pulseValue2->Parent = panel1;
 		l0pulseValue2->Name="i10";
 		l0pulseValue2->Caption="I1";
-		l0pulseValue2->Font->Size=12;
+		l0pulseValue2->Font->Size=l0pulse->Font->Size-1;
+		l0pulseValue2->Font->Style = l0pulseValue2->Font->Style >> fsBold;
 		l0pulseValue2->AutoSize=false;
 		l0pulseValue2->Alignment=taCenter;
 		l0pulseValue2->Transparent=false;
@@ -217,7 +235,8 @@ const int GridWidth=90;
 		l0pulseValue3->Parent = panel1;
 		l0pulseValue3->Name="i20";
 		l0pulseValue3->Caption="I2";
-		l0pulseValue3->Font->Size=12;
+		l0pulseValue3->Font->Size=l0pulseValue2->Font->Size;
+		l0pulseValue3->Font->Style = l0pulseValue3->Font->Style >> fsBold;
 		l0pulseValue3->AutoSize=false;
 		l0pulseValue3->Alignment=taCenter;
 		l0pulseValue3->Transparent=false;
@@ -235,6 +254,7 @@ const int GridWidth=90;
 		l0pulseValue4->Name="i30";
 		l0pulseValue4->Caption="I3";
 		l0pulseValue4->Font->Size=l0pulseValue3->Font->Size;
+		l0pulseValue4->Font->Style = l0pulseValue4->Font->Style >> fsBold;
 		l0pulseValue4->AutoSize=false;
 		l0pulseValue4->Alignment=taCenter;
 		l0pulseValue4->Transparent=false;
@@ -250,7 +270,8 @@ const int GridWidth=90;
 		l0pulseValue5->Parent = panel1;
 		l0pulseValue5->Name="i40";
 		l0pulseValue5->Caption="I4";
-		l0pulseValue5->Font->Size=12;
+		l0pulseValue5->Font->Size=l0pulseValue3->Font->Size;
+		l0pulseValue5->Font->Style = l0pulseValue5->Font->Style >> fsBold;
 		l0pulseValue5->AutoSize=false;
 		l0pulseValue5->Alignment=taCenter;
 		l0pulseValue5->Transparent=false;
@@ -267,7 +288,8 @@ const int GridWidth=90;
 		l0pulseValue6->Parent = panel1;
 		l0pulseValue6->Name="F0";
 		l0pulseValue6->Caption="FIN";
-		l0pulseValue6->Font->Size=12;
+		l0pulseValue6->Font->Size=l0pulseValue2->Font->Size;
+		l0pulseValue6->Font->Style = l0pulseValue6->Font->Style >> fsBold;
 		l0pulseValue6->AutoSize=false;
 		l0pulseValue6->Alignment=taCenter;
 		l0pulseValue6->Transparent=false;
@@ -285,7 +307,8 @@ const int GridWidth=90;
 		lpulse= new TLabel(panel1);
 		lpulse->Parent = panel1;
 		lpulse->Name="lPulseA";
-		lpulse->Font->Size=12;
+		lpulse->Font->Size=10;
+		lpulse->Font->Style = lpulse->Font->Style >> fsBold;
 		lpulse->AutoSize=false;
 		lpulse->Alignment=taCenter;
 		lpulse->Transparent=false;
@@ -302,7 +325,8 @@ const int GridWidth=90;
 		lpulseValue=new TLabel(panel1);
 		lpulseValue->Parent = panel1;
 		lpulseValue->Name="S";
-		lpulseValue->Font->Size=12;
+		lpulseValue->Font->Size=lpulse->Font->Size-1;
+		lpulseValue->Font->Style = lpulseValue->Font->Style >> fsBold;
 		lpulseValue->AutoSize=false;
 		lpulseValue->Alignment=taCenter;
 		lpulseValue->Transparent=false;
@@ -318,7 +342,8 @@ const int GridWidth=90;
 		lpulseValue2=new TLabel(panel1);
 		lpulseValue2->Parent = panel1;
 		lpulseValue2->Name="i1";
-		lpulseValue2->Font->Size=12;
+		lpulseValue2->Font->Size=lpulseValue->Font->Size;
+		lpulseValue2->Font->Style = lpulseValue2->Font->Style >> fsBold;
 		lpulseValue2->AutoSize=false;
 		lpulseValue2->Alignment=taCenter;
 		lpulseValue2->Transparent=false;
@@ -335,7 +360,8 @@ const int GridWidth=90;
 		lpulseValue3=new TLabel(panel1);
 		lpulseValue3->Parent = panel1;
 		lpulseValue3->Name="i2";
-		lpulseValue3->Font->Size=12;
+		lpulseValue3->Font->Size=lpulseValue->Font->Size;
+		lpulseValue3->Font->Style = lpulseValue3->Font->Style >> fsBold;
 		lpulseValue3->AutoSize=false;
 		lpulseValue3->Alignment=taCenter;
 		lpulseValue3->Transparent=false;
@@ -351,7 +377,8 @@ const int GridWidth=90;
 		lpulseValue4=new TLabel(panel1);
 		lpulseValue4->Parent = panel1;
 		lpulseValue4->Name="i3";
-		lpulseValue4->Font->Size=12;
+		lpulseValue4->Font->Size=lpulseValue->Font->Size;
+		lpulseValue4->Font->Style = lpulseValue4->Font->Style >> fsBold;
 		lpulseValue4->AutoSize=false;
 		lpulseValue4->Alignment=taCenter;
 		lpulseValue4->Transparent=false;
@@ -367,7 +394,8 @@ const int GridWidth=90;
 		lpulseValue5=new TLabel(panel1);
 		lpulseValue5->Parent = panel1;
 		lpulseValue5->Name="i4";
-		lpulseValue5->Font->Size=12;
+		lpulseValue5->Font->Size=lpulseValue->Font->Size;
+		lpulseValue5->Font->Style = lpulseValue5->Font->Style >> fsBold;
 		lpulseValue5->AutoSize=false;
 		lpulseValue5->Alignment=taCenter;
 		lpulseValue5->Transparent=false;
@@ -383,7 +411,8 @@ const int GridWidth=90;
 		lpulseValue6=new TLabel(panel1);
 		lpulseValue6->Parent = panel1;
 		lpulseValue6->Name="F";
-		lpulseValue6->Font->Size=12;
+		lpulseValue6->Font->Size=lpulseValue->Font->Size;
+		lpulseValue6->Font->Style = lpulseValue6->Font->Style >> fsBold;
 		lpulseValue6->AutoSize=false;
 		lpulseValue6->Alignment=taCenter;
 		lpulseValue6->Transparent=false;
@@ -400,7 +429,8 @@ const int GridWidth=90;
 		lBpulse= new TLabel(panel1);
 		lBpulse->Parent = panel1;
 		lBpulse->Name="lPulseB";
-		lBpulse->Font->Size=12;
+		lBpulse->Font->Size=lpulse->Font->Size;
+		lBpulse->Font->Style = lBpulse->Font->Style >> fsBold;
 		lBpulse->AutoSize=false;
 		lBpulse->Alignment=taCenter;
 		lBpulse->Transparent=false;
@@ -417,7 +447,8 @@ const int GridWidth=90;
 		lBpulseValue=new TLabel(panel1);
 		lBpulseValue->Parent = panel1;
 		lBpulseValue->Name="BS";
-		lBpulseValue->Font->Size=12;
+		lBpulseValue->Font->Size=lpulse->Font->Size-1;
+		lBpulseValue->Font->Style = lBpulseValue->Font->Style >> fsBold;
 		lBpulseValue->AutoSize=false;
 		lBpulseValue->Alignment=taCenter;
 		lBpulseValue->Transparent=false;
@@ -433,7 +464,8 @@ const int GridWidth=90;
 		lBpulseValue2=new TLabel(panel1);
 		lBpulseValue2->Parent = panel1;
 		lBpulseValue2->Name="Bi1";
-		lBpulseValue2->Font->Size=12;
+		lBpulseValue2->Font->Size=lBpulseValue->Font->Size;
+		lBpulseValue2->Font->Style = lBpulseValue2->Font->Style >> fsBold;
 		lBpulseValue2->AutoSize=false;
 		lBpulseValue2->Alignment=taCenter;
 		lBpulseValue2->Transparent=false;
@@ -450,7 +482,8 @@ const int GridWidth=90;
 		lBpulseValue3=new TLabel(panel1);
 		lBpulseValue3->Parent = panel1;
 		lBpulseValue3->Name="Bi2";
-		lBpulseValue3->Font->Size=12;
+		lBpulseValue3->Font->Size=lBpulseValue->Font->Size;
+		lBpulseValue3->Font->Style = lBpulseValue3->Font->Style >> fsBold;
 		lBpulseValue3->AutoSize=false;
 		lBpulseValue3->Alignment=taCenter;
 		lBpulseValue3->Transparent=false;
@@ -466,7 +499,8 @@ const int GridWidth=90;
 		lBpulseValue4=new TLabel(panel1);
 		lBpulseValue4->Parent = panel1;
 		lBpulseValue4->Name="Bi3";
-		lBpulseValue4->Font->Size=12;
+		lBpulseValue4->Font->Size=lBpulseValue->Font->Size;
+		lBpulseValue4->Font->Style = lBpulseValue4->Font->Style >> fsBold;
 		lBpulseValue4->AutoSize=false;
 		lBpulseValue4->Alignment=taCenter;
 		lBpulseValue4->Transparent=false;
@@ -482,7 +516,8 @@ const int GridWidth=90;
 		lBpulseValue5=new TLabel(panel1);
 		lBpulseValue5->Parent = panel1;
 		lBpulseValue5->Name="Bi4";
-		lBpulseValue5->Font->Size=12;
+		lBpulseValue5->Font->Size=lBpulseValue->Font->Size;
+		lBpulseValue5->Font->Style = lBpulseValue5->Font->Style >> fsBold;
 		lBpulseValue5->AutoSize=false;
 		lBpulseValue5->Alignment=taCenter;
 		lBpulseValue5->Transparent=false;
@@ -498,7 +533,8 @@ const int GridWidth=90;
 		lBpulseValue6=new TLabel(panel1);
 		lBpulseValue6->Parent = panel1;
 		lBpulseValue6->Name="BF";
-		lBpulseValue6->Font->Size=12;
+		lBpulseValue6->Font->Size=lBpulseValue->Font->Size;
+		lBpulseValue6->Font->Style = lBpulseValue6->Font->Style >> fsBold;
 		lBpulseValue6->AutoSize=false;
 		lBpulseValue6->Alignment=taCenter;
 		lBpulseValue6->Transparent=false;
@@ -518,7 +554,7 @@ const int GridWidth=90;
 		panel2->Parent = panel1;
 		panel2->DoubleBuffered=true;
 		panel2->Name="tmP2";
-		panel2->Font->Size=12;
+		panel2->Font->Size=lpulse->Font->Size;
 		panel2->Alignment=taLeftJustify;
 		panel2->VerticalAlignment=taAlignTop;
 		panel2->Top=lBpulse->Top+lBpulse->Height;
@@ -531,7 +567,7 @@ const int GridWidth=90;
 		panel3->Parent = panel2;
 		panel3->DoubleBuffered=true;
 		panel3->Name="tmP3";
-		panel3->Font->Size=12;
+		panel3->Font->Size=lpulse->Font->Size-1;
 		panel3->Alignment=taLeftJustify;
 		panel3->VerticalAlignment=taAlignTop;
 		panel3->Top=0;//18*2+8;
@@ -581,7 +617,10 @@ const int GridWidth=90;
 }//end of proc
 //------------------------------------------------------------------------------
 void __fastcall TimeKeeping::showTimeKeeping(void){
+int iwidth=rcs->get_pRaceInfo();
 	TimeKeepingLocations(pTMViews);
+	if(iwidth)
+		pTMViews->Width=iwidth;
 	pTMViews->Show();
 }
 //------------------------------------------------------------------------------
@@ -642,16 +681,18 @@ void __fastcall TimeKeeping::Set_Red_Lime_Color(TLabel *lblmoused){
 void __fastcall TimeKeeping::mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y){
 TLabel *lblmoused=dynamic_cast<TLabel*>(Sender);
 String 	str=lblmoused->Caption,sname=lblmoused->Name;
-AnsiString astr,atime,atype,aline,aa,bb;
+AnsiString astr,atime,atimeb,atype,aline,aa,bb;
 int a,b,itag;
-	b=random(9);a=random(9);
-	aa.sprintf("%d",a);
+	b=random(9);///a=random(9);
+///	aa.sprintf("%d",a);
 	bb.sprintf("%d",b);
 	astr=str;
 	astr=sname;
-	atime=_getTimeHHSSZZZ();
+	atime=_getTimeHHSSZZZZ();
+	atimeb=atime;
+	atimeb.SetLength(12);
 	if(sname=="tmlRaceCode"){
-	    sname="";
+		sname="";
 	}
 	if(sname=="tmlDSQ" || sname=="tmlDNF")
 		Set_DSQ_DNF(lblmoused),sname="";
@@ -673,33 +714,32 @@ int a,b,itag;
 			l0pulse->Color=clLime;
 			l0pulse->Visible=true;
 			l0pulse->Caption="0";
-			SetLastStartTime(Now());
+			SetLastStartTime(microsec_clock::local_time());
 		}
 		if(sname.Pos("F")){
-			b=random(999);a=random(999);
-			atime.SetLength(10);
-			aa.sprintf("%03d",a);
+			b=random(999);
+			atimeb.SetLength(10);
 			bb.sprintf("%03d",b);
 		}
 		if(ipos==0){
-			lblmoused->Caption=atime+aa;
+			lblmoused->Caption=atime;
 			if (Shift.Contains(ssCtrl)){
-				TimePut("A",sname,atime+aa);
+				TimePut("A",sname,atime);
 			}
 			else{
 				if(a>=b){
-					TimePut("B",sname,atime+bb);
-					TimePut("A",sname,atime+aa);
+					TimePut("B",sname,atimeb+bb);
+					TimePut("A",sname,atime);
 				}
 				else{
-					TimePut("A",sname,atime+aa);
-					TimePut("B",sname,atime+bb);
+					TimePut("A",sname,atime);
+					TimePut("B",sname,atimeb+bb);
 				}
 			}
 		}
 		else{
-			TimePut("",sname,atime+bb);
-			lblmoused->Caption=atime+bb;
+			TimePut("",sname,atimeb+bb);
+			lblmoused->Caption=atimeb+bb;
 		}
 		IniUltraTimeKeeping->UpdateFile();
 
@@ -716,27 +756,32 @@ TDateTime dateTime1,dateTime;
 TDateTime _now,_last;
 int ih,im,is,ims;
 static int ilastsec;
-SYSTEMTIME sys;
-	GetSystemTime(&sys);
-	ih=(sys.wHour+3)%24;
-	im=sys.wMinute;
-	is=sys.wSecond;
-	ims=sys.wMilliseconds;
+	if(pTMViews->Visible){
+/*		std::stringstream sstream;
+		boost::gregorian::date dayte(boost::gregorian::day_clock::local_day());
+		boost::posix_time::ptime midnight(dayte);
+		boost::posix_time::ptime now(boost::posix_time::microsec_clock::local_time());
+		boost::posix_time::time_duration td = now - midnight;
+		sstream << td.hours() << ":" << td.minutes() << ":" << td.seconds()<< "." << td.fractional_seconds() << std::endl;
+		std::string str = sstream.str();
+		atime=str.c_str();
+*/
+		atime=_getTimeHHSSZZZZ();
+		pTMViews->Caption=atime;
 
-	_now=Now();
-	atime=_getTimeHHSSZZZ();
-	pTMViews->Caption=atime;
-	if(ilastsec!=is){
-	    ilastsec=is;
-		if(l0pulse!=NULL&&l0pulse->Color==clLime){
-			_last=LastStartTime;
-			isecs=SecondsBetween(_now,LastStartTime);
-			if(isecs>=0 and isecs<599){
-				l0pulse->Visible=true;
-				l0pulse->Caption=Secs2MSS(isecs+1);
+		if(ilastsec!=is){
+			ilastsec=is;
+			if(l0pulse!=NULL&&l0pulse->Color==clLime){
+				ptime now(microsec_clock::local_time());
+				boost::posix_time::time_duration diff = now - LastStartTime;
+				isecs=static_cast<float>(diff.total_milliseconds())/1000;
+				if(isecs>=0 and isecs<599){
+					l0pulse->Visible=true;
+					l0pulse->Caption=Secs2MSS(isecs+1);
+				}
+				else
+					l0pulse->Visible=false;
 			}
-			else
-				l0pulse->Visible=false;
 		}
 	}
 }
@@ -748,6 +793,7 @@ void __fastcall TimeKeeping::form_resize(TObject *Sender){
 void __fastcall TimeKeeping::show_viewTK(void){
 	int iN;
 	iN=(pTMViews->Height-panel2->Top-36)/18;
+///	iN=TimingList.size();
 	viewTK.reserve(iN);
 	_viewTK *vtk;
 	int sz= viewTK.capacity();
@@ -761,7 +807,7 @@ void __fastcall TimeKeeping::show_viewTK(void){
 		float it1=0,it2=0;
 		float idiff=0;
 		AnsiString asystem="",bsystem="",atime="",btime="",ahh="",amm="",ass="",azzzz="",bhh="",bmm="",bss="",bzzzz="",adiff="";
-        tm1=tm2=tmp1=tmp2=NULL;
+		tm1=tm2=tmp1=tmp2=NULL;
 		if(TimingList.size()>0&&(tmlsz-j-1)>=0){
 			tm1=&TimingList[tmlsz-j-1];
 			adsq=tm1->DSQ;
@@ -786,7 +832,7 @@ void __fastcall TimeKeeping::show_viewTK(void){
 		if(time1!=time2)
 			secondsbetween=MilliSecondsBetween(time1,time2);
 		else
-        	secondsbetween=0;
+			secondsbetween=0;
 		if(secondsbetween>0){
 			tmp1=NULL;tmp2=NULL;
 			if(asystem=="A")tmp1=tm1;
@@ -801,7 +847,7 @@ void __fastcall TimeKeeping::show_viewTK(void){
 			if(bsystem=="B")tmp2=tm2;
 			if(tmp1!=NULL&&tmp1->electroLine=="AS"&&lsynch->Color==clLime){
 				lsynch->Color=clRed;
-                lsynch->Font->Color=clYellow;
+				lsynch->Font->Color=clYellow;
 				eAsynch->Text=tmp1->TimeOfDay;
 				eBsynch->Text=tmp2->TimeOfDay;
 
@@ -811,14 +857,14 @@ void __fastcall TimeKeeping::show_viewTK(void){
 				ahh=tmp1->TimeOfDay.SubString(1,2);
 				amm=tmp1->TimeOfDay.SubString(4,2);
 				ass=tmp1->TimeOfDay.SubString(7,2);
-				azzzz=tmp1->TimeOfDay.SubString(10,4);
+				azzzz=Trim(tmp1->TimeOfDay.SubString(10,4));
 				it1=/*ahh.ToDouble()*60*60+amm.ToDouble()*60+ass.ToDouble()+*/azzzz.ToDouble()/10000;
 			}
 			if(tmp2!=NULL){
 				bhh=tmp2->TimeOfDay.SubString(1,2);
 				bmm=tmp2->TimeOfDay.SubString(4,2);
 				bss=tmp2->TimeOfDay.SubString(7,2);
-				bzzzz=tmp2->TimeOfDay.SubString(10,4);
+				bzzzz=Trim(tmp2->TimeOfDay.SubString(10,4));
 				it2=/*bhh.ToDouble()*60*60+bmm.ToDouble()*60+bss.ToDouble()+*/bzzzz.ToDouble()/10000;
 			}
 			idiff=(it2-it1);
@@ -833,6 +879,17 @@ void __fastcall TimeKeeping::show_viewTK(void){
 			}
 		}
 */
+		if(i==0){//настройка на текущго гонщика в стартовом спииске
+			AnsiString abib=Trim(eBIBonStart->Text);
+			if(abib.Length()){
+				int ibib;
+				if(TryStrToInt(abib,ibib)){
+					ibib++;
+					eBIBonStart->Text=ibib;
+					rcs->SetCurRacer(ibib);
+				}
+			}
+		}
 
 		int ileftoffset=lBpulseValue->Left,iwidth=lBpulseValue->Width;
 		vtk=new _viewTK(panel3,ileftoffset,iwidth,i,idiff,tmp1,tmp2,lsynch);

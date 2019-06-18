@@ -2,15 +2,15 @@ object fUltraSki: TfUltraSki
   Left = 0
   Top = 0
   Caption = 'UltraSki'
-  ClientHeight = 149
+  ClientHeight = 151
   ClientWidth = 644
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = clBlack
   Font.Height = -11
   Font.Name = 'Tahoma'
-  Font.Style = []
+  Font.Style = [fsBold]
   Icon.Data = {
     0000010006000000000001002000CFB800006600000080800000010020002808
     010035B900004040000001002000284200005DC101003030000001002000A825
@@ -4609,6 +4609,7 @@ object fUltraSki: TfUltraSki
   KeyPreview = True
   OldCreateOrder = False
   Position = poDesigned
+  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object Image2: TImage
@@ -23234,7 +23235,6 @@ object fUltraSki: TfUltraSki
       00000D01010C0000000000000DE1FF03B42C662659F2D7960000000049454E44
       AE426082}
     Stretch = True
-    Transparent = True
     OnClick = Image1Click
   end
   object pINFO: TLabel
@@ -29205,7 +29205,7 @@ object fUltraSki: TfUltraSki
   object Label1: TLabel
     Left = 416
     Top = 128
-    Width = 31
+    Width = 37
     Height = 13
     Caption = 'Label1'
     Color = clAqua

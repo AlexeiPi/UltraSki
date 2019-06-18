@@ -1,12 +1,9 @@
 //---------------------------------------------------------------------------
-
 #pragma hdrstop
-
 #include "Competition.h"
 #include <StrUtils.hpp>
-TIniFile *IniUltraAlpSki;//ini file
-AnsiString toLatin(AnsiString &srussian);
 //____________________________________________________________________________
+TIniFile *IniUltraAlpSki;//ini file
 //-----------------------------------------------------------------------------
 
 String __fastcall Race::LiveFISRaceclear(void){

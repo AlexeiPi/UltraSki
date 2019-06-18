@@ -12,20 +12,20 @@
 #include "Competition.h"
 #include "RaceViews.h"
 #include "TimingDevice.h"
-#include "System.Zip.hpp"
+
+
 
 //------------------------------------------------------------------------------
 void __fastcall UnZIP(AnsiString afiledir,AnsiString afilename);
 //------------------------------------------------------------------------------
 TfUltraSki *fUltraSki;
-extern TIdTCPClient *LiveFIS;
-AnsiString toLatin(AnsiString &srussian);
 //extern PACKAGE TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 Races *rcs;
 TimeKeeping *tk;
 
 __fastcall TfUltraSki::TfUltraSki(TComponent* Owner): TForm(Owner){
+#if 1
 	rcs=new Races;
 	tk=new TimeKeeping;
 	TGIFImage *GIF = dynamic_cast<TGIFImage*>(Image2->Picture->Graphic);
@@ -89,13 +89,15 @@ Races *rcs=NULL;
 	RaceStartListView rsl;
 	rsl.showView();
 */
+#endif
 }
 //---------------------------------------------------------------------------
+#if 1
 void __fastcall TfUltraSki::MyException( TObject *Sender, Exception *E )
 {
  if( String( E->ClassName() ) == "ESocketError" )
    {
-    ShowMessage("Îøèáêà - ESocketError");
+	ShowMessage("Îøèáêà - ESocketError");
    }
 }
 //---------------------------------------------------------------------------
@@ -160,11 +162,18 @@ void __fastcall TfUltraSki::Image2Click(TObject *Sender){
 	int iN=rcs->getNumberOfRaces();
 	if(iN>0){
 		iN=rcs->getCurrRace();
+		if(iN==-1)
+			iN=0;
 		rcs->showInfo();
+
+		rcs->setlastcurrRace(-1);
 		rcs->setCurrRace(iN);
-		iN=rcs->getCurrRace();
-		rcs->setCurRacersColor();
-		iN=rcs->getCurrRace();
+
+
+///		iN=rcs->getCurrRace();
+
+		rcs->setCurRacersColor();//????
+///		iN=rcs->getCurrRace();
 		rcs->SetFocus();
 	}
 }
@@ -336,6 +345,22 @@ AnsiString astr;
 	return astr;
 }
 //---------------------------------------------------------------------------
+AnsiString __fastcall _getTimeHHSSZZZZ(void){
+AnsiString atime;
+	std::stringstream sstream;
+	boost::gregorian::date dayte(boost::gregorian::day_clock::local_day());
+	boost::posix_time::ptime midnight(dayte);
+	boost::posix_time::ptime
+	now(boost::posix_time::microsec_clock::local_time());
+	boost::posix_time::time_duration td = now - midnight;
+	sstream << boost::format("%02d") % td.hours() << ":" << boost::format("%02d") % td.minutes() << ":" << boost::format("%02d") % td.seconds()<< "." << td.fractional_seconds() << std::endl;
+
+	std::string str = sstream.str();
+	atime=str.c_str();
+	atime.SetLength(13);
+	return atime;
+}
+//---------------------------------------------------------------------------
 void __fastcall TfUltraSki::imTimeMachineClick(TObject *Sender){
 
 	Memo1->Lines->Add(_getTimeHHSSZZZ());
@@ -372,3 +397,14 @@ void __fastcall UnZIP(AnsiString afiledir,AnsiString afilename){
 	zip->Close();
 	delete zip;
 }
+
+
+void __fastcall TfUltraSki::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
+		  TPoint &MousePos, bool &Handled)
+{
+//OnMouseWheel
+}
+//---------------------------------------------------------------------------
+#endif
+
+

@@ -2,18 +2,27 @@
 
 #ifndef TimingDeviceH
 #define TimingDeviceH
-#include <vcl.h>
-#include <vector>
+//---------------------------------------------------------------------------
 #include "UltraSki.h"
-#include "Racer.h"
-#include "Competition.h"
-#include "RaceViews.h"
+//---------------------------------------------------------------------------
+/*using namespace std;
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+*/
 
-extern TIniFile *IniUltraTimeKeeping;//ini file
-///extern Races *rcs;
-using namespace std;
+#pragma message ("WE REACHED TIMING DEVICE...")
+
+ #include <boost/format.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/date.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
+using namespace boost::posix_time;
+using namespace boost::gregorian;
+
+//---------------------------------------------------------------------------
 
 enum timemachinelines{FISemulation=0,startline=1,inter1=2,inter2=3,inter3=4,inter4=5,finishline=9};
+//---------------------------------------------------------------------------
 class TimeKeeping{
 private:
 	TForm *pTMViews;
@@ -130,6 +139,7 @@ private:
 				lRaceCode->AutoSize=false;
 				lRaceCode->Transparent=false;
 				lRaceCode->Font->Size=8;
+				lRaceCode->Font->Style = lRaceCode->Font->Style >> fsBold;
 				lRaceCode->Width=90;
 				lRaceCode->Height=18;
 				lRaceCode->Top=0;
@@ -147,7 +157,7 @@ private:
 				lDNF->Name="tmlDNF";
 				lDNF->AutoSize=false;
 				lDNF->Transparent=false;
-				lDNF->Font->Size=8;
+				lDNF->Font->Size=lRaceCode->Font->Size;
 				lDNF->Width=10;
 				lDNF->Height=18;
 				lDNF->Top=0;
@@ -188,10 +198,10 @@ private:
 				eBIB->Parent = p1;
 				eBIB->AutoSize=false;
 				eBIB->Tag=i;
-				eBIB->Font->Size=lDNF->Font->Size;
-				eBIB->Width=25;
-				eBIB->Height=18;
-				eBIB->Top=0;
+				eBIB->Font->Size=lDNF->Font->Size+1;
+				eBIB->Width=30;
+				eBIB->Height=20;
+				eBIB->Top=-3;
 				eBIB->Left=lDSQ->Left+lDSQ->Width;
 				eBIB->Alignment=taCenter;
 			}
@@ -206,11 +216,11 @@ private:
 				lbibLapse->Transparent=false;
 				lbibLapse->Tag=i;
 				lbibLapse->Color=clWhite;
-				lbibLapse->Font->Size=8;
+				lbibLapse->Font->Size=lRaceCode->Font->Size;
 				lbibLapse->Width=40;
 				lbibLapse->Height=18;
 				lbibLapse->Top=0;
-				lbibLapse->Left=eBIB->Left+eBIB->Width+2;
+				lbibLapse->Left=eBIB->Left+eBIB->Width+0;
 				lbibLapse->Alignment=taCenter;
 			}
 			lbibLapse->Caption=aBIBLAPSE;
@@ -224,7 +234,8 @@ private:
 				lSN->Transparent=false;
 				lSN->Tag=i;
 				lSN->Color=clWhite;
-				lSN->Font->Size=8;
+				lSN->Font->Size=lRaceCode->Font->Size;
+				lSN->Font->Style = lSN->Font->Style >> fsBold;
 				lSN->Width=40;
 				lSN->Height=18;
 				lSN->Top=0;
@@ -257,7 +268,7 @@ private:
 				eTime->Parent = p1;
 				eTime->AutoSize=false;
 				eTime->Tag=lSN->Tag;
-				eTime->Font->Size=10;
+				eTime->Font->Size=lRaceCode->Font->Size;
 				eTime->Width=90;
 				eTime->Height=lSN->Height;
 				eTime->Top=lSN->Top;
@@ -276,7 +287,7 @@ private:
 				emTime->Font->Size=eTime->Font->Size;
 				emTime->Width=eTime->Width-30;
 				emTime->Height=lSN->Height;
-				emTime->Top=lSN->Top;
+				emTime->Top=lSN->Top+2;
 				emTime->Left=ileftoffset+3*(iwidth+5);
 				emTime->Alignment=taRightJustify;
 			}
@@ -328,6 +339,7 @@ private:
 				lSNb->Tag=i;
 				lSNb->Color=clWhite;
 				lSNb->Font->Size=lSN->Font->Size;
+				lSNb->Font->Style = lSNb->Font->Style >> fsBold;
 				lSNb->Width=lSN->Width;
 				lSNb->Height=18;
 				lSNb->Top=0;
@@ -353,13 +365,16 @@ private:
 	AnsiString ApplicationPath,DefaultPath;
 	TStringList* Sections;
 	TStringList* Values;
-	TDateTime  LastStartTime;
+//	TDateTime  LastStartTime;
+	ptime LastStartTime;
+	AnsiString aCurRaceCode="";
 
 public:
 	TimeKeeping(){
 	AnsiString astr;
-	    randomize();
+		randomize();
 		pTMViews=new TForm(Application);
+		pTMViews->Font->Style = pTMViews->Font->Style << fsBold;
 		pTMViews->DoubleBuffered=true;
 		pTMViews->OnResize=form_resize;
 		TKtimer=new TTimer(pTMViews);
@@ -431,17 +446,31 @@ public:
 	int getPulsesN(){return TimingList.size();};
 	void __fastcall TimeKeepingLocations(TForm* form);
 	void __fastcall showTimeKeeping(void);
+	void __fastcall form_key_down(TObject *Sender, WORD &Key, TShiftState Shift);
+	void __fastcall form_key_press(TObject *Sender, System::WideChar &Key);
 	void __fastcall mouse_down(TObject *Sender, TMouseButton Button, TShiftState Shift, int X, int Y);
 	void __fastcall OnTKtimer(TObject *Sender);
 	void __fastcall SetLeftTop(int ileft,int itop){pTMViews->Left=ileft;pTMViews->Top=itop;};
 	void __fastcall form_resize(TObject *Sender);
 	void __fastcall show_viewTK(void);
 	void __fastcall TimePut(AnsiString atype,AnsiString aname,AnsiString atime);
-	void __fastcall SetRaceCode(AnsiString aRaceCode){if(lRaceCode->Color==clLime){eRaceCode->Text=aRaceCode;lRaceCode->Color=clRed;lRaceCode->Font->Color=clYellow;}};
-	void __fastcall SetBIBonStart(AnsiString abibonstart){if(lBIBonStart->Color==clLime){eBIBonStart->Text=abibonstart;lBIBonStart->Color=clRed;lBIBonStart->Font->Color=clYellow;}};
+	void __fastcall SetRaceCode(AnsiString aRaceCode){
+							aCurRaceCode=aRaceCode;
+							if(lRaceCode!=NULL&&lRaceCode->Color==clLime){
+							eRaceCode->Text=aRaceCode;lRaceCode->Color=clRed;
+							lRaceCode->Font->Color=clYellow;
+						}
+		};
+	void __fastcall ForceRaceCode(AnsiString aRaceCode){if(eRaceCode)eRaceCode->Text=aRaceCode;};
+	void __fastcall ForceBIBonStart(AnsiString abibonstart){eBIBonStart->Text=abibonstart;};
+	void __fastcall SetBIBonStart(AnsiString abibonstart){
+					if(lBIBonStart&&lBIBonStart->Visible&&lBIBonStart->Color==clLime){
+						eBIBonStart->Text=abibonstart;lBIBonStart->Color=clRed;lBIBonStart->Font->Color=clYellow;
+					}
+	};
 	void __fastcall Set_DSQ_DNF(TLabel *lblmoused);
 	void __fastcall Set_Red_Lime_Color(TLabel *lblmoused);
-	void __fastcall SetLastStartTime(TDateTime lastdatetime){LastStartTime=lastdatetime;};
+	void __fastcall SetLastStartTime(/*TDateTime*/ptime lastdatetime){LastStartTime=lastdatetime;};
 	AnsiString __fastcall Secs2MSS(int isecs){AnsiString atime;int imin;imin=isecs/60;isecs=isecs%60;atime.sprintf("%0d:%02d",imin,isecs);return atime;};
 	AnsiString __fastcall mSecs2MSSHH(int imsecs){
 										AnsiString atime,aminsec,amsecs;
