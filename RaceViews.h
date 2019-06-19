@@ -11,6 +11,7 @@
 //#include "Racer.h"
 #include "Competition.h"
 
+extern PACKAGE TfUltraSki *fUltraSki;
 //---------------------------------------------------------------------------
 class RaceStartListView:public RaceList{
 	private:
@@ -21,6 +22,8 @@ class RaceStartListView:public RaceList{
 		TLabel *SN;
 		TLabel *FC;
 		TLabel *FIO;
+		TLabel *T1;
+		TLabel *T2;
 
 		_viewSL(TPanel*p,int i,RaceList *rL,TLabel *lbl){//constructor
 			AnsiString str;
@@ -37,7 +40,8 @@ class RaceStartListView:public RaceList{
 				SN->Font->Size=10;
 				SN->Width=30;
 				SN->Height=18;
-				SN->Top=(i>0?i-1:1)*SN->Height;
+//				SN->Top=(i>0?i-1:1)*SN->Height;
+				SN->Top=(i>0?i-1:2)*SN->Height;
 				SN->Left=1;
 				SN->Alignment=taCenter;
 				str=i>0?rL->getRacer(i,0):"№";
@@ -92,8 +96,50 @@ class RaceStartListView:public RaceList{
 				FIO->Caption=str;
 				FIO->OnMouseDown = SN->OnMouseDown;
 				FIO->OnDblClick = lbl->OnDblClick;
-            }
+			}
 
+			T1=dynamic_cast<TLabel*> (p->FindComponent("T1"+AnsiString(i)));
+			if(T1==NULL){
+				T1=new TLabel(p);
+				T1->Name="T1"+AnsiString(i);
+				T1->Parent = p;
+				T1->AutoSize=false;
+				T1->Transparent=SN->Transparent;
+				T1->Tag=SN->Tag;
+				T1->Color=SN->Color;
+				T1->Font->Size=SN->Font->Size-(i>0?1:0);
+				T1->Width=80;
+				T1->Height=SN->Height;
+				T1->Top=SN->Top;
+				T1->Left=FIO->Left+FIO->Width;
+				T1->Alignment=taCenter;
+				str=i>0?"1:22.33"/*rL->getRacer(i,2)*/:"T1";
+
+				T1->Caption=str;
+				T1->OnMouseDown = SN->OnMouseDown;
+				T1->OnDblClick = lbl->OnDblClick;
+			}
+			T2=dynamic_cast<TLabel*> (p->FindComponent("T2"+AnsiString(i)));
+			if(T2==NULL){
+				T2=new TLabel(p);
+				T2->Name="T2"+AnsiString(i);
+				T2->Parent = p;
+				T2->AutoSize=false;
+				T2->Transparent=SN->Transparent;
+				T2->Tag=SN->Tag;
+				T2->Color=SN->Color;
+				T2->Font->Size=SN->Font->Size-(i>0?1:0);
+				T2->Width=T1->Width;
+				T2->Height=SN->Height;
+				T2->Top=SN->Top;
+				T2->Left=T1->Left+T1->Width;
+				T2->Alignment=T1->Alignment;
+				str=i>0?/*rL->getRacer(i,2)*/"1:22.33":"T2";
+
+				T2->Caption=str;
+				T2->OnMouseDown = SN->OnMouseDown;
+				T2->OnDblClick = lbl->OnDblClick;
+			}
 		}
 		~_viewSL(){
 		}
@@ -101,9 +147,11 @@ class RaceStartListView:public RaceList{
 //______________________________________________________________________________
 		vector < _viewSL > viewSL;
 		TForm *pRaceSLViews;
-		TPanel *apanel1,*panel2,*panel3;
+		TPanel *panel1,*panel2,*panel3;
 		TLabel *l2live;
 		TImage *image;
+
+        TImage *imageFIS;
 
 
 		int icurrRacer=-1,ilastcurrRacer=-1;
@@ -121,8 +169,9 @@ class RaceStartListView:public RaceList{
 			if(pRaceSLViews==NULL){
 				panel3=NULL;
 				panel2=NULL;
-				apanel1=NULL;
+				panel1=NULL;
 				l2live=NULL;
+                imageFIS=NULL;
 
 				pRaceSLViews=new TForm(Application);
 				pRaceSLViews->Caption="Стартовый список";
@@ -144,41 +193,56 @@ class RaceStartListView:public RaceList{
 				pRaceSLViews->BorderIcons = tempBI;
 
 
-				apanel1= new TPanel(pRaceSLViews);
-				apanel1->Parent = pRaceSLViews;
-				apanel1->Name="P1SL";
-				apanel1->Font->Size=12;
-				apanel1->Alignment=taLeftJustify;
-				apanel1->VerticalAlignment=taAlignTop;
-				apanel1->Top=3;
-				apanel1->Left=3;
-				apanel1->Visible=true;
+				panel1= new TPanel(pRaceSLViews);
+				panel1->Parent = pRaceSLViews;
+				panel1->Name="P1SL";
+				panel1->Font->Size=12;
+				panel1->Alignment=taLeftJustify;
+				panel1->VerticalAlignment=taAlignTop;
+				panel1->Top=3;
+				panel1->Left=3;
+				panel1->Visible=true;
 				int ccodex=this->getCodex();
 				//str.sprintf(L"RaceList%d",this->getCodex());
-				apanel1->Caption="";//str;
+				panel1->Caption="";//str;
 
-				l2live= new TLabel(apanel1);
-				l2live->Parent=apanel1;
+#if 1
+				l2live= new TLabel(panel1);
+				l2live->Parent=panel1;
 				l2live->Font->Size=10;
 				l2live->Top=0;
 				l2live->Left=3;
 				l2live->Height=18;
+				l2live->Width=1;
 				l2live->Top=0;
 				l2live->Name="SL2FIS";
-				l2live->Caption="Нажмите для записи в LiveTiming FIS";
+				l2live->Caption="";//"Нажмите для записи в LiveTiming FIS";
 				l2live->Transparent=false;
 				l2live->Color=clLime;
 				l2live->OnMouseDown=mouse_down;
 				l2live->OnDblClick=mouse_DblClick;
+//#else
+
+				imageFIS=new TImage(panel1);
+				imageFIS->Parent = panel1;
+				imageFIS->Stretch=true;
+				imageFIS->Height=2*18;
+				imageFIS->Width=imageFIS->Height;
+				imageFIS->Top=0;
+				imageFIS->Left=l2live->Left+l2live->Width;
+				imageFIS->Picture=fUltraSki->Image1->Picture;
+
+#endif
 
 
-				panel2= new TPanel(apanel1);
-				panel2->Parent = apanel1;
+
+				panel2= new TPanel(panel1);
+				panel2->Parent = panel1;
 				panel2->Name="P2SL";
 				panel2->Font->Size=12;
 				panel2->Alignment=taLeftJustify;
 				panel2->VerticalAlignment=taAlignTop;
-				panel2->Top=18*2;
+				panel2->Top=18*3;
 				panel2->Left=3;
 				panel2->Visible=true;
 				panel2->Caption="";
@@ -231,17 +295,31 @@ class RaceStartListView:public RaceList{
 		void  __fastcall setCurRacersColor(){
 				std::for_each(viewSL.begin(),viewSL.end(),setRacersColor);
 		}
+		void  __fastcall setCurRacersColor(int icurr){
+				icurrRacer=icurr;
+				setCurRacersColor();
+		}
 
 		int  __fastcall checkLines(void);
 		void __fastcall CleaSLForm(void){pRaceSLViews->Hide();};
 		void __fastcall formmousewheel(TObject *Sender, TShiftState Shift, int WheelDelta,
-						 const TPoint &MousePos, bool &Handled){
-							//OnMouseWheel
+						 const TPoint &MousePos, bool &Handled){//OnMouseWheel
 						 int wheeldelta=WheelDelta;
+						 int itop=0,iheight=0;
 						 Handled=true;
-						 if(WheelDelta<0)icurrRacer--;
-						 else icurrRacer++;
-						 SetCurRacer(icurrRacer);
+						 iheight=panel3->Height;
+						 itop=panel3->Top;
+						 if(WheelDelta<0){
+							if(itop>-iheight+pRaceSLViews->Height-5*18){
+								panel3->Top-=18;
+							}
+						 }
+						 else {
+							if(itop<0)
+								panel3->Top+=18;
+							else
+								panel3->Top=0;
+						 }
 		}
         void __fastcall SetCurRacer(int irc);
 

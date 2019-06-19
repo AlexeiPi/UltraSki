@@ -22,7 +22,15 @@ extern Races *rcs;
 TIniFile *IniUltraTimeKeeping;//ini file
 //---------------------------------------------------------------------------
 void __fastcall TimeKeeping::form_key_press(TObject *Sender, System::WideChar &Key){
-///
+/*AnsiString astr,sname;
+TMaskEdit *edt=dynamic_cast<TMaskEdit*>(Sender);
+int i;
+	astr=Trim(edt->Text);
+	sname=edt->Name;
+	if(Key==46){
+		edt->Text=astr;
+	}
+*/
 }
 //---------------------------------------------------------------------------
 void __fastcall TimeKeeping::form_key_down(TObject *Sender, WORD &Key, TShiftState Shift){
@@ -41,6 +49,7 @@ int i;
 	   catch(...){}
 	}
 }
+
 //---------------------------------------------------------------------------
 void __fastcall TimeKeeping::TimeKeepingLocations(TForm* form){
 String str;
@@ -176,6 +185,8 @@ const int GridWidth=90;
 		eBIBonStart->Width=30;
 		eBIBonStart->Visible=true;
 		eBIBonStart->OnKeyDown=form_key_down;
+///		eBIBonStart->OnKeyPress=form_key_press;
+
 
 	}
 	eBIBonStart->Text="";

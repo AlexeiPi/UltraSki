@@ -61,6 +61,8 @@ TColor cl1=clActiveCaption,cl2=clWhite,cl;
 	else
 		cl=cl2;
 ///	cl=(i==icurrRacer)?cl1:cl2;
+	vsl.T2->Color=cl;
+	vsl.T1->Color=cl;
 	vsl.SN->Color=cl;
 	vsl.FC->Color=cl;
 	vsl.FIO->Color=cl;
@@ -85,7 +87,7 @@ int icurH,icurN,
 	   case 40://down
 			if(icurrRacer<iracersN-1){
 				icurH=(icurN+5)*18;
-				if((icurH+ipaneltop)>iformH)
+				if((icurH+ipaneltop+18)>iformH)
 					panel3->Top-=18;
 
 				icurrRacer++;
@@ -139,6 +141,7 @@ i=1;
 void __fastcall RaceStartListView::SetCurRacer(int inewcurracer){
 int isteps;
 int ichecklines=checkLines(),iracersN=getRacersN();
+    if(icurrRacer<0)icurrRacer=0;
 int icurH,icurN,
 	iformH=pRaceSLViews->Height,
 	ipaneltop=panel3->Top;
@@ -146,39 +149,22 @@ int icurH,icurN,
 
 	ilastcurrRacer=icurrRacer;
 
-	if(icurrRacer==inewcurracer)return;
-	if(icurrRacer>inewcurracer){
-	   isteps=icurrRacer-inewcurracer-1;
-	   while(isteps-->=0){
-		   --icurrRacer;
-			if(icurrRacer>1){
-				icurH=(icurrRacer-2)*18;
-				if(icurH+ipaneltop<0)
-					panel3->Top+=18;
-				//icurrRacer--;
-				icurN=icurrRacer;
-			}
-			else{
-				icurrRacer=1;
-				panel3->Top=0;
-			}
-	   }
+	if(icurN==inewcurracer)return;
+	if(icurN>inewcurracer){//up
+		panel3->Top=-inewcurracer*18+(iformH-18*5-5)-(ichecklines-1)*18;
+		icurrRacer=inewcurracer;
 	}
 	else{
-	   isteps=inewcurracer-icurrRacer+1;
-	   while(--isteps>0){
-			if(icurrRacer<iracersN-1){
-				icurH=(icurN+5)*18;
-				if((icurH+ipaneltop)>iformH)
-					panel3->Top-=18;
-
-				icurrRacer++;
-				icurH=icurrRacer*18;
+	   isteps=inewcurracer-icurN+1;//down
+		if(inewcurracer>iracersN-1)
+			inewcurracer=iracersN-1;
+		if(inewcurracer<=iracersN-1){
+			if((/*60*/18*5+ipaneltop+inewcurracer*18)>=iformH){
+				panel3->Top=-inewcurracer*18+(iformH-18*5-5);
 			}
-			else icurrRacer=iracersN-1;
-	   }
+			icurrRacer=inewcurracer;
+		}
 	}
-
 	for(auto i:viewSL)
 		setRacersColor(i);
 }
@@ -264,7 +250,7 @@ try{
 	}
 	else{
 		int irc=dynamic_cast<TLabel*>(Sender)->Tag;
-		SetCurRacer(irc);
+		setCurRacersColor(irc);
 	}
 }//end of proc
 //_____________________________________________________________________________
@@ -282,7 +268,7 @@ int iN;
 	viewSL.reserve(iN);
 	auto sz= viewSL.capacity();
 	for(int i=0;i<iN;++i){
-		vsl=new _viewSL(i==0?apanel1:panel3,i,this,l2live);
+		vsl=new _viewSL(i==0?panel1:panel3,i,this,l2live);
 		viewSL.push_back(*vsl);
 		if(sz!=viewSL.capacity()){
 			sz=viewSL.capacity();
@@ -291,10 +277,11 @@ int iN;
 	///String *sss=(String*)viewSL.data();
 	panel3->Height=(iN-1)*vsl->FIO->Height;
 	panel2->Height=panel3->Height;
-	apanel1->Height=panel2->Height+2;
-	panel3->Width=vsl->FIO->Width+vsl->FC->Width+vsl->SN->Width+6;
-	panel2->Width=panel3->Width+4;
-	apanel1->Width=panel2->Width+4;
+	panel1->Height=panel2->Height+2;
+	panel3->Width=vsl->T2->Width+vsl->T1->Width+vsl->FIO->Width+vsl->FC->Width+vsl->SN->Width+6;
+	panel2->Width=panel3->Width+panel3->Left+2;
+	panel1->Width=panel2->Width+panel2->Left+2;
+	form->Width=panel1->Width+panel1->Left+14;
 }//end of proc
 
 
@@ -808,7 +795,7 @@ int icurH,icurH1,icurN,
 			if(icurrRace<iracersN-1){
 				icurrRace++;
 				icurH=icurrRace*18;
-				int ih=iformH-panel2->Top-3*18;
+				int ih=iformH-panel2->Top-4*18;
 				if((icurH+ipaneltop)<ih){
 					int i=iformH-4*8;
 					i=panel2->Top;
